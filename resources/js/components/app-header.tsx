@@ -7,7 +7,6 @@ import {
     Menu,
     Palette,
     Search,
-    Settings,
     Shield,
     User,
     ChevronDown,
@@ -20,23 +19,14 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu';
+
 import {
     Menubar,
     MenubarContent,
-    MenubarGroup,
+
     MenubarItem,
     MenubarMenu,
-    MenubarSeparator,
-    MenubarShortcut,
+
     MenubarTrigger,
 } from "@/components/ui/menubar"
 import {
@@ -57,10 +47,10 @@ import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useInitials } from '@/hooks/use-initials';
 import { cn, toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
+import * as yearLevel from '@/routes/year-level';
 import type { BreadcrumbItem, SharedData } from '@/types';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
-import yearLevel from '@/routes/year-level';
 
 
 type Props = {
@@ -135,7 +125,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
 
                                             <Collapsible className="group/collapsible">
                                                 <CollapsibleTrigger className="flex w-full items-center justify-between font-medium">
-                                                    Addons
+                                                    Settings
                                                     <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
                                                 </CollapsibleTrigger>
                                                 <CollapsibleContent>
@@ -154,12 +144,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                                 </CollapsibleContent>
                                             </Collapsible>
 
-                                            <Link
-                                                href="/pricing"
-                                                className="flex items-center space-x-2 font-medium"
-                                            >
-                                                <span>Pricing</span>
-                                            </Link>
+
                                         </div>
                                     </div>
                                 </div>
@@ -189,8 +174,9 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                             ))}
                             <MenubarMenu>
                                 <MenubarTrigger className="cursor-pointer">
-                                    Addons <ChevronDown className="ml-1 h-3 w-3" />
+                                    Settings <ChevronDown className="ml-1 h-3 w-3" />
                                 </MenubarTrigger>
+
                                 <MenubarContent>
                                     {settingsItems.map((item) => (
                                         <MenubarItem key={item.title} asChild>
