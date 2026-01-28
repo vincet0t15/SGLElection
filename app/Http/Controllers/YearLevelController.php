@@ -22,4 +22,26 @@ class YearLevelController extends Controller
             'yearLevels' => $yearLevels,
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        YearLevel::create($request->all());
+
+        return redirect()->back()->with('success', 'Year Level created successfully.');
+    }
+
+    public function update(Request $request, YearLevel $yearLevel)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $yearLevel->update($request->all());
+
+        return redirect()->back()->with('success', 'Year Level updated successfully.');
+    }
 }

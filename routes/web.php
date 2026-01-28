@@ -17,6 +17,8 @@ Route::get('dashboard', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');
+    Route::post('year-level', [YearLevelController::class, 'store'])->name('year-level.store');
+    Route::put('year-level/{yearLevel}', [YearLevelController::class, 'update'])->name('year-level.update');
 });
 
 
