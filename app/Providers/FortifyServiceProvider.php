@@ -7,6 +7,8 @@ use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -28,6 +30,20 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Fortify::authenticateUsing(function (Request $request) {
+            $username = $request->username ?? $request->email;
+
+            $user = User::where('username', $username)->first();
+
+            if (
+                $user &&
+                Hash::check($request->password, $user->password) &&
+                $user->is_active
+            ) {
+                return $user;
+            }
+        });
+
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
