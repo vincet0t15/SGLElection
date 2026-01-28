@@ -60,6 +60,7 @@ import { dashboard } from '@/routes';
 import type { BreadcrumbItem, SharedData } from '@/types';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
+import yearlLevel from '@/routes/yearl-level';
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
@@ -74,9 +75,8 @@ const navItems = [
     { title: 'Admin', href: '/admin' },
 ];
 
-const addonsItems = [
-    { title: 'Sanity CMS', href: '/addons/sanity', icon: LayoutGrid },
-    { title: 'Payload CMS', href: '/addons/payload', icon: LayoutGrid },
+const settingsItems = [
+    { title: 'Year Level', href: yearlLevel.index().url, icon: LayoutGrid },
 ];
 
 const activeItemStyles =
@@ -139,7 +139,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                                 </CollapsibleTrigger>
                                                 <CollapsibleContent>
                                                     <div className="flex flex-col space-y-3 pl-2 pt-3">
-                                                        {addonsItems.map((item) => (
+                                                        {settingsItems.map((item) => (
                                                             <Link
                                                                 key={item.title}
                                                                 href={item.href}
@@ -191,7 +191,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                     Addons <ChevronDown className="ml-1 h-3 w-3" />
                                 </MenubarTrigger>
                                 <MenubarContent>
-                                    {addonsItems.map((item) => (
+                                    {settingsItems.map((item) => (
                                         <MenubarItem key={item.title} asChild>
                                             <Link href={item.href} className={cn("cursor-pointer w-full", isCurrentUrl(item.href) && activeItemStyles)}>
                                                 <item.icon className="mr-2 h-4 w-4" />

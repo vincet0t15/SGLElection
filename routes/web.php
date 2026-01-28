@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\YearLevelController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -13,5 +14,10 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    // YearLevel
+    Route::get('yearl-level', [YearLevelController::class, 'index'])->name('yearl-level.index');
+});
 
-require __DIR__.'/settings.php';
+
+require __DIR__ . '/settings.php';
