@@ -19,6 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');
     Route::post('year-level', [YearLevelController::class, 'store'])->name('year-level.store');
     Route::put('year-level/{yearLevel}', [YearLevelController::class, 'update'])->name('year-level.update');
+    Route::delete('year-level/{yearLevel}', [YearLevelController::class, 'destroy'])->name('year-level.destroy');
 });
 
 

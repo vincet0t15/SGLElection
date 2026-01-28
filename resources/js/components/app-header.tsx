@@ -59,11 +59,6 @@ type Props = {
 
 const navItems = [
     { title: 'Dashboard', href: dashboard() },
-    { title: 'Blocks', href: '/blocks' },
-    { title: 'Templates', href: '/templates' },
-    { title: 'Figma', href: '/figma' },
-    { title: 'Themes', href: '/themes' },
-    { title: 'Admin', href: '/admin' },
 ];
 
 const settingsItems = [

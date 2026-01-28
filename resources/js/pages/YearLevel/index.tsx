@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { PlusIcon } from 'lucide-react';
+import { Delete, PlusIcon } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -13,6 +13,7 @@ import { KeyboardEventHandler, useState } from 'react';
 import { YearLevelCreateDialog } from './create';
 import { YearLevelEditDialog } from './edit';
 import yearLevel from '@/routes/year-level';
+import DeleteYearLevel from './delete';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -29,11 +30,17 @@ export default function YearLevel({ yearLevels, filters }: Props) {
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [dataToEdit, setDataEdit] = useState<YearLevelProps | null>(null);
+    const [dataToDelete, setDataDelete] = useState<YearLevelProps | null>(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
 
     const handleClickEdit = (yearLevel: YearLevelProps) => {
         setDataEdit(yearLevel);
         setOpenEditDialog(true);
+    }
+    const handleClickDelete = (yearLevel: YearLevelProps) => {
+        setDataDelete(yearLevel);
+        setOpenDeleteDialog(true);
     }
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,8 +95,7 @@ export default function YearLevel({ yearLevels, filters }: Props) {
                                             <span
                                                 className="cursor-pointer text-green-500 hover:text-green-700 hover:underline"
                                                 onClick={() => {
-                                                    handleClickEdit(yearLevel);
-                                                    setOpenEditDialog(true);
+                                                    handleClickEdit(yearLevel)
                                                 }}
 
                                             >
@@ -97,7 +103,10 @@ export default function YearLevel({ yearLevels, filters }: Props) {
                                             </span>
                                             <span
                                                 className="text-red-500 cursor-pointer hover:text-orange-700 hover:underline"
+                                                onClick={() => {
+                                                    handleClickDelete(yearLevel);
 
+                                                }}
                                             >
                                                 Delete
                                             </span>
@@ -125,6 +134,11 @@ export default function YearLevel({ yearLevels, filters }: Props) {
             {
                 openEditDialog && dataToEdit && (
                     <YearLevelEditDialog open={openEditDialog} setOpen={setOpenEditDialog} yearlevel={dataToEdit} />
+                )
+            }
+            {
+                openDeleteDialog && dataToDelete && (
+                    <DeleteYearLevel open={openDeleteDialog} setOpen={setOpenDeleteDialog} dataToDelete={dataToDelete} />
                 )
             }
         </AppLayout >

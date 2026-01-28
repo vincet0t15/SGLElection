@@ -17,6 +17,7 @@ import { ChangeEventHandler, FormEventHandler, SubmitEventHandler } from "react"
 import yearLevel from "@/routes/year-level";
 import InputError from "@/components/input-error";
 import { LoaderCircle } from "lucide-react";
+import { toast } from "sonner";
 interface Props {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -38,15 +39,10 @@ export function YearLevelCreateDialog({ open, setOpen }: Props) {
         console.log(data);
         post(yearLevel.store().url, {
             preserveState: true,
-            onSuccess: () => {
+            onSuccess: (response: { props: FlashProps }) => {
+                toast.success(response.props.flash?.success);
                 setOpen(false);
                 reset();
-            },
-            onError: (errors) => {
-                setData({
-                    ...data,
-                    ...errors,
-                })
             },
         })
     }

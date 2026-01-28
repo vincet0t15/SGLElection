@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\YearLevel;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class YearLevelController extends Controller
@@ -26,7 +27,7 @@ class YearLevelController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:year_levels,name',
         ]);
 
         YearLevel::create($request->all());
@@ -37,11 +38,23 @@ class YearLevelController extends Controller
     public function update(Request $request, YearLevel $yearLevel)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('year_levels', 'name')->ignore($yearLevel->id),
+            ],
         ]);
 
         $yearLevel->update($request->all());
 
         return redirect()->back()->with('success', 'Year Level updated successfully.');
+    }
+
+    public function destroy(YearLevel $yearLevel)
+    {
+        $yearLevel->delete();
+
+        return redirect()->back()->with('success', 'Year Level deleted successfully.');
     }
 }
