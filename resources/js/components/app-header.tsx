@@ -60,7 +60,8 @@ import { dashboard } from '@/routes';
 import type { BreadcrumbItem, SharedData } from '@/types';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
-import yearlLevel from '@/routes/yearl-level';
+import yearLevel from '@/routes/year-level';
+
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
@@ -76,7 +77,7 @@ const navItems = [
 ];
 
 const settingsItems = [
-    { title: 'Year Level', href: yearlLevel.index().url, icon: LayoutGrid },
+    { title: 'Year Level', href: yearLevel.index().url, icon: LayoutGrid },
 ];
 
 const activeItemStyles =

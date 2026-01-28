@@ -16,7 +16,7 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::middleware(['auth', 'verified'])->group(function () {
     // YearLevel
-    Route::get('yearl-level', [YearLevelController::class, 'index'])->name('yearl-level.index');
+    Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');
 });
 
 
