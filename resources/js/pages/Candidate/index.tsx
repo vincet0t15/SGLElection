@@ -5,17 +5,16 @@ import candidateRoutes from '@/routes/candidate';
 import type { BreadcrumbItem } from '@/types';
 import { EventProps } from '@/types/event';
 import { Button } from '@/components/ui/button';
-import { PlusIcon, User } from 'lucide-react';
-import { useState, KeyboardEventHandler } from 'react';
+import { PlusIcon, User, Search } from 'lucide-react';
+import { useState, KeyboardEventHandler, useMemo } from 'react';
 import { YearLevelProps } from '@/types/yearlevel';
-import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import Pagination from '@/components/paginationData';
 import { PaginatedDataResponse } from '@/types/pagination';
 import { CandidateProps } from '@/types/candidate';
 import { FilterProps } from '@/types/filter';
+import { PositionProps } from '@/types/position';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -35,8 +34,8 @@ interface Props {
     filters: FilterProps;
 }
 
+
 export default function CandidateIndex({ candidates, events, yearLevels, filters }: Props) {
-    console.log(candidates)
     const [search, setSearch] = useState(filters.search || '');
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,74 +53,56 @@ export default function CandidateIndex({ candidates, events, yearLevels, filters
         }
     }
 
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Candidates" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <Button className="cursor-pointer" asChild>
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-y-auto rounded-xl p-4 md:p-8 bg-background">
+                {/* Header Section */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-2 border-b">
+                    <div className="relative flex-1 max-w-sm">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search candidates..."
+                            value={search}
+                            onChange={handleSearch}
+                            onKeyDown={handleKeyDown}
+                            className="pl-9"
+                        />
+                    </div>
+                    <Button className="cursor-pointer shadow-sm" asChild>
                         <Link href="/candidate/create">
-                            <PlusIcon className="h-4 w-4" />
-                            <span className="rounded-sm lg:inline">Candidate</span>
+                            <PlusIcon className="h-4 w-4 mr-2" />
+                            <span>Add Candidate</span>
                         </Link>
                     </Button>
-                    <div className="flex items-center gap-2">
-                        <Input placeholder="Search..." value={search} onChange={handleSearch} onKeyDown={handleKeyDown} />
-                    </div>
                 </div>
 
-                <div className="w-full overflow-hidden rounded-sm border shadow-sm">
-                    <Table>
-                        <TableHeader className="bg-muted/50">
-                            <TableRow>
-                                <TableHead className="w-[100px]">Photo</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Event</TableHead>
-                                <TableHead>Position</TableHead>
-                                <TableHead>Year Level</TableHead>
-                                <TableHead>Section</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {candidates.data.length > 0 ? (
-                                candidates.data.map((candidate) => (
-                                    <TableRow key={candidate.id}>
-                                        <TableCell>
-                                            <Avatar className="h-10 w-10 border border-muted">
-                                                {candidate.candidate_photos && candidate.candidate_photos.length > 0 ? (
-                                                    <AvatarImage
-                                                        src={`/storage/${candidate.candidate_photos[0].path}`}
-                                                        alt={candidate.name}
-                                                        className="object-cover"
-                                                    />
-                                                ) : null}
-                                                <AvatarFallback className="bg-muted">
-                                                    <User className="h-5 w-5 text-muted-foreground" />
-                                                </AvatarFallback>
-                                            </Avatar>
-                                        </TableCell>
-                                        <TableCell className="font-medium">{candidate.name}</TableCell>
-                                        <TableCell>{candidate.event?.name}</TableCell>
-                                        <TableCell>{candidate.position?.name}</TableCell>
-                                        <TableCell>{candidate.year_level?.name}</TableCell>
-                                        <TableCell>{candidate.year_section?.name}</TableCell>
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                                        No candidates found.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                {/* Content Section */}
+                <div className="space-y-12">
+                    {events.map((data, index) => (
+                        <div key={index} className="space-y-8 animate-in fade-in duration-500">
+                            {/* Event Header */}
+                            <div className="text-center space-y-2 border-b pb-6">
+                                <h2 className="text-2xl font-bold tracking-tight text-foreground uppercase">
+                                    OFFICIAL CANDIDATES
+                                </h2>
+                                <div className="flex items-center justify-center gap-2">
+                                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-widest">to the</span>
+                                </div>
+                                <h1 className="text-3xl md:text-4xl font-black text-primary uppercase tracking-tight">
+                                    {data.name}
+                                </h1>
+                            </div>
+
+                            {/* Positions and Candidates */}
+
+                        </div>
+                    ))}
+
                 </div>
 
-                <Pagination data={candidates} />
             </div>
-
-
         </AppLayout>
     );
 }
