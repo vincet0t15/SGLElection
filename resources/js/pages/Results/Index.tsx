@@ -198,13 +198,14 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                     const percentage = totalVotes > 0
                                                         ? Math.round((candidate.votes_count / totalVotes) * 100)
                                                         : 0;
-                                                    // Determine winner only if event is NOT active
-                                                    const isWinner = !event.is_active && index === 0 && candidate.votes_count > 0;
-                                                    const isSecond = !event.is_active && index === 1 && candidate.votes_count > 0;
-                                                    const isThird = !event.is_active && index === 2 && candidate.votes_count > 0;
 
-                                                    // If event is active, mask the details
-                                                    const showDetails = !event.is_active;
+                                                    // Determine winner if results should be shown
+                                                    const isWinner = showResults && index === 0 && candidate.votes_count > 0;
+                                                    const isSecond = showResults && index === 1 && candidate.votes_count > 0;
+                                                    const isThird = showResults && index === 2 && candidate.votes_count > 0;
+
+                                                    // Use the showResults flag for details visibility
+                                                    const showDetails = showResults;
 
                                                     return (
                                                         <div
