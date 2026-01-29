@@ -15,6 +15,12 @@ class Event extends Model
         'is_active',
     ];
 
+    protected $casts = [
+        'dateTime_start' => 'datetime',
+        'dateTime_end' => 'datetime',
+        'is_active' => 'boolean',
+    ];
+
     public function positions()
     {
         return $this->hasMany(Position::class);

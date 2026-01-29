@@ -14,7 +14,7 @@ class DashboardController extends Controller
     public function index()
     {
         $activeEvent = Event::where('is_active', true)->first();
-        
+
         $stats = [
             'total_voters' => Voter::count(),
             'total_candidates' => Candidate::count(),
@@ -28,9 +28,9 @@ class DashboardController extends Controller
             $votesCast = Vote::where('event_id', $activeEvent->id)
                 ->distinct('voter_id')
                 ->count('voter_id');
-                
+
             $stats['votes_cast'] = $votesCast;
-            
+
             // Calculate turnout based on total voters (or voters assigned to event if applicable)
             // Assuming global voter pool for now based on simplicity
             if ($stats['total_voters'] > 0) {
@@ -38,8 +38,42 @@ class DashboardController extends Controller
             }
         }
 
+        // Logic for Winners
+        $winners = [];
+        $eventForWinners = $activeEvent ?? Event::latest()->first();
+
+        if ($eventForWinners) {
+            // Check if event is ended (either inactive or time passed)
+            $isEnded = !$eventForWinners->is_active || now()->greaterThan($eventForWinners->dateTime_end);
+
+            if ($isEnded) {
+                $winners = $eventForWinners->positions()
+                    ->orderBy('id')
+                    ->with(['candidates' => function ($query) use ($eventForWinners) {
+                        $query->with(['candidatePhotos', 'yearLevel', 'yearSection'])
+                            ->withCount(['votes' => function ($q) use ($eventForWinners) {
+                                $q->where('event_id', $eventForWinners->id);
+                            }])
+                            ->orderBy('votes_count', 'desc');
+                    }])
+                    ->get()
+                    ->map(function ($position) {
+                        // We only need the winners (with at least 1 vote)
+                        $winnersList = $position->candidates
+                            ->filter(function ($candidate) {
+                                return $candidate->votes_count > 0;
+                            })
+                            ->take($position->max_votes);
+
+                        $position->setRelation('candidates', $winnersList);
+                        return $position;
+                    });
+            }
+        }
+
         return Inertia::render('dashboard', [
-            'stats' => $stats
+            'stats' => $stats,
+            'winners' => $winners
         ]);
     }
 }

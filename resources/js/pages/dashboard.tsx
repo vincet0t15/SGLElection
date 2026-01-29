@@ -7,6 +7,7 @@ import { Users, UserCheck, Vote, Award, Activity, Calendar, AlertCircle, Trophy 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import results from '@/routes/results';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -35,7 +36,43 @@ interface Stats {
     turnout_percentage: number;
 }
 
-export default function Dashboard({ stats }: { stats: Stats }) {
+interface CandidatePhoto {
+    id: number;
+    path: string;
+}
+
+interface YearLevel {
+    id: number;
+    name: string;
+}
+
+interface YearSection {
+    id: number;
+    name: string;
+}
+
+interface Candidate {
+    id: number;
+    name: string;
+    candidate_photos: CandidatePhoto[];
+    year_level: YearLevel;
+    year_section: YearSection;
+    votes_count: number;
+}
+
+interface Position {
+    id: number;
+    name: string;
+    max_votes: number;
+    candidates: Candidate[];
+}
+
+interface Props {
+    stats: Stats;
+    winners: Position[];
+}
+
+export default function Dashboard({ stats, winners = [] }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -121,6 +158,8 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                     )}
                 </div>
 
+
+
                 {/* Stats Grid */}
                 <div>
                     <h2 className="text-lg font-semibold mb-4">System Overview</h2>
@@ -183,6 +222,61 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                         </Card>
                     </div>
                 </div>
+
+                {/* Winners Section */}
+                {winners.length > 0 && (
+                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Trophy className="h-6 w-6 text-yellow-500" />
+                            <h2 className="text-2xl font-bold tracking-tight">Election Winners</h2>
+                        </div>
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {winners.map((position) => (
+                                <Card key={position.id} className="flex flex-col h-full border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/30 dark:bg-yellow-950/10 shadow-sm hover:shadow-md transition-shadow">
+                                    <CardHeader className="pb-3 border-b border-yellow-100 dark:border-yellow-900/30 bg-yellow-100/20 dark:bg-yellow-900/20">
+                                        <CardTitle className="text-base font-bold text-center text-yellow-800 dark:text-yellow-500">
+                                            {position.name}
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="flex-1 flex flex-col gap-3 p-4">
+                                        {position.candidates.length > 0 ? (
+                                            position.candidates.map((candidate, index) => (
+                                                <div key={candidate.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/80 dark:bg-black/40 backdrop-blur-sm border border-yellow-100 dark:border-yellow-900/30 shadow-sm">
+                                                    <div className="relative shrink-0">
+                                                        <Avatar className="h-10 w-10 border-2 border-yellow-400 shadow-sm">
+                                                            <AvatarImage src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined} className="object-cover" />
+                                                            <AvatarFallback className="bg-yellow-100 text-yellow-700 font-bold">
+                                                                {candidate.name.charAt(0)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="absolute -top-1.5 -right-1.5 bg-yellow-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md ring-1 ring-white dark:ring-black">
+                                                            {index + 1}
+                                                        </div>
+                                                    </div>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="text-sm font-bold truncate text-foreground">{candidate.name}</p>
+                                                        <div className="flex items-center justify-between mt-0.5">
+                                                            <p className="text-xs text-muted-foreground truncate">
+                                                                {candidate.year_level?.name}
+                                                            </p>
+                                                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400 border-none">
+                                                                {candidate.votes_count} Votes
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="text-center py-4 text-sm text-muted-foreground italic">
+                                                No winners declared
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </AppLayout>
     );
