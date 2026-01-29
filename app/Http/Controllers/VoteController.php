@@ -15,6 +15,14 @@ class VoteController extends Controller
 {
     public function index()
     {
+        $voter = Auth::guard('voter')->user();
+
+        // If the user is somehow logged in but inactive, log them out
+        if ($voter && !$voter->is_active) {
+            Auth::guard('voter')->logout();
+            return redirect()->route('voter.login')->withErrors(['username' => 'Your account is inactive.']);
+        }
+
         $events = Event::query()
             ->where('is_active', true)
             ->with([
@@ -26,6 +34,20 @@ class VoteController extends Controller
                 'positions.candidates.yearSection',
             ])
             ->get();
+
+        // Check if voter has already voted for any active event
+        if ($voter) {
+            foreach ($events as $event) {
+                $hasVoted = Vote::where('voter_id', $voter->id)
+                    ->where('event_id', $event->id)
+                    ->exists();
+
+                if ($hasVoted) {
+                    Auth::guard('voter')->logout();
+                    return redirect()->route('voter.login')->withErrors(['username' => 'You have already voted for this event.']);
+                }
+            }
+        }
 
         return Inertia::render('Vote/index', [
             'events' => $events,
@@ -84,8 +106,18 @@ class VoteController extends Controller
                     ]);
                 }
             }
+
+            // Deactivate the voter account
+            DB::table('voters')
+                ->where('id', $voter->id)
+                ->update(['is_active' => false]);
         });
 
-        return redirect()->back()->with('success', 'Votes submitted successfully!');
+        // Logout the voter
+        Auth::guard('voter')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('voter.login')->with('success', 'Votes submitted successfully! You have been logged out.');
     }
 }
