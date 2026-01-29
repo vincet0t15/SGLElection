@@ -54,6 +54,7 @@ import AppLogoIcon from './app-logo-icon';
 import yearSection from '@/routes/year-section';
 import event from '@/routes/event';
 import position from '@/routes/position';
+import candidate from '@/routes/candidate';
 
 
 type Props = {
@@ -68,6 +69,7 @@ const settingsItems = [
     { title: 'Year Level', href: yearLevel.index().url, icon: LayoutGrid },
     { title: 'Events', href: event.index().url, icon: Folder },
     { title: 'Positions', href: position.index().url, icon: BookOpen },
+    { title: 'Candidates', href: candidate.index().url, icon: User },
 ];
 
 const activeItemStyles =

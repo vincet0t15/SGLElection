@@ -37,6 +37,6 @@ class Candidate extends Model
 
     public function candidatePhotos()
     {
-        return $this->belongsTo(CandidatePhoto::class);
+        return $this->hasMany(CandidatePhoto::class);
     }
 }

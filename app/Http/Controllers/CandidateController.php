@@ -27,11 +27,11 @@ class CandidateController extends Controller
                 'positions' => function ($q) {
                     $q->orderBy('id', 'asc');
                 },
-                'positions.candidates',
+                'positions.candidates.candidatePhotos',
             ])
             ->get();
 
-        return Inertia::render('Candidate/Index', [
+        return Inertia::render('Candidate/index', [
             'events' => $events,
             'search' => $request->only('search'),
         ]);
