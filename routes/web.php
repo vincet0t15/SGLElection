@@ -20,12 +20,19 @@ Route::get('/', function () {
 
 use App\Http\Controllers\DashboardController;
 
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResultController;
 
 // Admin Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('results', [ResultController::class, 'index'])->name('results.index');
+
+    // Reports
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/{event}', [ReportController::class, 'show'])->name('reports.show');
+    Route::get('reports/print/{event}', [ReportController::class, 'print'])->name('reports.print');
+
 
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');

@@ -10,6 +10,7 @@ import {
     Shield,
     User,
     ChevronDown,
+    FileText,
 } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -55,6 +56,7 @@ import yearSection from '@/routes/year-section';
 import event from '@/routes/event';
 import position from '@/routes/position';
 import candidate from '@/routes/candidate';
+import reports from '@/routes/reports';
 
 
 type Props = {
@@ -70,6 +72,7 @@ const settingsItems = [
     { title: 'Events', href: event.index().url, icon: Folder },
     { title: 'Positions', href: position.index().url, icon: BookOpen },
     { title: 'Candidates', href: candidate.index().url, icon: User },
+    { title: 'Reports', href: reports.index().url, icon: FileText },
 ];
 
 const activeItemStyles =

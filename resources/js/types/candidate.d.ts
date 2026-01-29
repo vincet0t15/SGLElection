@@ -21,6 +21,7 @@ export interface CandidateProps {
     candidate_photos?: CandidatePhoto[];
     year_level?: YearLevelProps;
     year_section?: YearSectionProps;
+    votes_count?: number;
 }
 
 export type CandidateCreateProps = Omit<CandidateProps, 'id'>

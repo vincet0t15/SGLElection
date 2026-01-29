@@ -31,6 +31,7 @@ const mainNavItems: NavItem[] = [
                 href: results.index().url,
                 icon: BookOpen,
             },
+
         ]
     },
     {
