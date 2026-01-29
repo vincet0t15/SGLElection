@@ -1,10 +1,12 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, UserCheck, Vote, Award, Activity, Calendar, AlertCircle } from 'lucide-react';
+import { Users, UserCheck, Vote, Award, Activity, Calendar, AlertCircle, Trophy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import results from '@/routes/results';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -66,6 +68,14 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                                         <CardDescription className="text-base text-emerald-700/80 dark:text-emerald-400/80">
                                             {stats.active_event.description || 'No description provided.'}
                                         </CardDescription>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Link href={results.index()}>
+                                            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all hover:scale-105">
+                                                <Trophy className="mr-2 h-4 w-4" />
+                                                View Live Results
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                             </CardHeader>
