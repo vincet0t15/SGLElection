@@ -16,6 +16,7 @@ import position from '@/routes/position';
 import { PositionCreateDialog } from './create';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PositionEditDialog } from './edit';
+import DeletePosition from './delete';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -167,6 +168,7 @@ export default function Position({ positions, filters, events }: Props) {
 
             {openCreateDialog && <PositionCreateDialog open={openCreateDialog} setOpen={setOpenCreateDialog} events={events} />}
             {openEditDialog && selectedPosition && <PositionEditDialog open={openEditDialog} setOpen={setOpenEditDialog} events={events} SelectedPosition={selectedPosition} />}
+            {openDeleteDialog && selectedPosition && <DeletePosition open={openDeleteDialog} setOpen={setOpenDeleteDialog} selectedPosition={selectedPosition} />}
         </AppLayout >
     );
 }

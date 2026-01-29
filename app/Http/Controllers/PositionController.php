@@ -67,9 +67,8 @@ class PositionController extends Controller
         return redirect()->back()->with('success', 'Position updated successfully');
     }
 
-    public function destroy(Request $request)
+    public function destroy(Position $position)
     {
-        $position = Position::findOrFail($request->position_id);
         $position->delete();
 
         return redirect()->back()->with('success', 'Position deleted successfully');
