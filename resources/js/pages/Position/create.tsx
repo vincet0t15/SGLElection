@@ -76,11 +76,11 @@ export function PositionCreateDialog({ open, setOpen, events }: Props) {
                         <div className="grid gap-3">
                             <Label htmlFor="event_id">Select Event</Label>
                             <CustomSelect
-                                id="event_id"
-                                name="event_id"
-                                options={eventOptions}
+                                options={eventOptions.map(opt => ({ value: String(opt.value), label: opt.label }))}
                                 onChange={onChangeEvent}
                                 value={String(data.event_id)}
+                                placeholder="Select an event"
+                                widthClass="w-full"
                             />
                             <InputError message={errors.event_id} />
                         </div>

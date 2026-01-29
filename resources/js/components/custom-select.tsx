@@ -27,7 +27,7 @@ export default function CustomSelect({
     value,
     onChange,
     placeholder = 'Select an option',
-    widthClass = 'w-[180px]',
+    widthClass = 'w-full',
     disabled,
     tabIndex,
 }: CustomSelectProps) {

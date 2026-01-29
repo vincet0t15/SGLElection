@@ -21,7 +21,7 @@ class PositionController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             })
-            ->with('events')
+            ->with('event')
             ->orderBy('name', 'asc')
             ->paginate(20)
             ->withQueryString();
@@ -38,6 +38,7 @@ class PositionController extends Controller
         $request->validate([
             'name' => 'required|string',
             'max_votes' => 'required|integer',
+            'event_id' => 'required|integer',
         ]);
 
         Position::create($request->all());

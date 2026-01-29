@@ -81,6 +81,7 @@ export default function Position({ positions, filters, events }: Props) {
                         <TableHeader className="bg-muted/50">
                             <TableRow>
                                 <TableHead className="text-primary font-bold">Position Name</TableHead>
+                                <TableHead className="text-primary font-bold">Event</TableHead>
                                 <TableHead className="text-primary font-bold">Max Votes</TableHead>
                                 <TableHead className="text-primary font-bold text-center w-25">Position Actions</TableHead>
                             </TableRow>
@@ -92,7 +93,9 @@ export default function Position({ positions, filters, events }: Props) {
                                         <TableCell>
                                             <span >{position.name}</span>
                                         </TableCell>
-
+                                        <TableCell>
+                                            <span >{position.event?.name}</span>
+                                        </TableCell>
                                         <TableCell>
                                             <span >{position.max_votes}</span>
                                         </TableCell>
