@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import CustomSelect from "@/components/custom-select";
 import InputError from "@/components/input-error";
-import { ChangeEventHandler, FormEventHandler, useMemo, useState } from "react";
+import { ChangeEventHandler, FormEventHandler, SubmitEventHandler, useMemo, useState } from "react";
 import { LoaderCircle, ChevronLeft, Upload, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import { EventProps } from "@/types/event";
@@ -109,6 +109,7 @@ export default function CandidateCreate({ events, yearLevels, positions, event_i
             preserveScroll: true,
             only: ['positions', 'event_id'],
             replace: true,
+
         });
     }
 
@@ -128,11 +129,13 @@ export default function CandidateCreate({ events, yearLevels, positions, event_i
         }
     }
 
-    const submit: FormEventHandler = (e) => {
+    const submit: SubmitEventHandler = (e) => {
         e.preventDefault();
         post('/candidate', {
             onSuccess: () => {
                 toast.success("Candidate created successfully");
+                reset();
+                setPreviewUrl(null);
             },
             onError: (err) => {
                 toast.error("Failed to create candidate");
