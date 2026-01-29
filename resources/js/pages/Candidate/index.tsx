@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import candidateRoutes from '@/routes/candidate';
@@ -7,7 +7,6 @@ import { EventProps } from '@/types/event';
 import { Button } from '@/components/ui/button';
 import { PlusIcon, User } from 'lucide-react';
 import { useState, KeyboardEventHandler } from 'react';
-import { CandidateCreateDialog } from './create';
 import { YearLevelProps } from '@/types/yearlevel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -39,7 +38,6 @@ interface Props {
 export default function CandidateIndex({ candidates, events, yearLevels, filters }: Props) {
     console.log(candidates)
     const [search, setSearch] = useState(filters.search || '');
-    const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
@@ -61,9 +59,11 @@ export default function CandidateIndex({ candidates, events, yearLevels, filters
             <Head title="Candidates" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)}>
-                        <PlusIcon className="h-4 w-4" />
-                        <span className="rounded-sm lg:inline">Candidate</span>
+                    <Button className="cursor-pointer" asChild>
+                        <Link href="/candidate/create">
+                            <PlusIcon className="h-4 w-4" />
+                            <span className="rounded-sm lg:inline">Candidate</span>
+                        </Link>
                     </Button>
                     <div className="flex items-center gap-2">
                         <Input placeholder="Search..." value={search} onChange={handleSearch} onKeyDown={handleKeyDown} />
@@ -121,14 +121,7 @@ export default function CandidateIndex({ candidates, events, yearLevels, filters
                 <Pagination data={candidates} />
             </div>
 
-            {openCreateDialog && (
-                <CandidateCreateDialog
-                    open={openCreateDialog}
-                    setOpen={setOpenCreateDialog}
-                    events={events}
-                    yearLevels={yearLevels}
-                />
-            )}
+
         </AppLayout>
     );
 }
