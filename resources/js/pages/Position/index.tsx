@@ -14,6 +14,8 @@ import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import position from '@/routes/position';
 import { PositionCreateDialog } from './create';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PositionEditDialog } from './edit';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -30,18 +32,18 @@ interface Props {
 export default function Position({ positions, filters, events }: Props) {
 
     const [search, setSearch] = useState(filters.search || '');
+    const [eventId, setEventId] = useState<string>(filters.event_id ? String(filters.event_id) : 'all');
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
-    const [dataToEdit, setDataEdit] = useState<PositionProps | null>(null);
-    const [dataToDelete, setDataDelete] = useState<PositionProps | null>(null);
+    const [selectedPosition, setSelectedPosition] = useState<PositionProps>();
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
     const handleClickEdit = (position: PositionProps) => {
-        setDataEdit(position);
+        setSelectedPosition(position);
         setOpenEditDialog(true);
     }
     const handleClickDelete = (position: PositionProps) => {
-        setDataDelete(position);
+        setSelectedPosition(position);
         setOpenDeleteDialog(true);
     }
 
@@ -49,11 +51,23 @@ export default function Position({ positions, filters, events }: Props) {
         setSearch(e.target.value);
     }
 
+    const handleEventFilter = (value: string) => {
+        setEventId(value);
+        router.get(position.index().url, {
+            search: search,
+            event_id: value === 'all' ? undefined : value
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    }
+
     const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (e.key === 'Enter') {
-            const queryString = search ? { search: search } : undefined;
-
-            router.get(position.index().url, queryString,
+            router.get(position.index().url, {
+                search: search,
+                event_id: eventId === 'all' ? undefined : eventId
+            },
                 {
                     preserveState: true,
                     preserveScroll: true,
@@ -71,6 +85,19 @@ export default function Position({ positions, filters, events }: Props) {
                     </Button>
 
                     <div className="flex items-center gap-2">
+                        <Select value={eventId} onValueChange={handleEventFilter}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by Event" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Events</SelectItem>
+                                {events.map((event) => (
+                                    <SelectItem key={event.id} value={String(event.id)}>
+                                        {event.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                         <Input placeholder="Search..." value={search} onChange={handleSearch} onKeyDown={handleKeyDown} />
                     </div>
                 </div>
@@ -139,7 +166,7 @@ export default function Position({ positions, filters, events }: Props) {
             </div>
 
             {openCreateDialog && <PositionCreateDialog open={openCreateDialog} setOpen={setOpenCreateDialog} events={events} />}
-
+            {openEditDialog && selectedPosition && <PositionEditDialog open={openEditDialog} setOpen={setOpenEditDialog} events={events} SelectedPosition={selectedPosition} />}
         </AppLayout >
     );
 }

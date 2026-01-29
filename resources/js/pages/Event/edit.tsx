@@ -20,6 +20,7 @@ import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { EventProps, EventType } from "@/types/event";
 import event from "@/routes/event";
+import { Textarea } from "@/components/ui/textarea";
 interface Props {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -38,7 +39,7 @@ export function EventEditDialog({ open, setOpen, SelectedEvent }: Props) {
         is_active: SelectedEvent.is_active,
     })
 
-    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
         setData({
             ...data,
             [e.target.name]: e.target.value,
@@ -95,7 +96,7 @@ export function EventEditDialog({ open, setOpen, SelectedEvent }: Props) {
 
                         <div className="grid gap-3">
                             <Label htmlFor="description">Event Description</Label>
-                            <Input id="description" name="description" placeholder="e.g. This is the 1st Year General Meeting" onChange={handleChange} value={data.description} />
+                            <Textarea id="description" name="description" placeholder="e.g. This is the 1st Year General Meeting" onChange={handleChange} value={data.description} />
                             <InputError message={errors.description} />
                         </div>
 

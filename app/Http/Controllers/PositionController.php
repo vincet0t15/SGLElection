@@ -13,13 +13,19 @@ class PositionController extends Controller
     public function index(Request $request)
     {
         $search = request()->input('search');
+        $eventId = request()->input('event_id');
+
         $events = Event::query()
             ->where('is_active', true)
             ->orderBy('name', 'asc')
             ->get();
+
         $positions = Position::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
+            })
+            ->when($eventId, function ($query, $eventId) {
+                $query->where('event_id', $eventId);
             })
             ->with('event')
             ->orderBy('name', 'asc')
@@ -27,7 +33,7 @@ class PositionController extends Controller
             ->withQueryString();
 
         return Inertia::render('Position/index', [
-            'filters' => $request->only('search'),
+            'filters' => $request->only(['search', 'event_id']),
             'positions' => $positions,
             'events' => $events,
         ]);
@@ -47,14 +53,15 @@ class PositionController extends Controller
     }
 
 
-    public function update(Request $request)
+    public function update(Request $request, Position $position)
     {
         $request->validate([
             'name' => 'required|string',
             'max_votes' => 'required|integer',
+            'event_id' => 'required|integer',
         ]);
 
-        $position = Position::findOrFail($request->position_id);
+
         $position->update($request->all());
 
         return redirect()->back()->with('success', 'Position updated successfully');
