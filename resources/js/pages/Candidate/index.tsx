@@ -37,6 +37,7 @@ interface Props {
 }
 
 export default function CandidateIndex({ candidates, events, yearLevels, filters }: Props) {
+    console.log(candidates)
     const [search, setSearch] = useState(filters.search || '');
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
