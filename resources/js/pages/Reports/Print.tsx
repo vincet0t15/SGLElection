@@ -57,7 +57,8 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b-2 border-gray-300">
-                                        <th className="py-2 pl-2 font-bold uppercase text-xs text-gray-500">Candidate</th>
+                                        <th className="py-2 pl-2 w-12 font-bold uppercase text-xs text-gray-500">Rank</th>
+                                        <th className="py-2 font-bold uppercase text-xs text-gray-500">Candidate</th>
                                         <th className="py-2 font-bold uppercase text-xs text-gray-500">Year & Section</th>
                                         <th className="py-2 text-right font-bold uppercase text-xs text-gray-500">Votes</th>
                                         <th className="py-2 text-right pr-2 font-bold uppercase text-xs text-gray-500">Percentage</th>
@@ -68,11 +69,15 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
                                         const percentage = totalVotes > 0 
                                             ? Math.round(((candidate.votes_count || 0) / totalVotes) * 100) 
                                             : 0;
-                                        const isWinner = index === 0 && (candidate.votes_count || 0) > 0;
+                                        // Consider as winner if the candidate is within the top N candidates (where N is max_votes)
+                                        // and has at least one vote.
+                                        const isWinner = index < position.max_votes && (candidate.votes_count || 0) > 0;
+                                        const rank = index + 1;
 
                                         return (
                                             <tr key={candidate.id} className={`border-b border-gray-100 ${isWinner ? 'bg-emerald-50/50' : ''}`}>
-                                                <td className="py-3 pl-2 flex items-center gap-3">
+                                                <td className="py-3 pl-2 font-bold text-gray-500">#{rank}</td>
+                                                <td className="py-3 flex items-center gap-3">
                                                     <div className="w-10 h-10 bg-gray-100 rounded-full overflow-hidden flex-shrink-0 border border-gray-200">
                                                         {candidate.candidate_photos?.[0]?.path ? (
                                                             <img 
