@@ -17,6 +17,7 @@ class Voter extends Authenticatable
         'username',
         'password',
         'is_active',
+        'event_id',
     ];
 
     protected $hidden = [
@@ -28,4 +29,9 @@ class Voter extends Authenticatable
         'password' => 'hashed',
         'is_active' => 'boolean',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
 }
