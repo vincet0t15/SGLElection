@@ -36,6 +36,7 @@ interface Props {
 
 
 export default function CandidateIndex({ candidates, events, yearLevels, filters }: Props) {
+    console.log(events)
     const [search, setSearch] = useState(filters.search || '');
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,7 +97,34 @@ export default function CandidateIndex({ candidates, events, yearLevels, filters
                             </div>
 
                             {/* Positions and Candidates */}
+                            {data.positions.map((position, index) => (
+                                <>
+                                    <div key={index} className="space-y-6">
+                                        <div className="text-center space-y-2">
+                                            <h3 className="text-2xl font-bold tracking-tight text-foreground uppercase">
+                                                {position.name}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                        {position.candidates.map((candidate, index) => (
+                                            <div key={index} className="bg-card text-card-foreground rounded-lg p-4 shadow-sm border border-border">
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <Avatar className="h-12 w-12">
+                                                        <AvatarImage src={'storage/' + candidate.candidate_photos?.[0].path || ''} alt={candidate.name} />
+                                                        <AvatarFallback>{candidate.name}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="text-center">
+                                                        <h4 className="text-lg font-bold tracking-tight text-foreground">{candidate.name}</h4>
+                                                        <p className="text-sm font-medium text-muted-foreground">{candidate.year_level?.name || 'N/A'}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
 
+                            ))}
                         </div>
                     ))}
 
