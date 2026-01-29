@@ -31,23 +31,58 @@ class VoterAuthController extends Controller
             $request->session()->regenerate();
             $voter = Auth::guard('voter')->user();
 
-            // Additional check: Ensure voter hasn't already voted for any active event
-            // This protects against scenarios where an admin might manually reactivate a user
-            // but they shouldn't vote again for the same event.
-            $activeEvents = Event::where('is_active', true)->get();
-            foreach ($activeEvents as $event) {
-                $hasVoted = Vote::where('voter_id', $voter->id)
-                    ->where('event_id', $event->id)
-                    ->exists();
+            // Check if voter has an assigned event
+            if (!$voter->event_id) {
+                Auth::guard('voter')->logout();
+                $request->session()->invalidate();
+                throw ValidationException::withMessages([
+                    'username' => 'You are not assigned to any election event.',
+                ]);
+            }
 
-                if ($hasVoted) {
-                    Auth::guard('voter')->logout();
-                    $request->session()->invalidate();
-                    
-                    throw ValidationException::withMessages([
-                        'username' => 'You have already voted for the active election.',
-                    ]);
-                }
+            // Load the event relationship
+            $event = Event::find($voter->event_id);
+            $event = $voter->event;
+
+            // Check if event exists
+            if (!$event) {
+                Auth::guard('voter')->logout();
+                $request->session()->invalidate();
+                throw ValidationException::withMessages([
+                    'username' => 'The assigned election event does not exist.',
+                ]);
+            }
+
+            // Check if event is active
+            if (!$event->is_active) {
+                Auth::guard('voter')->logout();
+                $request->session()->invalidate();
+                throw ValidationException::withMessages([
+                    'username' => 'The election event is not currently active.',
+                ]);
+            }
+
+            // Check if event has ended
+            if ($event->dateTime_end && now()->gt($event->dateTime_end)) {
+                Auth::guard('voter')->logout();
+                $request->session()->invalidate();
+                throw ValidationException::withMessages([
+                    'username' => 'The election event has ended.',
+                ]);
+            }
+
+            // Check if voter has already voted in this specific event
+            $hasVoted = Vote::where('voter_id', $voter->id)
+                ->where('event_id', $event->id)
+                ->exists();
+
+            if ($hasVoted) {
+                Auth::guard('voter')->logout();
+                $request->session()->invalidate();
+
+                throw ValidationException::withMessages([
+                    'username' => 'You have already voted for this election.',
+                ]);
             }
 
             return redirect()->intended(route('vote.index'));
