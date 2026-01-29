@@ -8,6 +8,14 @@ import { Check, User, Info, Vote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import vote from '@/routes/vote';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Props {
     events: EventProps[];
@@ -16,6 +24,7 @@ interface Props {
 export default function VoteIndex({ events }: Props) {
     // State to store votes: { [positionId]: [candidateId1, candidateId2, ...] }
     const [votes, setVotes] = useState<Record<number, number[]>>({});
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     // Calculate progress
     const totalPositions = useMemo(() => {
@@ -58,17 +67,46 @@ export default function VoteIndex({ events }: Props) {
     };
 
     const handleSubmit = () => {
+        if (votedPositions === 0) {
+            toast.error("Please select at least one candidate to submit.");
+            return;
+        }
+        setIsConfirmOpen(true);
+    };
+
+    const confirmSubmit = () => {
         router.post((vote.store().url), { votes }, {
             onSuccess: () => {
                 toast.success("Votes submitted successfully!");
                 setVotes({});
+                setIsConfirmOpen(false);
             },
             onError: (errors) => {
                 Object.values(errors).forEach(error => {
                     toast.error(error);
                 });
+                setIsConfirmOpen(false);
             }
         });
+    };
+
+    const getVoteSummary = () => {
+        const summary: { position: string; candidates: string[] }[] = [];
+        events.forEach(event => {
+            event.positions.forEach(position => {
+                const selectedIds = votes[position.id] || [];
+                if (selectedIds.length > 0) {
+                    const selectedCandidates = position.candidates
+                        .filter(c => selectedIds.includes(c.id))
+                        .map(c => c.name);
+                    summary.push({
+                        position: position.name,
+                        candidates: selectedCandidates
+                    });
+                }
+            });
+        });
+        return summary;
     };
 
     return (
@@ -105,7 +143,7 @@ export default function VoteIndex({ events }: Props) {
                         disabled={votedPositions === 0}
                         className="hidden md:flex bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 shadow-lg"
                     >
-                        Submit Ballot
+                        Review & Submit
                     </Button>
                 </div>
             </header>
@@ -255,9 +293,54 @@ export default function VoteIndex({ events }: Props) {
                     onClick={handleSubmit}
                     disabled={votedPositions === 0}
                 >
-                    Submit Ballot ({votedPositions})
+                    Review & Submit ({votedPositions})
                 </Button>
             </div>
+
+            <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+                <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-emerald-950">Review Your Votes</DialogTitle>
+                        <DialogDescription>
+                            Please review your selected candidates before submitting. This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 my-4">
+                        {getVoteSummary().length === 0 ? (
+                            <p className="text-center text-muted-foreground">No candidates selected.</p>
+                        ) : (
+                            getVoteSummary().map((item, index) => (
+                                <div key={index} className="border-b border-emerald-100 last:border-0 pb-3 last:pb-0">
+                                    <h4 className="font-semibold text-emerald-800 text-sm mb-1">{item.position}</h4>
+                                    <ul className="list-disc list-inside text-sm text-emerald-600">
+                                        {item.candidates.map((candidate, idx) => (
+                                            <li key={idx}>{candidate}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))
+                        )}
+
+                        <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-sm text-amber-800 flex items-start gap-2 mt-4">
+                            <Info className="h-4 w-4 mt-0.5 shrink-0" />
+                            <p>
+                                You have selected candidates for <span className="font-semibold">{votedPositions}</span> out of <span className="font-semibold">{totalPositions}</span> positions.
+                                {votedPositions < totalPositions && " You can still vote for the remaining positions."}
+                            </p>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="flex-col sm:flex-row gap-2">
+                        <Button variant="outline" onClick={() => setIsConfirmOpen(false)} className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800">
+                            Keep Voting
+                        </Button>
+                        <Button onClick={confirmSubmit} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                            Confirm & Submit
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
