@@ -39,4 +39,9 @@ class Candidate extends Model
     {
         return $this->hasMany(CandidatePhoto::class);
     }
+
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
+    }
 }

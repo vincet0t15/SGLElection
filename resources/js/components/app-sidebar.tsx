@@ -15,6 +15,7 @@ import {
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
+import results from '@/routes/results';
 
 const mainNavItems: NavItem[] = [
     {
@@ -24,6 +25,11 @@ const mainNavItems: NavItem[] = [
                 title: 'Dashboard',
                 href: dashboard(),
                 icon: LayoutGrid,
+            },
+            {
+                title: 'Results',
+                href: results.index().url,
+                icon: BookOpen,
             },
         ]
     },

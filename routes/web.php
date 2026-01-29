@@ -20,9 +20,12 @@ Route::get('/', function () {
 
 use App\Http\Controllers\DashboardController;
 
+use App\Http\Controllers\ResultController;
+
 // Admin Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('results', [ResultController::class, 'index'])->name('results.index');
 
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');
