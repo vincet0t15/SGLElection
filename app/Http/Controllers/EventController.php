@@ -50,8 +50,8 @@ class EventController extends Controller
             'name' => 'required|string',
             'dateTime_start' => 'required|date',
             'dateTime_end' => 'required|date',
-            'location' => 'required|string',
-            'description' => 'required|string',
+            'location' => 'nullable|string',
+            'description' => 'nullable|string',
             'is_active' => 'required|boolean',
         ]);
 

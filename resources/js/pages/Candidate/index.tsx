@@ -12,10 +12,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Dashboard',
         href: dashboard().url,
     },
-    {
-        title: 'Candidates',
-        href: '#',
-    },
 ];
 
 interface CandidatePhoto {

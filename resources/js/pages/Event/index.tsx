@@ -50,12 +50,13 @@ export default function Event({ events, filters }: Props) {
     }
 
     const handleToggleActive = (ev: EventProps) => {
+        console.log(ev)
         router.put(event.update(ev.id).url, {
             name: ev.name,
             dateTime_start: ev.dateTime_start,
             dateTime_end: ev.dateTime_end,
-            location: ev.location,
-            description: ev.description,
+            location: ev?.location,
+            description: ev?.description,
             is_active: !ev.is_active,
         }, {
             preserveState: true,
@@ -79,7 +80,7 @@ export default function Event({ events, filters }: Props) {
     }
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Year Level" />
+            <Head title="Events" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)}>
