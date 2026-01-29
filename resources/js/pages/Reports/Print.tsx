@@ -38,7 +38,7 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
                     <tr>
                         <td>
                             {/* Top Margin Spacer - Repeats on every page */}
-                            <div className="h-0 print:h-[20mm]"></div>
+                            <div className="h-0 print:h-[10mm]"></div>
                         </td>
                     </tr>
                 </thead>
