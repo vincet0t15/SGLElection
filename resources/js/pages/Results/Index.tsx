@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Trophy, Medal, User, AlertCircle } from 'lucide-react';
+import { Trophy, Medal, User, AlertCircle, HelpCircle } from 'lucide-react';
 import results from '@/routes/results';
+
 
 
 interface CandidatePhoto {
@@ -120,7 +121,13 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                     const percentage = totalVotes > 0
                                                         ? Math.round((candidate.votes_count / totalVotes) * 100)
                                                         : 0;
-                                                    const isWinner = index === 0 && candidate.votes_count > 0;
+                                                    // Determine winner only if event is NOT active
+                                                    const isWinner = !event.is_active && index === 0 && candidate.votes_count > 0;
+                                                    const isSecond = !event.is_active && index === 1 && candidate.votes_count > 0;
+                                                    const isThird = !event.is_active && index === 2 && candidate.votes_count > 0;
+
+                                                    // If event is active, mask the details
+                                                    const showDetails = !event.is_active;
 
                                                     return (
                                                         <div
@@ -131,12 +138,18 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                             <div className="flex items-start gap-4">
                                                                 <div className="relative">
                                                                     <Avatar className={`h-12 w-12 border-2 ${isWinner ? 'border-yellow-500' : 'border-border'}`}>
-                                                                        <AvatarImage
-                                                                            src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
-                                                                            alt={candidate.name}
-                                                                        />
-                                                                        <AvatarFallback>
-                                                                            <User className="h-6 w-6 text-muted-foreground" />
+                                                                        {showDetails ? (
+                                                                            <AvatarImage
+                                                                                src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
+                                                                                alt={candidate.name}
+                                                                            />
+                                                                        ) : null}
+                                                                        <AvatarFallback className={!showDetails ? "bg-muted" : ""}>
+                                                                            {showDetails ? (
+                                                                                <User className="h-6 w-6 text-muted-foreground" />
+                                                                            ) : (
+                                                                                <HelpCircle className="h-6 w-6 text-muted-foreground" />
+                                                                            )}
                                                                         </AvatarFallback>
                                                                     </Avatar>
                                                                     {isWinner && (
@@ -144,12 +157,12 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                             <Trophy className="h-3 w-3" />
                                                                         </div>
                                                                     )}
-                                                                    {index === 1 && candidate.votes_count > 0 && (
+                                                                    {isSecond && (
                                                                         <div className="absolute -top-2 -right-2 bg-slate-400 text-white p-1 rounded-full shadow-sm">
                                                                             <Medal className="h-3 w-3" />
                                                                         </div>
                                                                     )}
-                                                                    {index === 2 && candidate.votes_count > 0 && (
+                                                                    {isThird && (
                                                                         <div className="absolute -top-2 -right-2 bg-amber-700 text-white p-1 rounded-full shadow-sm">
                                                                             <Medal className="h-3 w-3" />
                                                                         </div>
@@ -159,7 +172,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                 <div className="flex-1 space-y-1">
                                                                     <div className="flex items-center justify-between">
                                                                         <h4 className={`font-semibold text-sm ${isWinner ? 'text-yellow-700 dark:text-yellow-500' : ''}`}>
-                                                                            {candidate.name}
+                                                                            {showDetails ? candidate.name : "Tallying..."}
                                                                         </h4>
                                                                         <span className="font-mono text-sm font-bold">
                                                                             {candidate.votes_count}
@@ -168,7 +181,10 @@ export default function ResultsIndex({ event, positions }: Props) {
 
                                                                     <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                                                                         <span>
-                                                                            {candidate.year_level?.name} - {candidate.year_section?.name}
+                                                                            {showDetails
+                                                                                ? `${candidate.year_level?.name} - ${candidate.year_section?.name}`
+                                                                                : "Candidate Details Hidden"
+                                                                            }
                                                                         </span>
                                                                         <span>{percentage}%</span>
                                                                     </div>
