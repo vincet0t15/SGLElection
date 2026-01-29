@@ -1,3 +1,13 @@
+import { EventProps } from "./event";
+import { PositionProps } from "./position";
+import { YearLevelProps } from "./yearlevel";
+import { YearSectionProps } from "./section";
+
+export interface CandidatePhoto {
+    id: number;
+    path: string;
+}
+
 export interface CandidateProps {
     id: number;
     name: string;
@@ -6,6 +16,11 @@ export interface CandidateProps {
     event_id: number;
     position_id: number;
     photo?: File[]
+    event?: EventProps;
+    position?: PositionProps;
+    candidate_photos?: CandidatePhoto[];
+    year_level?: YearLevelProps;
+    year_section?: YearSectionProps;
 }
 
 export type CandidateCreateProps = Omit<CandidateProps, 'id'>

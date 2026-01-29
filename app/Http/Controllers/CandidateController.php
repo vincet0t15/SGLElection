@@ -17,24 +17,23 @@ class CandidateController extends Controller
     {
         $search = $request->input('search');
 
-        $events = Event::query()
-            ->where('is_active', true)
-            ->when($search, function ($query) use ($search) {
+        $candidates = Candidate::query()
+            ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
-                    ->orWhereHas('positions', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%")
-                            ->orWhereHas('candidates', function ($qq) use ($search) {
-                                $qq->where('name', 'like', "%{$search}%");
-                            });
+                    ->orWhereHas('event', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('position', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
                     });
             })
-            ->with([
-                'positions' => function ($q) {
-                    $q->orderBy('id', 'asc');
-                },
-                'positions.candidates.candidatePhotos',
-            ])
-            ->get();
+            ->with(['event', 'position', 'candidatePhotos', 'yearLevel', 'yearSection'])
+            ->orderBy('event_id')
+            ->orderBy('position_id')
+            ->paginate(10)
+            ->withQueryString();
+
+        $events = Event::query()->where('is_active', true)->get();
 
         $yearLevels = YearLevel::query()
             ->with('section')
@@ -42,8 +41,9 @@ class CandidateController extends Controller
             ->get();
 
         return Inertia::render('Candidate/index', [
+            'candidates' => $candidates,
             'events' => $events,
-            'search' => $request->only('search'),
+            'filters' => $request->only('search'),
             'yearLevels' => $yearLevels,
         ]);
     }
