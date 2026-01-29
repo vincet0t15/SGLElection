@@ -241,15 +241,15 @@ export default function Dashboard({ stats, winners = [] }: Props) {
                                     <CardContent className="flex-1 flex flex-col gap-3 p-4">
                                         {position.candidates.length > 0 ? (
                                             position.candidates.map((candidate, index) => (
-                                                <div key={candidate.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/80 dark:bg-black/40 backdrop-blur-sm border border-amber-100 dark:border-amber-900/30 shadow-sm">
+                                                <div key={candidate.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/80 dark:bg-black/40 backdrop-blur-sm border border-emerald-100 dark:border-emerald-900/30 shadow-sm">
                                                     <div className="relative shrink-0">
-                                                        <Avatar className="h-10 w-10 border-2 border-amber-500 shadow-sm">
+                                                        <Avatar className="h-10 w-10 border-2 border-emerald-500 shadow-sm">
                                                             <AvatarImage src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined} className="object-cover" />
-                                                            <AvatarFallback className="bg-amber-100 text-amber-700 font-bold">
+                                                            <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold">
                                                                 {candidate.name.charAt(0)}
                                                             </AvatarFallback>
                                                         </Avatar>
-                                                        <div className="absolute -top-1.5 -right-1.5 bg-amber-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md ring-1 ring-white dark:ring-black">
+                                                        <div className="absolute -top-1.5 -right-1.5 bg-emerald-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md ring-1 ring-white dark:ring-black">
                                                             {index + 1}
                                                         </div>
                                                     </div>
@@ -259,7 +259,7 @@ export default function Dashboard({ stats, winners = [] }: Props) {
                                                             <p className="text-xs text-muted-foreground truncate">
                                                                 {candidate.year_level?.name} - {candidate.year_section?.name}
                                                             </p>
-                                                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-400 border-none">
+                                                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-400 border-none">
                                                                 {candidate.votes_count} Votes
                                                             </Badge>
                                                         </div>
