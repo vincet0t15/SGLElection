@@ -23,6 +23,7 @@ Route::get('dashboard', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // VOTE
     Route::get('vote', [VoteController::class, 'index'])->name('vote.index');
+    Route::post('vote', [VoteController::class, 'store'])->name('vote.store');
 
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');

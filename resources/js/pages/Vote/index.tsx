@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Toaster, toast } from 'sonner';
 import { EventProps } from '@/types/event';
 import { useState, useMemo } from 'react';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Check, User, Info, Vote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import vote from '@/routes/vote';
 
 interface Props {
     events: EventProps[];
@@ -57,10 +58,17 @@ export default function VoteIndex({ events }: Props) {
     };
 
     const handleSubmit = () => {
-        // Here you would typically send the votes to the backend
-        console.log('Votes submitted:', votes);
-        toast.success("Votes submitted successfully (Simulation)");
-        // router.post('/vote', { votes });
+        router.post((vote.store().url), { votes }, {
+            onSuccess: () => {
+                toast.success("Votes submitted successfully!");
+                setVotes({});
+            },
+            onError: (errors) => {
+                Object.values(errors).forEach(error => {
+                    toast.error(error);
+                });
+            }
+        });
     };
 
     return (
