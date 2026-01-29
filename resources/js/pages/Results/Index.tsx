@@ -136,11 +136,11 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                                 alt={candidate.name}
                                                                             />
                                                                         ) : null}
-                                                                        <AvatarFallback className={!showDetails ? "bg-muted" : ""}>
+                                                                        <AvatarFallback className={!showDetails ? "bg-emerald-100 dark:bg-emerald-900/30 animate-pulse" : ""}>
                                                                             {showDetails ? (
                                                                                 <User className="h-6 w-6 text-muted-foreground" />
                                                                             ) : (
-                                                                                <HelpCircle className="h-6 w-6 text-muted-foreground" />
+                                                                                <HelpCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                                                                             )}
                                                                         </AvatarFallback>
                                                                     </Avatar>
@@ -163,7 +163,7 @@ export default function ResultsIndex({ event, positions }: Props) {
 
                                                                 <div className="flex-1 space-y-1">
                                                                     <div className="flex items-center justify-between">
-                                                                        <h4 className={`font-semibold text-sm ${isWinner ? 'text-yellow-700 dark:text-yellow-500' : ''}`}>
+                                                                        <h4 className={`font-semibold text-sm ${isWinner ? 'text-yellow-700 dark:text-yellow-500' : ''} ${!showDetails ? 'text-emerald-600 dark:text-emerald-400 italic' : ''}`}>
                                                                             {showDetails ? candidate.name : "Tallying..."}
                                                                         </h4>
                                                                         <span className="font-mono text-sm font-bold">
