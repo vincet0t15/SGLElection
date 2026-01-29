@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Users, UserCheck, Vote, Award, Activity, Calendar, AlertCircle, Trophy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import results from '@/routes/results';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -165,16 +166,19 @@ export default function Dashboard({ stats }: { stats: Stats }) {
 
                         <Card className="hover:shadow-md transition-shadow">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Votes Cast</CardTitle>
+                                <CardTitle className="text-sm font-medium">Voter Turnout</CardTitle>
                                 <div className="h-8 w-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
-                                    <Vote className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                    <Activity className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats.votes_cast}</div>
-                                <p className="text-xs text-muted-foreground">
-                                    {stats.turnout_percentage}% turnout rate
-                                </p>
+                                <div className="flex items-baseline justify-between mb-2">
+                                    <div className="text-2xl font-bold">{stats.turnout_percentage}%</div>
+                                    <span className="text-xs text-muted-foreground">
+                                        {stats.votes_cast} of {stats.total_voters} voted
+                                    </span>
+                                </div>
+                                <Progress value={stats.turnout_percentage} className="h-2 bg-emerald-100 dark:bg-emerald-900/30" indicatorClassName="bg-emerald-600 dark:bg-emerald-400" />
                             </CardContent>
                         </Card>
                     </div>
