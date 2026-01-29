@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\YearLevelController;
 use App\Http\Controllers\YearSectionController;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('event', [EventController::class, 'store'])->name('event.store');
     Route::put('event/{event}', [EventController::class, 'update'])->name('event.update');
     Route::delete('event/{event}', [EventController::class, 'destroy'])->name('event.destroy');
+
+    // POSITION
+    Route::get('position', [PositionController::class, 'index'])->name('position.index');
+    Route::post('position', [PositionController::class, 'store'])->name('position.store');
+    Route::put('position/{position}', [PositionController::class, 'update'])->name('position.update');
+    Route::delete('position/{position}', [PositionController::class, 'destroy'])->name('position.destroy');
 });
 
 
