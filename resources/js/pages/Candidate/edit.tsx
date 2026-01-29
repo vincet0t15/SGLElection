@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import CustomSelect from "@/components/custom-select";
 import InputError from "@/components/input-error";
-import { ChangeEventHandler, FormEventHandler, SubmitEventHandler, useMemo, useState } from "react";
+import { ChangeEventHandler, FormEventHandler, useMemo, useState } from "react";
 import { LoaderCircle, ChevronLeft, Upload, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import { EventProps } from "@/types/event";
@@ -15,7 +15,6 @@ import { dashboard } from "@/routes";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CandidateProps } from "@/types/candidate";
-import candidate from "@/routes/candidate";
 
 interface Position {
     id: number;
@@ -24,7 +23,7 @@ interface Position {
 }
 
 interface Props {
-    selectedCandidate: CandidateProps;
+    candidate: CandidateProps;
     events: EventProps[];
     yearLevels: YearLevelProps[];
     positions: Position[];
@@ -37,7 +36,6 @@ type CandidateForm = {
     event_id: number;
     position_id: number;
     photo?: File | null;
-    _method?: string;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -45,21 +43,29 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Dashboard',
         href: dashboard().url,
     },
+    {
+        title: 'Candidates',
+        href: '/candidate',
+    },
+    {
+        title: 'Edit',
+        href: '#',
+    },
 ];
 
-export default function CandidateEdit({ selectedCandidate, events, yearLevels, positions }: Props) {
-    const { data, setData, put, processing, errors } = useForm<CandidateForm>({
-        name: selectedCandidate.name,
-        year_level_id: selectedCandidate.year_level_id,
-        year_section_id: selectedCandidate.year_section_id,
-        event_id: selectedCandidate.event_id,
-        position_id: selectedCandidate.position_id,
+export default function CandidateEdit({ candidate, events, yearLevels, positions }: Props) {
+    const { data, setData, post, processing, errors } = useForm<CandidateForm>({
+        name: candidate.name,
+        year_level_id: candidate.year_level_id,
+        year_section_id: candidate.year_section_id,
+        event_id: candidate.event_id,
+        position_id: candidate.position_id,
         photo: null,
     });
 
     const [previewUrl, setPreviewUrl] = useState<string | null>(
-        selectedCandidate.candidate_photos && selectedCandidate.candidate_photos.length > 0
-            ? `/storage/${selectedCandidate.candidate_photos[0].path}`
+        candidate.candidate_photos && candidate.candidate_photos.length > 0
+            ? `/storage/${candidate.candidate_photos[0].path}`
             : null
     );
 
@@ -111,7 +117,7 @@ export default function CandidateEdit({ selectedCandidate, events, yearLevels, p
         }));
 
         // Fetch positions for the selected event
-        router.get(`/candidate/${selectedCandidate.id}/edit`, { event_id: eventId }, {
+        router.get(`/candidate/${candidate.id}/edit`, { event_id: eventId }, {
             preserveState: true,
             preserveScroll: true,
             only: ['positions'],
@@ -135,14 +141,18 @@ export default function CandidateEdit({ selectedCandidate, events, yearLevels, p
         }
     }
 
-    const submit: SubmitEventHandler = (e) => {
+    const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        put(candidate.update(selectedCandidate.id).url, {
-            preserveState: true,
-            onSuccess: (response: { props: FlashProps }) => {
-                toast.success(response.props.flash?.success);
+        post(`/candidate/${candidate.id}`, {
+            onSuccess: () => {
+                toast.success("Candidate updated successfully");
             },
-        })
+            onError: (err) => {
+                toast.error("Failed to update candidate");
+                console.error(err);
+            },
+            forceFormData: true,
+        });
     }
 
     return (

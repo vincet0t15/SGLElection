@@ -114,7 +114,7 @@ class CandidateController extends Controller
         $positions = Position::where('event_id', $candidate->event_id)->get();
 
         return Inertia::render('Candidate/edit', [
-            'selectedCandidate' => $candidate,
+            'candidate' => $candidate,
             'events' => $events,
             'yearLevels' => $yearLevels,
             'positions' => $positions,
@@ -123,7 +123,6 @@ class CandidateController extends Controller
 
     public function update(Request $request, Candidate $candidate)
     {
-        dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'year_level_id' => 'required|exists:year_levels,id',
