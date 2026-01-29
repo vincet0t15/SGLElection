@@ -52,36 +52,41 @@ interface Props {
 }
 
 export default function ResultsIndex({ event, positions }: Props) {
+    const calculateTimeLeft = (endTime: string) => {
+        const now = new Date().getTime();
+        const distance = new Date(endTime).getTime() - now;
+
+        if (distance < 0) {
+            return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        }
+
+        return {
+            days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+            hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+            minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+            seconds: Math.floor((distance % (1000 * 60)) / 1000),
+        };
+    };
+
     const [timeLeft, setTimeLeft] = useState<{
         days: number;
         hours: number;
         minutes: number;
         seconds: number;
-    } | null>(null);
+    } | null>(() => {
+        if (event?.is_active && event?.dateTime_end) {
+            return calculateTimeLeft(event.dateTime_end);
+        }
+        return null;
+    });
 
     useEffect(() => {
         if (event?.is_active && event?.dateTime_end) {
-            const calculateTimeLeft = () => {
-                const now = new Date().getTime();
-                const distance = new Date(event.dateTime_end).getTime() - now;
+            const timer = setInterval(() => {
+                setTimeLeft(calculateTimeLeft(event.dateTime_end));
+            }, 1000);
 
-                if (distance < 0) {
-                    setTimeLeft(null);
-                    return;
-                }
-
-                setTimeLeft({
-                    days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-                    hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-                    minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-                    seconds: Math.floor((distance % (1000 * 60)) / 1000),
-                });
-            };
-
-            calculateTimeLeft();
-            const interval = setInterval(calculateTimeLeft, 1000);
-
-            return () => clearInterval(interval);
+            return () => clearInterval(timer);
         }
     }, [event]);
 
