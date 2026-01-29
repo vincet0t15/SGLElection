@@ -194,12 +194,18 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                 const percentage = totalVotes > 0
                                                     ? Math.round(((candidate.votes_count || 0) / totalVotes) * 100)
                                                     : 0;
-                                                const isWinner = index === 0 && (candidate.votes_count || 0) > 0;
+                                                // Consider as winner if the candidate is within the top N candidates (where N is max_votes)
+                                                // and has at least one vote.
+                                                const isWinner = index < position.max_votes && (candidate.votes_count || 0) > 0;
+                                                const rank = index + 1;
 
                                                 return (
                                                     <div key={candidate.id} className="space-y-2">
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-3">
+                                                                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                                                                    #{rank}
+                                                                </div>
                                                                 <Avatar className={`h-10 w-10 border-2 ${isWinner ? 'border-yellow-500' : 'border-transparent'}`}>
                                                                     <AvatarImage
                                                                         src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
