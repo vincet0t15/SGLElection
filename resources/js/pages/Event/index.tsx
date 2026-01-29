@@ -17,6 +17,7 @@ import yearSection from '@/routes/year-section';
 import { EventProps } from '@/types/event';
 import { EventCreateDialog } from './create';
 import event from '@/routes/event';
+import { EventEditDialog } from './edit';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -37,8 +38,6 @@ export default function Event({ events, filters }: Props) {
     const [dataToEdit, setDataEdit] = useState<EventProps | null>(null);
     const [dataToDelete, setDataDelete] = useState<EventProps | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-
 
     const handleClickEdit = (event: EventProps) => {
         setDataEdit(event);
@@ -101,10 +100,24 @@ export default function Event({ events, filters }: Props) {
                                             <span >{event.name}</span>
                                         </TableCell>
                                         <TableCell>
-                                            <span >  {new Date(event.dateTime_start).toLocaleString()}</span>
+                                            <span>
+                                                {
+                                                    new Intl.DateTimeFormat(undefined, {
+                                                        dateStyle: 'medium',
+                                                        timeStyle: 'short',
+                                                    }).format(new Date(event.dateTime_start))
+                                                }
+                                            </span>
                                         </TableCell>
                                         <TableCell>
-                                            <span >{event.dateTime_end}</span>
+                                            <span>
+                                                {
+                                                    new Intl.DateTimeFormat(undefined, {
+                                                        dateStyle: 'medium',
+                                                        timeStyle: 'short',
+                                                    }).format(new Date(event.dateTime_end))
+                                                }
+                                            </span>
                                         </TableCell>
                                         <TableCell>
                                             <span >{event.location}</span>
@@ -113,7 +126,7 @@ export default function Event({ events, filters }: Props) {
                                             <span >{event.description}</span>
                                         </TableCell>
                                         <TableCell>
-                                            <span >{event.is_active ? 'Active' : 'Inactive'}</span>
+                                            <span >{event.is_active ? <span className="text-green-500">Active</span> : <span className="text-red-500">Inactive</span>}</span>
                                         </TableCell>
                                         <TableCell className="text-sm gap-2 flex justify-end">
                                             <span
@@ -153,6 +166,7 @@ export default function Event({ events, filters }: Props) {
             </div>
 
             {openCreateDialog && <EventCreateDialog open={openCreateDialog} setOpen={setOpenCreateDialog} />}
+            {openEditDialog && <EventEditDialog open={openEditDialog} setOpen={setOpenEditDialog} SelectedEvent={dataToEdit} />}
         </AppLayout >
     );
 }
