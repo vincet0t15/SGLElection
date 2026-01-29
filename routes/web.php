@@ -18,11 +18,11 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+use App\Http\Controllers\DashboardController;
+
 // Admin Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');
