@@ -1,11 +1,10 @@
 import { Head } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Trophy, Medal, User, AlertCircle, HelpCircle } from 'lucide-react';
-import results from '@/routes/results';
+
 
 
 
@@ -52,26 +51,19 @@ interface Props {
 }
 
 export default function ResultsIndex({ event, positions }: Props) {
-    const breadcrumbs = [
-        {
-            title: 'Results',
-            href: results.index().url,
-        },
-    ];
-
     // Helper to get total votes for a position to calculate percentage
     const getTotalVotes = (candidates: Candidate[]) => {
         return candidates.reduce((sum, candidate) => sum + candidate.votes_count, 0);
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <div className="min-h-screen bg-background text-foreground">
             <Head title="Election Results" />
 
-            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6 container mx-auto py-10">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Election Results</h1>
+                        <h1 className="text-3xl font-bold tracking-tight">Election Results</h1>
                         <p className="text-muted-foreground">
                             {event ? `Showing results for ${event.name}` : 'No active event found'}
                         </p>
@@ -208,6 +200,6 @@ export default function ResultsIndex({ event, positions }: Props) {
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </div>
     );
 }

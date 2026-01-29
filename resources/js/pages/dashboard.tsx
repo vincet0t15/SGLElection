@@ -70,12 +70,12 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                                         </CardDescription>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Link href={results.index()}>
+                                        <a href={results.index().url} target="_blank" rel="noopener noreferrer">
                                             <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all hover:scale-105">
                                                 <Trophy className="mr-2 h-4 w-4" />
                                                 View Live Results
                                             </Button>
-                                        </Link>
+                                        </a>
                                     </div>
                                 </div>
                             </CardHeader>
