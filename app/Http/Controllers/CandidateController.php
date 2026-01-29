@@ -33,6 +33,8 @@ class CandidateController extends Controller
                     $q->orderBy('id', 'asc');
                 },
                 'positions.candidates.candidatePhotos',
+                'positions.candidates.yearLevel',
+                'positions.candidates.yearSection',
             ])
             ->get();
 

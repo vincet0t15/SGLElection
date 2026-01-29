@@ -106,17 +106,37 @@ export default function CandidateIndex({ candidates, events, yearLevels, filters
                                             </h3>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                    <div className="flex flex-wrap justify-center gap-6">
                                         {position.candidates.map((candidate, index) => (
-                                            <div key={index} className="bg-card text-card-foreground rounded-lg p-4 shadow-sm border border-border">
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <Avatar className="h-12 w-12">
-                                                        <AvatarImage src={'storage/' + candidate.candidate_photos?.[0].path || ''} alt={candidate.name} />
-                                                        <AvatarFallback>{candidate.name}</AvatarFallback>
+                                            <div key={index} className="flex flex-col items-center justify-center bg-card text-card-foreground rounded-xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all group relative overflow-hidden w-full sm:w-[300px]">
+                                                {/* Background decoration */}
+                                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                                <div className="flex flex-col items-center justify-center gap-4 pt-2">
+                                                    <Avatar className="h-32 w-32 border-[4px] border-yellow-400 shadow-lg ring-4 ring-background">
+                                                        <AvatarImage
+                                                            src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : ''}
+                                                            alt={candidate.name}
+                                                            className="object-cover"
+                                                        />
+                                                        <AvatarFallback className="text-2xl font-bold bg-muted text-muted-foreground">
+                                                            {candidate.name.substring(0, 2).toUpperCase()}
+                                                        </AvatarFallback>
                                                     </Avatar>
-                                                    <div className="text-center">
-                                                        <h4 className="text-lg font-bold tracking-tight text-foreground">{candidate.name}</h4>
-                                                        <p className="text-sm font-medium text-muted-foreground">{candidate.year_level?.name || 'N/A'}</p>
+
+                                                    <div className="text-center space-y-1 w-full">
+                                                        <h4 className="text-lg font-black tracking-tight text-foreground uppercase leading-tight px-2">
+                                                            {candidate.name}
+                                                        </h4>
+
+                                                        <div className="flex flex-col gap-0.5">
+                                                            <p className="text-sm font-medium text-muted-foreground italic">
+                                                                {candidate.year_level?.name || 'N/A'}
+                                                            </p>
+                                                            <p className="text-xs font-bold text-primary/80 uppercase tracking-wide">
+                                                                {candidate.year_section?.name}
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
