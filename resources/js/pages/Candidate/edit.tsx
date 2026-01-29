@@ -141,7 +141,6 @@ export default function CandidateEdit({ selectedCandidate, events, yearLevels, p
             preserveState: true,
             onSuccess: (response: { props: FlashProps }) => {
                 toast.success(response.props.flash?.success);
-
             },
         })
     }
