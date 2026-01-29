@@ -118,19 +118,19 @@ export default function VoteIndex({ events }: Props) {
                                                         </div>
                                                     )}
 
-                                                    <div className="aspect-[4/5] w-full overflow-hidden bg-muted">
+                                                    <div className="aspect-square w-full overflow-hidden bg-muted">
                                                         {photoUrl ? (
                                                             <img
                                                                 src={photoUrl}
                                                                 alt={candidate.name}
                                                                 className={cn(
-                                                                    "h-full w-full object-cover transition-transform duration-500",
+                                                                    "h-full w-full object-cover object-top transition-transform duration-500",
                                                                     selected ? "scale-105" : "group-hover:scale-105"
                                                                 )}
                                                             />
                                                         ) : (
                                                             <div className="flex h-full w-full items-center justify-center text-muted-foreground/20">
-                                                                <User className="h-24 w-24" />
+                                                                <User className="h-16 w-16" />
                                                             </div>
                                                         )}
                                                     </div>
