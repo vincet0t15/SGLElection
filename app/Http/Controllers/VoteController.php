@@ -77,6 +77,11 @@ class VoteController extends Controller
 
                 $position = Position::findOrFail($positionId);
 
+                // SECURITY CHECK: Ensure the position belongs to the voter's assigned event
+                if ($voter->event_id != $position->event_id) {
+                    abort(403, "You are not authorized to vote for positions in this event.");
+                }
+
                 // Check max votes
                 if (count($candidateIds) > $position->max_votes) {
                     abort(422, "You selected too many candidates for position: {$position->name}");
