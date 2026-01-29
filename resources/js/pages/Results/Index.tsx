@@ -3,8 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Trophy, Medal, User, AlertCircle, HelpCircle } from 'lucide-react';
-
+import { Trophy, Medal, User, AlertCircle, HelpCircle, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 
 
@@ -43,6 +43,7 @@ interface Event {
     id: number;
     name: string;
     is_active: boolean;
+    dateTime_end: string;
 }
 
 interface Props {
@@ -51,6 +52,39 @@ interface Props {
 }
 
 export default function ResultsIndex({ event, positions }: Props) {
+    const [timeLeft, setTimeLeft] = useState<{
+        days: number;
+        hours: number;
+        minutes: number;
+        seconds: number;
+    } | null>(null);
+
+    useEffect(() => {
+        if (event?.is_active && event?.dateTime_end) {
+            const calculateTimeLeft = () => {
+                const now = new Date().getTime();
+                const distance = new Date(event.dateTime_end).getTime() - now;
+
+                if (distance < 0) {
+                    setTimeLeft(null);
+                    return;
+                }
+
+                setTimeLeft({
+                    days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+                    hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+                    minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+                    seconds: Math.floor((distance % (1000 * 60)) / 1000),
+                });
+            };
+
+            calculateTimeLeft();
+            const interval = setInterval(calculateTimeLeft, 1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [event]);
+
     // Helper to get total votes for a position to calculate percentage
     const getTotalVotes = (candidates: Candidate[]) => {
         return candidates.reduce((sum, candidate) => sum + candidate.votes_count, 0);
@@ -69,11 +103,38 @@ export default function ResultsIndex({ event, positions }: Props) {
                         </p>
                     </div>
                     {event && event.is_active && (
-                        <Badge variant="outline" className="border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 animate-pulse">
-                            Live Updates
-                        </Badge>
+                        <div className="flex items-center gap-4">
+                            {timeLeft && (
+                                <div className="hidden md:flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-lg bg-emerald-100 dark:bg-emerald-900/20 px-4 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                                    <Clock className="h-5 w-5 animate-pulse" />
+                                    <span>
+                                        {timeLeft.days > 0 && `${timeLeft.days}d `}
+                                        {String(timeLeft.hours).padStart(2, '0')}:
+                                        {String(timeLeft.minutes).padStart(2, '0')}:
+                                        {String(timeLeft.seconds).padStart(2, '0')}
+                                    </span>
+                                    <span className="text-xs font-sans text-emerald-600/80 dark:text-emerald-500 ml-1 uppercase font-semibold">remaining</span>
+                                </div>
+                            )}
+                            <Badge variant="outline" className="border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 animate-pulse">
+                                Live Updates
+                            </Badge>
+                        </div>
                     )}
                 </div>
+
+                {/* Mobile Countdown */}
+                {event && event.is_active && timeLeft && (
+                    <div className="md:hidden flex items-center justify-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-xl bg-emerald-100 dark:bg-emerald-900/20 px-4 py-3 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-sm">
+                        <Clock className="h-5 w-5 animate-pulse" />
+                        <span>
+                            {timeLeft.days > 0 && `${timeLeft.days}d `}
+                            {String(timeLeft.hours).padStart(2, '0')}:
+                            {String(timeLeft.minutes).padStart(2, '0')}:
+                            {String(timeLeft.seconds).padStart(2, '0')}
+                        </span>
+                    </div>
+                )}
 
                 {!event ? (
                     <Card className="border-dashed border-2">
