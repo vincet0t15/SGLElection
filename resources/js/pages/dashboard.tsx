@@ -164,56 +164,56 @@ export default function Dashboard({ stats, winners = [] }: Props) {
                 <div>
                     <h2 className="text-lg font-semibold mb-4">System Overview</h2>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card className="hover:shadow-md transition-shadow">
+                        <Card className="hover:shadow-md transition-shadow bg-blue-50/50 dark:bg-blue-950/10 border-blue-200 dark:border-blue-800">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Total Voters</CardTitle>
+                                <CardTitle className="text-sm font-medium text-blue-800 dark:text-blue-300">Total Voters</CardTitle>
                                 <div className="h-8 w-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                                     <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats.total_voters}</div>
-                                <p className="text-xs text-muted-foreground">Registered in system</p>
+                                <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{stats.total_voters}</div>
+                                <p className="text-xs text-blue-600/80 dark:text-blue-400/80">Registered in system</p>
                             </CardContent>
                         </Card>
 
-                        <Card className="hover:shadow-md transition-shadow">
+                        <Card className="hover:shadow-md transition-shadow bg-purple-50/50 dark:bg-purple-950/10 border-purple-200 dark:border-purple-800">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Total Candidates</CardTitle>
+                                <CardTitle className="text-sm font-medium text-purple-800 dark:text-purple-300">Total Candidates</CardTitle>
                                 <div className="h-8 w-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                                     <UserCheck className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats.total_candidates}</div>
-                                <p className="text-xs text-muted-foreground">Across all positions</p>
+                                <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">{stats.total_candidates}</div>
+                                <p className="text-xs text-purple-600/80 dark:text-purple-400/80">Across all positions</p>
                             </CardContent>
                         </Card>
 
-                        <Card className="hover:shadow-md transition-shadow">
+                        <Card className="hover:shadow-md transition-shadow bg-orange-50/50 dark:bg-orange-950/10 border-orange-200 dark:border-orange-800">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Positions</CardTitle>
+                                <CardTitle className="text-sm font-medium text-orange-800 dark:text-orange-300">Positions</CardTitle>
                                 <div className="h-8 w-8 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
                                     <Award className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats.total_positions}</div>
-                                <p className="text-xs text-muted-foreground">Available for election</p>
+                                <div className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.total_positions}</div>
+                                <p className="text-xs text-orange-600/80 dark:text-orange-400/80">Available for election</p>
                             </CardContent>
                         </Card>
 
-                        <Card className="hover:shadow-md transition-shadow">
+                        <Card className="hover:shadow-md transition-shadow bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-200 dark:border-emerald-800">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Voter Turnout</CardTitle>
+                                <CardTitle className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Voter Turnout</CardTitle>
                                 <div className="h-8 w-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
                                     <Activity className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="flex items-baseline justify-between mb-2">
-                                    <div className="text-2xl font-bold">{stats.turnout_percentage}%</div>
-                                    <span className="text-xs text-muted-foreground">
+                                    <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{stats.turnout_percentage}%</div>
+                                    <span className="text-xs text-emerald-600/80 dark:text-emerald-400/80">
                                         {stats.votes_cast} of {stats.total_voters} voted
                                     </span>
                                 </div>
@@ -227,29 +227,29 @@ export default function Dashboard({ stats, winners = [] }: Props) {
                 {winners.length > 0 && (
                     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
                         <div className="flex items-center gap-2 mb-4">
-                            <Trophy className="h-6 w-6 text-yellow-500" />
+                            <Trophy className="h-6 w-6 text-emerald-600" />
                             <h2 className="text-2xl font-bold tracking-tight">Election Winners</h2>
                         </div>
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             {winners.map((position) => (
-                                <Card key={position.id} className="flex flex-col h-full border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/30 dark:bg-yellow-950/10 shadow-sm hover:shadow-md transition-shadow">
-                                    <CardHeader className="pb-3 border-b border-yellow-100 dark:border-yellow-900/30 bg-yellow-100/20 dark:bg-yellow-900/20">
-                                        <CardTitle className="text-base font-bold text-center text-yellow-800 dark:text-yellow-500">
+                                <Card key={position.id} className="flex flex-col h-full border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/30 dark:bg-emerald-950/10 shadow-sm hover:shadow-md transition-shadow">
+                                    <CardHeader className="pb-3 border-b border-emerald-100 dark:border-emerald-900/30 bg-emerald-100/20 dark:bg-emerald-900/20">
+                                        <CardTitle className="text-base font-bold text-center text-emerald-800 dark:text-emerald-500">
                                             {position.name}
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="flex-1 flex flex-col gap-3 p-4">
                                         {position.candidates.length > 0 ? (
                                             position.candidates.map((candidate, index) => (
-                                                <div key={candidate.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/80 dark:bg-black/40 backdrop-blur-sm border border-yellow-100 dark:border-yellow-900/30 shadow-sm">
+                                                <div key={candidate.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/80 dark:bg-black/40 backdrop-blur-sm border border-emerald-100 dark:border-emerald-900/30 shadow-sm">
                                                     <div className="relative shrink-0">
-                                                        <Avatar className="h-10 w-10 border-2 border-yellow-400 shadow-sm">
+                                                        <Avatar className="h-10 w-10 border-2 border-emerald-500 shadow-sm">
                                                             <AvatarImage src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined} className="object-cover" />
-                                                            <AvatarFallback className="bg-yellow-100 text-yellow-700 font-bold">
+                                                            <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold">
                                                                 {candidate.name.charAt(0)}
                                                             </AvatarFallback>
                                                         </Avatar>
-                                                        <div className="absolute -top-1.5 -right-1.5 bg-yellow-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md ring-1 ring-white dark:ring-black">
+                                                        <div className="absolute -top-1.5 -right-1.5 bg-emerald-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md ring-1 ring-white dark:ring-black">
                                                             {index + 1}
                                                         </div>
                                                     </div>
@@ -259,7 +259,7 @@ export default function Dashboard({ stats, winners = [] }: Props) {
                                                             <p className="text-xs text-muted-foreground truncate">
                                                                 {candidate.year_level?.name}
                                                             </p>
-                                                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400 border-none">
+                                                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-400 border-none">
                                                                 {candidate.votes_count} Votes
                                                             </Badge>
                                                         </div>
