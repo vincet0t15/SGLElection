@@ -103,7 +103,7 @@ export default function Event({ events, filters }: Props) {
                                 <TableHead className="text-primary font-bold">Event Location</TableHead>
                                 <TableHead className="text-primary font-bold">Event Description</TableHead>
                                 <TableHead className="text-primary font-bold">Event Status</TableHead>
-                                <TableHead className="text-primary font-bold text-right">Event Actions</TableHead>
+                                <TableHead className="text-primary font-bold text-center w-25">Event Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -161,7 +161,7 @@ export default function Event({ events, filters }: Props) {
                                                 Delete
                                             </span>
                                             <span
-                                                className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline"
+                                                className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline w-25"
                                                 onClick={() => handleToggleActive(event)}
                                             >
                                                 {event.is_active ? 'Deactivate' : 'Activate'}
