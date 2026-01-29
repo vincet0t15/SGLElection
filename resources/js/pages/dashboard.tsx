@@ -8,6 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import results from '@/routes/results';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -65,6 +73,7 @@ interface Position {
     name: string;
     max_votes: number;
     candidates: Candidate[];
+    total_votes?: number;
 }
 
 interface Props {
@@ -225,54 +234,103 @@ export default function Dashboard({ stats, winners = [] }: Props) {
 
                 {/* Winners Section */}
                 {winners.length > 0 && (
-                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                         <div className="flex items-center gap-2 mb-4">
                             <Trophy className="h-6 w-6 text-emerald-600" />
                             <h2 className="text-2xl font-bold tracking-tight">Election Winners</h2>
                         </div>
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+                        <div className="flex flex-col gap-10">
                             {winners.map((position) => (
-                                <Card key={position.id} className="flex flex-col h-full border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/30 dark:bg-emerald-950/10 shadow-sm hover:shadow-md transition-shadow">
-                                    <CardHeader className="pb-3 border-b border-emerald-100 dark:border-emerald-900/30 bg-emerald-100/20 dark:bg-emerald-900/20">
-                                        <CardTitle className="text-base font-bold text-center text-emerald-800 dark:text-emerald-500">
-                                            {position.name}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="flex-1 flex flex-col gap-3 p-4">
-                                        {position.candidates.length > 0 ? (
-                                            position.candidates.map((candidate, index) => (
-                                                <div key={candidate.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/80 dark:bg-black/40 backdrop-blur-sm border border-emerald-100 dark:border-emerald-900/30 shadow-sm">
-                                                    <div className="relative shrink-0">
-                                                        <Avatar className="h-10 w-10 border-2 border-emerald-500 shadow-sm">
-                                                            <AvatarImage src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined} className="object-cover" />
-                                                            <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold">
-                                                                {candidate.name.charAt(0)}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                        <div className="absolute -top-1.5 -right-1.5 bg-emerald-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md ring-1 ring-white dark:ring-black">
-                                                            {index + 1}
-                                                        </div>
-                                                    </div>
-                                                    <div className="min-w-0 flex-1">
-                                                        <p className="text-sm font-bold truncate text-foreground">{candidate.name}</p>
-                                                        <div className="flex items-center justify-between mt-0.5">
-                                                            <p className="text-xs text-muted-foreground truncate">
-                                                                {candidate.year_level?.name} - {candidate.year_section?.name}
-                                                            </p>
-                                                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-400 border-none">
-                                                                {candidate.votes_count} Votes
-                                                            </Badge>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-center py-4 text-sm text-muted-foreground italic">
-                                                No winners declared
-                                            </div>
-                                        )}
-                                    </CardContent>
-                                </Card>
+                                <div key={position.id} className="space-y-4">
+                                    <div className="flex items-center justify-between border-b pb-2">
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-foreground tracking-tight">{position.name}</h2>
+                                            <p className="text-sm text-muted-foreground">
+                                                Top {position.max_votes} {position.max_votes > 1 ? 'candidates' : 'candidate'} will win
+                                            </p>
+                                        </div>
+                                        <Badge variant="outline" className="text-base py-1 px-3">
+                                            Total Votes: {(position.total_votes || 0).toLocaleString()}
+                                        </Badge>
+                                    </div>
+
+                                    <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
+                                        <Table>
+                                            <TableHeader className="bg-muted/50">
+                                                <TableRow>
+                                                    <TableHead className="w-[80px] text-center font-bold">Rank</TableHead>
+                                                    <TableHead className="font-bold">Candidate Info</TableHead>
+                                                    <TableHead className="text-right font-bold w-[150px]">Votes</TableHead>
+                                                    <TableHead className="w-[30%] font-bold">Percentage</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {position.candidates.length > 0 ? (
+                                                    position.candidates.map((candidate, index) => {
+                                                        const percentage = (position.total_votes || 0) > 0
+                                                            ? Math.round((candidate.votes_count / (position.total_votes || 1)) * 100)
+                                                            : 0;
+
+                                                        return (
+                                                            <TableRow key={candidate.id} className="bg-emerald-50/50 dark:bg-emerald-900/10 hover:bg-emerald-100/50 dark:hover:bg-emerald-900/20">
+                                                                <TableCell className="text-center">
+                                                                    <div className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold mx-auto shadow-sm bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 ring-2 ring-emerald-500/20">
+                                                                        {index + 1}
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="relative shrink-0">
+                                                                            <Avatar className="h-12 w-12 border-2 border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm">
+                                                                                <AvatarImage src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined} className="object-cover" />
+                                                                                <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold">
+                                                                                    {candidate.name.charAt(0)}
+                                                                                </AvatarFallback>
+                                                                            </Avatar>
+                                                                            <div className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white p-1 rounded-full shadow-md">
+                                                                                <Trophy className="h-3 w-3 fill-current" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h4 className="font-bold text-base leading-none text-emerald-700 dark:text-emerald-500 uppercase">
+                                                                                {candidate.name}
+                                                                            </h4>
+                                                                            <p className="text-xs text-muted-foreground mt-1">
+                                                                                {candidate.year_level?.name} - {candidate.year_section?.name}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell className="text-right">
+                                                                    <div className="font-mono text-lg font-bold leading-none">
+                                                                        {candidate.votes_count.toLocaleString()}
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="flex items-center gap-3">
+                                                                        <Progress
+                                                                            value={percentage}
+                                                                            className="h-2.5 flex-1 bg-emerald-100/50 dark:bg-emerald-900/20"
+                                                                            indicatorClassName="bg-emerald-500 transition-all duration-500"
+                                                                        />
+                                                                        <span className="text-xs font-medium w-10 text-right">{percentage}%</span>
+                                                                    </div>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <TableRow className="hover:bg-transparent">
+                                                        <TableCell colSpan={4} className="text-center text-muted-foreground italic py-8">
+                                                            No winners declared
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </div>

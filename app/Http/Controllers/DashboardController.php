@@ -58,6 +58,9 @@ class DashboardController extends Controller
                     }])
                     ->get()
                     ->map(function ($position) {
+                        // Calculate total votes for the position BEFORE filtering
+                        $position->total_votes = $position->candidates->sum('votes_count');
+
                         // We only need the winners (with at least 1 vote)
                         $winnersList = $position->candidates
                             ->filter(function ($candidate) {
