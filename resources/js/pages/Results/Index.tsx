@@ -200,7 +200,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                         : 0;
 
                                                     // Determine winner if results should be shown
-                                                    const isWinner = showResults && index === 0 && candidate.votes_count > 0;
+                                                    const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0;
                                                     const isSecond = showResults && index === 1 && candidate.votes_count > 0;
                                                     const isThird = showResults && index === 2 && candidate.votes_count > 0;
 
@@ -213,8 +213,11 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                             className={`p-4 transition-colors ${isWinner ? 'bg-yellow-50/50 dark:bg-yellow-900/10' : ''
                                                                 }`}
                                                         >
-                                                            <div className="flex items-start gap-4">
-                                                                <div className="relative">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-bold text-muted-foreground shrink-0">
+                                                                    #{index + 1}
+                                                                </div>
+                                                                <div className="relative shrink-0">
                                                                     <Avatar className={`h-12 w-12 border-2 ${isWinner ? 'border-yellow-500' : 'border-border'}`}>
                                                                         {showDetails ? (
                                                                             <AvatarImage
@@ -235,12 +238,12 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                             <Trophy className="h-3 w-3" />
                                                                         </div>
                                                                     )}
-                                                                    {isSecond && (
+                                                                    {!isWinner && isSecond && (
                                                                         <div className="absolute -top-2 -right-2 bg-slate-400 text-white p-1 rounded-full shadow-sm">
                                                                             <Medal className="h-3 w-3" />
                                                                         </div>
                                                                     )}
-                                                                    {isThird && (
+                                                                    {!isWinner && isThird && (
                                                                         <div className="absolute -top-2 -right-2 bg-amber-700 text-white p-1 rounded-full shadow-sm">
                                                                             <Medal className="h-3 w-3" />
                                                                         </div>
