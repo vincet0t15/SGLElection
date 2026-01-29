@@ -49,6 +49,19 @@ export default function Event({ events, filters }: Props) {
         setOpenDeleteDialog(true);
     }
 
+    const handleToggleActive = (ev: EventProps) => {
+        router.put(event.update(ev.id).url, {
+            name: ev.name,
+            dateTime_start: ev.dateTime_start,
+            dateTime_end: ev.dateTime_end,
+            location: ev.location,
+            description: ev.description,
+            is_active: !ev.is_active,
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+        })
+    }
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
     }
@@ -146,6 +159,12 @@ export default function Event({ events, filters }: Props) {
                                                 }}
                                             >
                                                 Delete
+                                            </span>
+                                            <span
+                                                className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline"
+                                                onClick={() => handleToggleActive(event)}
+                                            >
+                                                {event.is_active ? 'Deactivate' : 'Activate'}
                                             </span>
 
                                         </TableCell>
