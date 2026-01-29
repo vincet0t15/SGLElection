@@ -1,15 +1,32 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Printer, Users, User, Trophy, Calendar, MapPin, ArrowLeft } from 'lucide-react';
+import { Printer, Users, User, Trophy, Calendar, MapPin, ArrowLeft, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
+import { cn } from "@/lib/utils";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+
+} from "@/components/ui/pagination"
 
 interface Voter {
     id: number;
@@ -19,26 +36,74 @@ interface Voter {
     has_voted: boolean;
 }
 
+interface PaginatedVoters {
+    data: Voter[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    prev_page_url: string | null;
+    next_page_url: string | null;
+    links: {
+        url: string | null;
+        label: string;
+        active: boolean;
+    }[];
+}
+
 interface Props {
     event: EventProps;
     positions: PositionProps[];
     stats: {
         total_voters: number;
+        total_assigned_voters: number;
+        voted_count: number;
     };
-    voters: Voter[];
+    voters: PaginatedVoters;
+    filters: {
+        search?: string;
+        status?: string;
+    };
 }
 
-export default function ReportsShow({ event, positions, stats, voters }: Props) {
-    const votedCount = voters.filter(v => v.has_voted).length;
-    const turnoutPercentage = voters.length > 0 ? Math.round((votedCount / voters.length) * 100) : 0;
+export default function ReportsShow({ event, positions, stats, voters, filters }: Props) {
+    const turnoutPercentage = stats.total_assigned_voters > 0
+        ? Math.round((stats.voted_count / stats.total_assigned_voters) * 100)
+        : 0;
+
+    const [search, setSearch] = useState(filters.search || '');
+    const [status, setStatus] = useState(filters.status || 'all');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (search !== (filters.search || '')) {
+                router.get(
+                    `/reports/${event.id}`,
+                    { search, status: status === 'all' ? undefined : status },
+                    { preserveState: true, preserveScroll: true }
+                );
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const handleStatusChange = (value: string) => {
+        setStatus(value);
+        router.get(
+            `/reports/${event.id}`,
+            { search, status: value === 'all' ? undefined : value },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
 
     return (
         <AppLayout breadcrumbs={[
             { title: 'Reports', href: '/reports' },
-            { title: event.name, href: `/reports/${event.id}` }
+
         ]}>
             <Head title={`Report - ${event.name}`} />
-            
+
             <div className="flex flex-col gap-6 p-6">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div className="space-y-1">
@@ -79,7 +144,7 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                             <Users className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{voters.length}</div>
+                            <div className="text-2xl font-bold">{stats.total_assigned_voters}</div>
                             <p className="text-xs text-muted-foreground">Assigned voters</p>
                         </CardContent>
                     </Card>
@@ -89,7 +154,7 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                             <Trophy className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{votedCount}</div>
+                            <div className="text-2xl font-bold">{stats.voted_count}</div>
                             <p className="text-xs text-muted-foreground">Total votes received</p>
                         </CardContent>
                     </Card>
@@ -111,7 +176,7 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                         <TabsTrigger value="candidates">Candidates</TabsTrigger>
                         <TabsTrigger value="voters">Voters</TabsTrigger>
                     </TabsList>
-                    
+
                     <TabsContent value="results" className="space-y-6 mt-6">
                         {positions.map((position) => {
                             const totalVotes = position.candidates.reduce((sum, c) => sum + (c.votes_count || 0), 0);
@@ -126,19 +191,19 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                                     <CardContent>
                                         <div className="space-y-6">
                                             {position.candidates.map((candidate, index) => {
-                                                const percentage = totalVotes > 0 
-                                                    ? Math.round(((candidate.votes_count || 0) / totalVotes) * 100) 
+                                                const percentage = totalVotes > 0
+                                                    ? Math.round(((candidate.votes_count || 0) / totalVotes) * 100)
                                                     : 0;
                                                 const isWinner = index === 0 && (candidate.votes_count || 0) > 0;
-                                                
+
                                                 return (
                                                     <div key={candidate.id} className="space-y-2">
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-3">
                                                                 <Avatar className={`h-10 w-10 border-2 ${isWinner ? 'border-yellow-500' : 'border-transparent'}`}>
-                                                                    <AvatarImage 
-                                                                        src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined} 
-                                                                        alt={candidate.name} 
+                                                                    <AvatarImage
+                                                                        src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
+                                                                        alt={candidate.name}
                                                                     />
                                                                     <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
                                                                 </Avatar>
@@ -159,9 +224,9 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                                                                 <div className="text-xs text-muted-foreground">{percentage}%</div>
                                                             </div>
                                                         </div>
-                                                        <Progress 
-                                                            value={percentage} 
-                                                            className="h-2" 
+                                                        <Progress
+                                                            value={percentage}
+                                                            className="h-2"
                                                             indicatorClassName={isWinner ? "bg-emerald-600" : ""}
                                                         />
                                                     </div>
@@ -181,6 +246,8 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                                 <CardDescription>All candidates participating in this election</CardDescription>
                             </CardHeader>
                             <CardContent>
+
+
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
@@ -191,13 +258,13 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {positions.flatMap(p => p.candidates.map(c => ({...c, position_name: p.name}))).map((candidate) => (
+                                        {positions.flatMap(p => p.candidates.map(c => ({ ...c, position_name: p.name }))).map((candidate) => (
                                             <TableRow key={candidate.id}>
                                                 <TableCell className="font-medium flex items-center gap-3">
                                                     <Avatar className="h-8 w-8">
-                                                        <AvatarImage 
-                                                            src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined} 
-                                                            alt={candidate.name} 
+                                                        <AvatarImage
+                                                            src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
+                                                            alt={candidate.name}
                                                         />
                                                         <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
@@ -221,9 +288,31 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                             <CardHeader>
                                 <CardTitle>Voters List</CardTitle>
                                 <CardDescription>
-                                    Registered voters and their voting status ({votedCount}/{voters.length} voted)
+                                    Registered voters and their voting status ({stats.voted_count}/{stats.total_assigned_voters} voted)
                                 </CardDescription>
+                                <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                                    <div className="relative flex-1">
+                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            placeholder="Search voters..."
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                            className="pl-8"
+                                        />
+                                    </div>
+                                    <Select value={status} onValueChange={handleStatusChange}>
+                                        <SelectTrigger className="w-full sm:w-[180px]">
+                                            <SelectValue placeholder="Filter by status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Voters</SelectItem>
+                                            <SelectItem value="voted">Voted</SelectItem>
+                                            <SelectItem value="not_voted">Not Voted</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </CardHeader>
+
                             <CardContent>
                                 <Table>
                                     <TableHeader>
@@ -234,7 +323,7 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {voters.map((voter) => (
+                                        {voters.data.map((voter) => (
                                             <TableRow key={voter.id}>
                                                 <TableCell className="font-medium">{voter.name}</TableCell>
                                                 <TableCell>{voter.username}</TableCell>
@@ -245,7 +334,7 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                                                 </TableCell>
                                             </TableRow>
                                         ))}
-                                        {voters.length === 0 && (
+                                        {voters.data.length === 0 && (
                                             <TableRow>
                                                 <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
                                                     No voters assigned to this event.
@@ -254,6 +343,70 @@ export default function ReportsShow({ event, positions, stats, voters }: Props) 
                                         )}
                                     </TableBody>
                                 </Table>
+
+                                <div className="mt-4">
+                                    <Pagination>
+                                        <PaginationContent>
+                                            {voters.links.map((link, index) => {
+                                                if (link.url === null) return null;
+                                                const isPrevious = link.label.includes('Previous');
+                                                const isNext = link.label.includes('Next');
+
+                                                if (isPrevious) {
+                                                    return (
+                                                        <PaginationItem key={index}>
+                                                            <Link
+                                                                href={link.url}
+                                                                preserveScroll
+                                                                preserveState
+                                                                className={cn(buttonVariants({ variant: "ghost", size: "default" }), "gap-1 pl-2.5")}
+                                                            >
+                                                                <ChevronLeft className="h-4 w-4" />
+                                                                <span>Previous</span>
+                                                            </Link>
+                                                        </PaginationItem>
+                                                    );
+                                                }
+
+                                                if (isNext) {
+                                                    return (
+                                                        <PaginationItem key={index}>
+                                                            <Link
+                                                                href={link.url}
+                                                                preserveScroll
+                                                                preserveState
+                                                                className={cn(buttonVariants({ variant: "ghost", size: "default" }), "gap-1 pr-2.5")}
+                                                            >
+                                                                <span>Next</span>
+                                                                <ChevronRight className="h-4 w-4" />
+                                                            </Link>
+                                                        </PaginationItem>
+                                                    );
+                                                }
+
+                                                if (link.label === '...') {
+                                                    return (
+                                                        <PaginationItem key={index}>
+                                                            <PaginationEllipsis />
+                                                        </PaginationItem>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <PaginationItem key={index}>
+                                                        <Link
+                                                            href={link.url}
+                                                            preserveScroll
+                                                            preserveState
+                                                            className={cn(buttonVariants({ variant: link.active ? "outline" : "ghost", size: "icon" }))}
+                                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                                        />
+                                                    </PaginationItem>
+                                                );
+                                            })}
+                                        </PaginationContent>
+                                    </Pagination>
+                                </div>
                             </CardContent>
                         </Card>
                     </TabsContent>
