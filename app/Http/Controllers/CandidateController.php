@@ -30,8 +30,32 @@ class CandidateController extends Controller
                     });
             })
             ->with([
-                'positions' => function ($q) {
+                'positions' => function ($q) use ($search) {
                     $q->orderBy('id', 'asc');
+                    if ($search) {
+                        $q->where(function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%")
+                                ->orWhereHas('candidates', function ($subQuery) use ($search) {
+                                    $subQuery->where('name', 'like', "%{$search}%");
+                                })
+                                ->orWhereHas('event', function ($subQuery) use ($search) {
+                                    $subQuery->where('name', 'like', "%{$search}%");
+                                });
+                        });
+                    }
+                },
+                'positions.candidates' => function ($q) use ($search) {
+                    if ($search) {
+                        $q->where(function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%")
+                                ->orWhereHas('position', function ($subQuery) use ($search) {
+                                    $subQuery->where('name', 'like', "%{$search}%");
+                                })
+                                ->orWhereHas('event', function ($subQuery) use ($search) {
+                                    $subQuery->where('name', 'like', "%{$search}%");
+                                });
+                        });
+                    }
                 },
                 'positions.candidates.candidatePhotos',
                 'positions.candidates.yearLevel',
