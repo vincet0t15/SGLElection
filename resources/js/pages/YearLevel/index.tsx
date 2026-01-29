@@ -31,7 +31,7 @@ interface Props {
     filters: FilterProps
 }
 export default function YearLevel({ yearLevels, filters }: Props) {
-    console.log(yearLevels);
+
     const [search, setSearch] = useState(filters.search || '');
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\YearLevelController;
 use App\Http\Controllers\YearSectionController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('year-section', [YearSectionController::class, 'store'])->name('year-section.store');
     Route::put('year-section/{yearSection}', [YearSectionController::class, 'update'])->name('year-section.update');
     Route::delete('year-section/{yearSection}', [YearSectionController::class, 'destroy'])->name('year-section.destroy');
+
+    // EVENT
+    Route::get('event', [EventController::class, 'index'])->name('event.index');
+    Route::post('event', [EventController::class, 'store'])->name('event.store');
+    Route::put('event/{event}', [EventController::class, 'update'])->name('event.update');
+    Route::delete('event/{event}', [EventController::class, 'destroy'])->name('event.destroy');
 });
 
 

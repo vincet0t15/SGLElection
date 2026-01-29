@@ -52,6 +52,7 @@ import type { BreadcrumbItem, SharedData } from '@/types';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 import yearSection from '@/routes/year-section';
+import event from '@/routes/event';
 
 
 type Props = {
@@ -64,7 +65,7 @@ const navItems = [
 
 const settingsItems = [
     { title: 'Year Level', href: yearLevel.index().url, icon: LayoutGrid },
-    { title: 'Section', href: yearSection.index().url, icon: Folder },
+    { title: 'Events', href: event.index().url, icon: Folder },
 ];
 
 const activeItemStyles =
