@@ -95,6 +95,10 @@ export default function ResultsIndex({ event, positions }: Props) {
         return candidates.reduce((sum, candidate) => sum + candidate.votes_count, 0);
     };
 
+    // Determine if results should be shown (Event not active OR Time has passed)
+    const isTimeUp = timeLeft?.days === 0 && timeLeft?.hours === 0 && timeLeft?.minutes === 0 && timeLeft?.seconds === 0;
+    const showResults = !event?.is_active || isTimeUp;
+
     return (
         <div className="min-h-screen bg-background text-foreground">
             <Head title="Election Results" />
@@ -107,18 +111,23 @@ export default function ResultsIndex({ event, positions }: Props) {
                             {event ? `Showing results for ${event.name}` : 'No active event found'}
                         </p>
                     </div>
-                    {event && event.is_active && (
+                    {event && event.is_active && !isTimeUp && (
                         <div className="flex items-center gap-4">
                             {timeLeft && (
-                                <div className="hidden md:flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-lg bg-emerald-100 dark:bg-emerald-900/20 px-4 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800">
-                                    <Clock className="h-5 w-5 animate-pulse" />
-                                    <span>
-                                        {timeLeft.days > 0 && `${timeLeft.days}d `}
-                                        {String(timeLeft.hours).padStart(2, '0')}:
-                                        {String(timeLeft.minutes).padStart(2, '0')}:
-                                        {String(timeLeft.seconds).padStart(2, '0')}
+                                <div className="hidden md:flex flex-col items-end">
+                                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-lg bg-emerald-100 dark:bg-emerald-900/20 px-4 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                                        <Clock className="h-5 w-5 animate-pulse" />
+                                        <span>
+                                            {timeLeft.days > 0 && `${timeLeft.days}d `}
+                                            {String(timeLeft.hours).padStart(2, '0')}:
+                                            {String(timeLeft.minutes).padStart(2, '0')}:
+                                            {String(timeLeft.seconds).padStart(2, '0')}
+                                        </span>
+                                        <span className="text-xs font-sans text-emerald-600/80 dark:text-emerald-500 ml-1 uppercase font-semibold">remaining</span>
+                                    </div>
+                                    <span className="text-[10px] text-muted-foreground mt-1 mr-2 font-medium">
+                                        Ends: {new Date(event.dateTime_end).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium' })}
                                     </span>
-                                    <span className="text-xs font-sans text-emerald-600/80 dark:text-emerald-500 ml-1 uppercase font-semibold">remaining</span>
                                 </div>
                             )}
                             <Badge variant="outline" className="border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 animate-pulse">
@@ -126,18 +135,28 @@ export default function ResultsIndex({ event, positions }: Props) {
                             </Badge>
                         </div>
                     )}
+                    {event && (event.is_active && isTimeUp) && (
+                        <Badge variant="outline" className="border-yellow-500 text-yellow-600 bg-yellow-50 dark:bg-yellow-950/20">
+                            Voting Ended - Finalizing
+                        </Badge>
+                    )}
                 </div>
 
                 {/* Mobile Countdown */}
-                {event && event.is_active && timeLeft && (
-                    <div className="md:hidden flex items-center justify-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-xl bg-emerald-100 dark:bg-emerald-900/20 px-4 py-3 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-sm">
-                        <Clock className="h-5 w-5 animate-pulse" />
-                        <span>
-                            {timeLeft.days > 0 && `${timeLeft.days}d `}
-                            {String(timeLeft.hours).padStart(2, '0')}:
-                            {String(timeLeft.minutes).padStart(2, '0')}:
-                            {String(timeLeft.seconds).padStart(2, '0')}
-                        </span>
+                {event && event.is_active && timeLeft && !isTimeUp && (
+                    <div className="md:hidden flex flex-col gap-2">
+                        <div className="flex items-center justify-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-xl bg-emerald-100 dark:bg-emerald-900/20 px-4 py-3 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-sm">
+                            <Clock className="h-5 w-5 animate-pulse" />
+                            <span>
+                                {timeLeft.days > 0 && `${timeLeft.days}d `}
+                                {String(timeLeft.hours).padStart(2, '0')}:
+                                {String(timeLeft.minutes).padStart(2, '0')}:
+                                {String(timeLeft.seconds).padStart(2, '0')}
+                            </span>
+                        </div>
+                        <div className="text-center text-xs text-muted-foreground font-medium">
+                            Ends: {new Date(event.dateTime_end).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium' })}
+                        </div>
                     </div>
                 )}
 
