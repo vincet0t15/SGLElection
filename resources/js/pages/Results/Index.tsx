@@ -137,7 +137,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                     )}
                     {event && (event.is_active && isTimeUp) && (
                         <Badge variant="outline" className="border-yellow-500 text-yellow-600 bg-yellow-50 dark:bg-yellow-950/20">
-                            Voting Ended - Finalizing
+                            Voting Ended - Results Finalized
                         </Badge>
                     )}
                 </div>
@@ -201,8 +201,9 @@ export default function ResultsIndex({ event, positions }: Props) {
 
                                                     // Determine winner if results should be shown
                                                     const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0;
-                                                    const isSecond = showResults && index === 1 && candidate.votes_count > 0;
-                                                    const isThird = showResults && index === 2 && candidate.votes_count > 0;
+                                                    // Only show 2nd/3rd place medals if they are NOT winners (to avoid double badging in multi-winner races)
+                                                    const isSecond = showResults && !isWinner && index === 1 && candidate.votes_count > 0;
+                                                    const isThird = showResults && !isWinner && index === 2 && candidate.votes_count > 0;
 
                                                     // Use the showResults flag for details visibility
                                                     const showDetails = showResults;
@@ -210,22 +211,29 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                     return (
                                                         <div
                                                             key={candidate.id}
-                                                            className={`p-4 transition-colors ${isWinner ? 'bg-yellow-50/50 dark:bg-yellow-900/10' : ''
+                                                            className={`p-4 transition-all duration-300 ${isWinner
+                                                                ? 'bg-gradient-to-r from-yellow-50/80 to-transparent dark:from-yellow-900/20'
+                                                                : 'hover:bg-muted/50'
                                                                 }`}
                                                         >
                                                             <div className="flex items-center gap-4">
-                                                                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-bold text-muted-foreground shrink-0">
+                                                                <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold shrink-0 shadow-sm
+                                                                    ${isWinner
+                                                                        ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400 ring-2 ring-yellow-500/20'
+                                                                        : 'bg-muted text-muted-foreground'
+                                                                    }`}>
                                                                     #{index + 1}
                                                                 </div>
                                                                 <div className="relative shrink-0">
-                                                                    <Avatar className={`h-12 w-12 border-2 ${isWinner ? 'border-yellow-500' : 'border-border'}`}>
+                                                                    <Avatar className={`h-14 w-14 border-2 shadow-sm transition-transform hover:scale-105 ${isWinner ? 'border-yellow-500 ring-2 ring-yellow-500/20' : 'border-border'}`}>
                                                                         {showDetails ? (
                                                                             <AvatarImage
                                                                                 src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
                                                                                 alt={candidate.name}
+                                                                                className="object-cover"
                                                                             />
                                                                         ) : null}
-                                                                        <AvatarFallback className={!showDetails ? "bg-emerald-100 dark:bg-emerald-900/30 animate-pulse" : ""}>
+                                                                        <AvatarFallback className={!showDetails ? "bg-emerald-100 dark:bg-emerald-900/30 animate-pulse" : "bg-muted"}>
                                                                             {showDetails ? (
                                                                                 <User className="h-6 w-6 text-muted-foreground" />
                                                                             ) : (
@@ -234,47 +242,50 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                         </AvatarFallback>
                                                                     </Avatar>
                                                                     {isWinner && (
-                                                                        <div className="absolute -top-2 -right-2 bg-yellow-500 text-white p-1 rounded-full shadow-sm">
-                                                                            <Trophy className="h-3 w-3" />
+                                                                        <div className="absolute -top-2 -right-2 bg-yellow-500 text-white p-1.5 rounded-full shadow-md animate-in zoom-in duration-300">
+                                                                            <Trophy className="h-3.5 w-3.5 fill-current" />
                                                                         </div>
                                                                     )}
-                                                                    {!isWinner && isSecond && (
-                                                                        <div className="absolute -top-2 -right-2 bg-slate-400 text-white p-1 rounded-full shadow-sm">
-                                                                            <Medal className="h-3 w-3" />
+                                                                    {isSecond && (
+                                                                        <div className="absolute -top-2 -right-2 bg-slate-400 text-white p-1.5 rounded-full shadow-md">
+                                                                            <Medal className="h-3.5 w-3.5 fill-current" />
                                                                         </div>
                                                                     )}
-                                                                    {!isWinner && isThird && (
-                                                                        <div className="absolute -top-2 -right-2 bg-amber-700 text-white p-1 rounded-full shadow-sm">
-                                                                            <Medal className="h-3 w-3" />
+                                                                    {isThird && (
+                                                                        <div className="absolute -top-2 -right-2 bg-amber-700 text-white p-1.5 rounded-full shadow-md">
+                                                                            <Medal className="h-3.5 w-3.5 fill-current" />
                                                                         </div>
                                                                     )}
                                                                 </div>
 
-                                                                <div className="flex-1 space-y-1">
+                                                                <div className="flex-1 space-y-1.5">
                                                                     <div className="flex items-center justify-between">
-                                                                        <h4 className={`font-semibold text-sm ${isWinner ? 'text-yellow-700 dark:text-yellow-500' : ''} ${!showDetails ? 'text-emerald-600 dark:text-emerald-400 italic' : ''}`}>
-                                                                            {showDetails ? candidate.name : "Tallying..."}
-                                                                        </h4>
-                                                                        <span className="font-mono text-sm font-bold">
-                                                                            {candidate.votes_count}
-                                                                        </span>
+                                                                        <div className="flex flex-col">
+                                                                            <h4 className={`font-bold text-base leading-none ${isWinner ? 'text-yellow-700 dark:text-yellow-500' : ''} ${!showDetails ? 'text-emerald-600 dark:text-emerald-400 italic' : ''}`}>
+                                                                                {showDetails ? candidate.name : "Tallying..."}
+                                                                            </h4>
+                                                                            {showDetails && (
+                                                                                <span className="text-xs text-muted-foreground mt-1">
+                                                                                    {candidate.year_level?.name} - {candidate.year_section?.name}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="text-right">
+                                                                            <div className="font-mono text-lg font-bold leading-none">
+                                                                                {candidate.votes_count.toLocaleString()}
+                                                                            </div>
+                                                                            <div className="text-[10px] uppercase text-muted-foreground font-semibold mt-0.5">Votes</div>
+                                                                        </div>
                                                                     </div>
 
-                                                                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                                                        <span>
-                                                                            {showDetails
-                                                                                ? `${candidate.year_level?.name} - ${candidate.year_section?.name}`
-                                                                                : "Candidate Details Hidden"
-                                                                            }
-                                                                        </span>
-                                                                        <span>{percentage}%</span>
+                                                                    <div className="flex items-center gap-3">
+                                                                        <Progress
+                                                                            value={percentage}
+                                                                            className={`h-2.5 flex-1 bg-muted/50 ${isWinner ? 'bg-yellow-100/50 dark:bg-yellow-900/20' : ''}`}
+                                                                            indicatorClassName={`transition-all duration-500 ${isWinner ? 'bg-yellow-500' : 'bg-primary/70'}`}
+                                                                        />
+                                                                        <span className="text-xs font-medium w-10 text-right">{percentage}%</span>
                                                                     </div>
-
-                                                                    <Progress
-                                                                        value={percentage}
-                                                                        className={`h-2 ${isWinner ? 'bg-yellow-100 dark:bg-yellow-900/30' : ''}`}
-                                                                        indicatorClassName={isWinner ? 'bg-yellow-500' : ''}
-                                                                    />
                                                                 </div>
                                                             </div>
                                                         </div>
