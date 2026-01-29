@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Voter;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -19,6 +20,13 @@ class DatabaseSeeder extends Seeder
             'username' => 'admin',
             'password' => Hash::make('admin123'),
             'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        Voter::create([
+            'name' => 'ZYRUS VINCE B. FAMINI',
+            'username' => 'voter',
+            'password' => Hash::make('admin123'),
             'is_active' => true,
         ]);
     }
