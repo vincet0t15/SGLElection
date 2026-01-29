@@ -25,10 +25,10 @@ export default function Login({
 }: Props) {
     return (
         <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
+            title="Admin Portal"
+            description="Welcome back. Please sign in to manage the election system."
         >
-            <Head title="Log in" />
+            <Head title="Admin Login" />
 
             <Form
                 {...store.form()}
@@ -48,7 +48,8 @@ export default function Login({
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="username"
-                                    placeholder="username"
+                                    placeholder="Enter your admin username"
+                                    className="focus:ring-emerald-500 focus:border-emerald-500"
                                 />
                                 <InputError message={errors.username} />
                             </div>
@@ -62,7 +63,8 @@ export default function Login({
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
+                                    placeholder="Enter your password"
+                                    className="focus:ring-emerald-500 focus:border-emerald-500"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -72,29 +74,30 @@ export default function Login({
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
+                                    className="data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
                                 />
                                 <Label htmlFor="remember">Remember me</Label>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-4 w-full bg-emerald-950 hover:bg-emerald-900 text-white"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
                             >
-                                {processing && <Spinner />}
-                                Log in
+                                {processing && <Spinner className="text-white" />}
+                                Sign in as Admin
                             </Button>
                         </div>
 
                         <div className="text-center text-sm">
-                            <span className="text-muted-foreground">Are you a voter? </span>
+                            <span className="text-muted-foreground">Not an admin? </span>
                             <Link
                                 href={(voter.login().url)}
-                                className="font-medium text-primary hover:text-primary/80 hover:underline"
+                                className="font-medium text-emerald-600 hover:text-emerald-500 hover:underline"
                             >
-                                Login here
+                                Go to Voter Login
                             </Link>
                         </div>
 
