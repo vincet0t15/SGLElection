@@ -47,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('candidate', [CandidateController::class, 'index'])->name('candidate.index');
     Route::get('candidate/create', [CandidateController::class, 'create'])->name('candidate.create');
     Route::post('candidate', [CandidateController::class, 'store'])->name('candidate.store');
+    Route::get('candidate/{candidate}/edit', [CandidateController::class, 'edit'])->name('candidate.edit');
     Route::put('candidate/{candidate}', [CandidateController::class, 'update'])->name('candidate.update');
     Route::delete('candidate/{candidate}', [CandidateController::class, 'destroy'])->name('candidate.destroy');
 });
