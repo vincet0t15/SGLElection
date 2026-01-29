@@ -37,13 +37,9 @@ class YearLevelController extends Controller
 
     public function update(Request $request, YearLevel $yearLevel)
     {
+
         $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('year_levels', 'name')->ignore($yearLevel->id),
-            ],
+            'name' => 'required|string|max:255|unique:year_levels,name,' . $yearLevel->id . ',id',
         ]);
 
         $yearLevel->update($request->all());

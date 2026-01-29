@@ -36,7 +36,6 @@ export function YearLevelCreateDialog({ open, setOpen }: Props) {
 
     const submit: SubmitEventHandler = (e) => {
         e.preventDefault();
-        console.log(data);
         post(yearLevel.store().url, {
             preserveState: true,
             onSuccess: (response: { props: FlashProps }) => {

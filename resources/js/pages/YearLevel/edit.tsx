@@ -37,7 +37,6 @@ export function YearLevelEditDialog({ open, setOpen, yearlevel }: Props) {
 
     const submit: SubmitEventHandler = (e) => {
         e.preventDefault();
-        console.log(data);
         put(yearLevel.update(yearlevel.id).url, {
             preserveState: true,
             onSuccess: (response: { props: FlashProps }) => {
@@ -47,6 +46,8 @@ export function YearLevelEditDialog({ open, setOpen, yearlevel }: Props) {
             },
         })
     }
+
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
 
