@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trophy, Medal, User, AlertCircle, HelpCircle, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -173,111 +174,123 @@ export default function ResultsIndex({ event, positions }: Props) {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="flex flex-col gap-10">
                         {positions.map((position) => {
                             const totalVotes = getTotalVotes(position.candidates);
 
                             return (
-                                <Card key={position.id} className="flex flex-col overflow-hidden h-full">
-                                    <CardHeader className="bg-muted/30 pb-4">
-                                        <CardTitle className="text-lg font-bold text-center text-primary">
-                                            {position.name}
-                                        </CardTitle>
-                                        <CardDescription className="text-center text-xs">
-                                            Total Votes Cast: {totalVotes}
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="p-0 flex-1 flex flex-col">
-                                        {position.candidates.length === 0 ? (
-                                            <div className="p-6 text-center text-muted-foreground text-sm">
-                                                No candidates for this position.
-                                            </div>
-                                        ) : (
-                                            <div className="divide-y">
-                                                {position.candidates.map((candidate, index) => {
-                                                    const percentage = totalVotes > 0
-                                                        ? Math.round((candidate.votes_count / totalVotes) * 100)
-                                                        : 0;
+                                <div key={position.id} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                    <div className="flex items-center justify-between border-b pb-2">
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-primary tracking-tight">{position.name}</h2>
+                                            <p className="text-sm text-muted-foreground">
+                                                Top {position.max_votes} {position.max_votes > 1 ? 'candidates' : 'candidate'} will win
+                                            </p>
+                                        </div>
+                                        <Badge variant="outline" className="text-base py-1 px-3">
+                                            Total Votes: {totalVotes.toLocaleString()}
+                                        </Badge>
+                                    </div>
 
-                                                    // Determine winner if results should be shown
-                                                    const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0;
-                                                    // Only show 2nd/3rd place medals if they are NOT winners (to avoid double badging in multi-winner races)
-                                                    const isSecond = showResults && !isWinner && index === 1 && candidate.votes_count > 0;
-                                                    const isThird = showResults && !isWinner && index === 2 && candidate.votes_count > 0;
+                                    <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
+                                        <Table>
+                                            <TableHeader className="bg-muted/50">
+                                                <TableRow>
+                                                    <TableHead className="w-[80px] text-center font-bold">Rank</TableHead>
+                                                    <TableHead className="font-bold">Candidate Info</TableHead>
+                                                    <TableHead className="text-right font-bold w-[150px]">Votes</TableHead>
+                                                    <TableHead className="w-[30%] font-bold">Percentage</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {position.candidates.length === 0 ? (
+                                                    <TableRow>
+                                                        <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                                                            No candidates for this position.
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ) : (
+                                                    position.candidates.map((candidate, index) => {
+                                                        const percentage = totalVotes > 0
+                                                            ? Math.round((candidate.votes_count / totalVotes) * 100)
+                                                            : 0;
 
-                                                    // Use the showResults flag for details visibility
-                                                    const showDetails = showResults;
+                                                        // Determine winner if results should be shown
+                                                        const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0;
+                                                        // Only show 2nd/3rd place medals if they are NOT winners
+                                                        const isSecond = showResults && !isWinner && index === 1 && candidate.votes_count > 0;
+                                                        const isThird = showResults && !isWinner && index === 2 && candidate.votes_count > 0;
 
-                                                    return (
-                                                        <div
-                                                            key={candidate.id}
-                                                            className={`p-4 transition-all duration-300 ${isWinner
-                                                                ? 'bg-gradient-to-r from-yellow-50/80 to-transparent dark:from-yellow-900/20'
-                                                                : 'hover:bg-muted/50'
-                                                                }`}
-                                                        >
-                                                            <div className="flex items-center gap-4">
-                                                                <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold shrink-0 shadow-sm
-                                                                    ${isWinner
-                                                                        ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400 ring-2 ring-yellow-500/20'
-                                                                        : 'bg-muted text-muted-foreground'
-                                                                    }`}>
-                                                                    #{index + 1}
-                                                                </div>
-                                                                <div className="relative shrink-0">
-                                                                    <Avatar className={`h-14 w-14 border-2 shadow-sm transition-transform hover:scale-105 ${isWinner ? 'border-yellow-500 ring-2 ring-yellow-500/20' : 'border-border'}`}>
-                                                                        {showDetails ? (
-                                                                            <AvatarImage
-                                                                                src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
-                                                                                alt={candidate.name}
-                                                                                className="object-cover"
-                                                                            />
-                                                                        ) : null}
-                                                                        <AvatarFallback className={!showDetails ? "bg-emerald-100 dark:bg-emerald-900/30 animate-pulse" : "bg-muted"}>
-                                                                            {showDetails ? (
-                                                                                <User className="h-6 w-6 text-muted-foreground" />
-                                                                            ) : (
-                                                                                <HelpCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                                                        // Use the showResults flag for details visibility
+                                                        const showDetails = showResults;
+
+                                                        return (
+                                                            <TableRow
+                                                                key={candidate.id}
+                                                                className={`transition-colors ${isWinner ? 'bg-emerald-50/50 dark:bg-emerald-900/10 hover:bg-emerald-100/50 dark:hover:bg-emerald-900/20' : 'hover:bg-muted/50'}`}
+                                                            >
+                                                                <TableCell className="text-center">
+                                                                    <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold mx-auto shadow-sm
+                                                                        ${isWinner
+                                                                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 ring-2 ring-emerald-500/20'
+                                                                            : 'bg-muted text-muted-foreground'
+                                                                        }`}>
+                                                                        {index + 1}
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="relative shrink-0">
+                                                                            <Avatar className={`h-12 w-12 border-2 shadow-sm ${isWinner ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-border'}`}>
+                                                                                {showDetails ? (
+                                                                                    <AvatarImage
+                                                                                        src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
+                                                                                        alt={candidate.name}
+                                                                                        className="object-cover"
+                                                                                    />
+                                                                                ) : null}
+                                                                                <AvatarFallback className={!showDetails ? "bg-emerald-100 dark:bg-emerald-900/30 animate-pulse" : "bg-muted"}>
+                                                                                    {showDetails ? (
+                                                                                        <User className="h-5 w-5 text-muted-foreground" />
+                                                                                    ) : (
+                                                                                        <HelpCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                                                                                    )}
+                                                                                </AvatarFallback>
+                                                                            </Avatar>
+                                                                            {isWinner && (
+                                                                                <div className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white p-1 rounded-full shadow-md animate-in zoom-in duration-300">
+                                                                                    <Trophy className="h-3 w-3 fill-current" />
+                                                                                </div>
                                                                             )}
-                                                                        </AvatarFallback>
-                                                                    </Avatar>
-                                                                    {isWinner && (
-                                                                        <div className="absolute -top-2 -right-2 bg-yellow-500 text-white p-1.5 rounded-full shadow-md animate-in zoom-in duration-300">
-                                                                            <Trophy className="h-3.5 w-3.5 fill-current" />
+                                                                            {isSecond && (
+                                                                                <div className="absolute -top-1.5 -right-1.5 bg-slate-400 text-white p-1 rounded-full shadow-md">
+                                                                                    <Medal className="h-3 w-3 fill-current" />
+                                                                                </div>
+                                                                            )}
+                                                                            {isThird && (
+                                                                                <div className="absolute -top-1.5 -right-1.5 bg-amber-700 text-white p-1 rounded-full shadow-md">
+                                                                                    <Medal className="h-3 w-3 fill-current" />
+                                                                                </div>
+                                                                            )}
                                                                         </div>
-                                                                    )}
-                                                                    {isSecond && (
-                                                                        <div className="absolute -top-2 -right-2 bg-slate-400 text-white p-1.5 rounded-full shadow-md">
-                                                                            <Medal className="h-3.5 w-3.5 fill-current" />
-                                                                        </div>
-                                                                    )}
-                                                                    {isThird && (
-                                                                        <div className="absolute -top-2 -right-2 bg-amber-700 text-white p-1.5 rounded-full shadow-md">
-                                                                            <Medal className="h-3.5 w-3.5 fill-current" />
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-
-                                                                <div className="flex-1 space-y-1.5">
-                                                                    <div className="flex items-center justify-between">
-                                                                        <div className="flex flex-col">
+                                                                        <div>
                                                                             <h4 className={`font-bold text-base leading-none ${isWinner ? 'text-emerald-700 dark:text-emerald-500' : ''} ${!showDetails ? 'text-emerald-600 dark:text-emerald-400 italic' : ''}`}>
                                                                                 {showDetails ? candidate.name : "Tallying..."}
                                                                             </h4>
                                                                             {showDetails && (
-                                                                                <span className="text-xs text-muted-foreground mt-1">
+                                                                                <p className="text-xs text-muted-foreground mt-1">
                                                                                     {candidate.year_level?.name} - {candidate.year_section?.name}
-                                                                                </span>
+                                                                                </p>
                                                                             )}
                                                                         </div>
-                                                                        <div className="text-right">
-                                                                            <div className="font-mono text-lg font-bold leading-none">
-                                                                                {candidate.votes_count.toLocaleString()}
-                                                                            </div>
-                                                                            <div className="text-[10px] uppercase text-muted-foreground font-semibold mt-0.5">Votes</div>
-                                                                        </div>
                                                                     </div>
-
+                                                                </TableCell>
+                                                                <TableCell className="text-right">
+                                                                    <div className="font-mono text-lg font-bold leading-none">
+                                                                        {candidate.votes_count.toLocaleString()}
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell>
                                                                     <div className="flex items-center gap-3">
                                                                         <Progress
                                                                             value={percentage}
@@ -286,15 +299,15 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                         />
                                                                         <span className="text-xs font-medium w-10 text-right">{percentage}%</span>
                                                                     </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        )}
-                                    </CardContent>
-                                </Card>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    })
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                </div>
                             );
                         })}
                     </div>
