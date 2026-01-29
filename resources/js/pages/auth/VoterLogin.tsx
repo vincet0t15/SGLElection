@@ -69,17 +69,7 @@ export default function VoterLogin() {
                         <InputError message={errors.password} />
                     </div>
 
-                    <div className="flex items-center space-x-3">
-                        <Checkbox
-                            id="remember"
-                            name="remember"
-                            checked={data.remember}
-                            onCheckedChange={(checked) => setData('remember', !!checked)}
-                            tabIndex={3}
-                            className="data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
-                        />
-                        <Label htmlFor="remember">Remember me</Label>
-                    </div>
+
 
                     <Button
                         type="submit"
