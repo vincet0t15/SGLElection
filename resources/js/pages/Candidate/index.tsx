@@ -3,6 +3,11 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import { EventProps } from '@/types/event';
+import { Button } from '@/components/ui/button';
+import { PlusIcon } from 'lucide-react';
+import { useState } from 'react';
+import { CandidateCreateDialog } from './create';
+import { YearLevelProps } from '@/types/yearlevel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from 'lucide-react';
@@ -39,13 +44,21 @@ interface EventWithPositions {
 
 interface Props {
     events: EventWithPositions[];
+    yearLevels: YearLevelProps[];
 }
 
-export default function CandidateIndex({ events }: Props) {
+export default function CandidateIndex({ events, yearLevels }: Props) {
+    const [openCreateDialog, setOpenCreateDialog] = useState(false);
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Candidates" />
             <div className="flex h-full flex-1 flex-col gap-8 overflow-x-auto rounded-xl p-4">
+                <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)}>
+                        <PlusIcon className="h-4 w-4" />
+                        <span className="rounded-sm lg:inline">Candidate</span>
+                    </Button>
+                </div>
                 {events.length > 0 ? (
                     events.map((event) => (
                         <div key={event.id} className="flex flex-col gap-6">
@@ -108,6 +121,14 @@ export default function CandidateIndex({ events }: Props) {
                     </div>
                 )}
             </div>
+            {openCreateDialog && (
+                <CandidateCreateDialog
+                    open={openCreateDialog}
+                    setOpen={setOpenCreateDialog}
+                    events={events as unknown as EventProps[]}
+                    yearLevels={yearLevels}
+                />
+            )}
         </AppLayout>
     );
 }
