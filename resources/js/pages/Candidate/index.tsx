@@ -39,7 +39,7 @@ interface Props {
 
 
 export default function CandidateIndex({ candidates, events, yearLevels, filters }: Props) {
-    console.log(events)
+
     const [search, setSearch] = useState(filters.search || '');
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
