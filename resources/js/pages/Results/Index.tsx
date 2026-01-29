@@ -136,7 +136,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                         </div>
                     )}
                     {event && (event.is_active && isTimeUp) && (
-                        <Badge variant="outline" className="border-yellow-500 text-yellow-600 bg-yellow-50 dark:bg-yellow-950/20">
+                        <Badge variant="outline" className="border-amber-500 text-amber-600 bg-amber-50 dark:bg-amber-950/20">
                             Voting Ended - Results Finalized
                         </Badge>
                     )}
@@ -261,7 +261,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                 <div className="flex-1 space-y-1.5">
                                                                     <div className="flex items-center justify-between">
                                                                         <div className="flex flex-col">
-                                                                            <h4 className={`font-bold text-base leading-none ${isWinner ? 'text-yellow-700 dark:text-yellow-500' : ''} ${!showDetails ? 'text-emerald-600 dark:text-emerald-400 italic' : ''}`}>
+                                                                            <h4 className={`font-bold text-base leading-none ${isWinner ? 'text-amber-700 dark:text-amber-500' : ''} ${!showDetails ? 'text-emerald-600 dark:text-emerald-400 italic' : ''}`}>
                                                                                 {showDetails ? candidate.name : "Tallying..."}
                                                                             </h4>
                                                                             {showDetails && (
@@ -281,8 +281,8 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                     <div className="flex items-center gap-3">
                                                                         <Progress
                                                                             value={percentage}
-                                                                            className={`h-2.5 flex-1 bg-muted/50 ${isWinner ? 'bg-yellow-100/50 dark:bg-yellow-900/20' : ''}`}
-                                                                            indicatorClassName={`transition-all duration-500 ${isWinner ? 'bg-yellow-500' : 'bg-primary/70'}`}
+                                                                            className={`h-2.5 flex-1 bg-muted/50 ${isWinner ? 'bg-amber-100/50 dark:bg-amber-900/20' : ''}`}
+                                                                            indicatorClassName={`transition-all duration-500 ${isWinner ? 'bg-amber-500' : 'bg-primary/70'}`}
                                                                         />
                                                                         <span className="text-xs font-medium w-10 text-right">{percentage}%</span>
                                                                     </div>
