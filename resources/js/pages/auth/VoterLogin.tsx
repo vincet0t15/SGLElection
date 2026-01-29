@@ -25,8 +25,8 @@ export default function VoterLogin() {
 
     return (
         <AuthLayout
-            title="Voter Login"
-            description="Enter your credentials to access the voting system"
+            title="Voter Portal"
+            description="Enter your credentials to cast your vote."
         >
             <Head title="Voter Login" />
 
@@ -44,7 +44,7 @@ export default function VoterLogin() {
                             autoFocus
                             tabIndex={1}
                             autoComplete="username"
-                            placeholder="username"
+                            placeholder="Enter your voter ID"
                             className="focus:ring-emerald-500 focus:border-emerald-500"
                         />
                         <InputError message={errors.username} />
@@ -63,7 +63,7 @@ export default function VoterLogin() {
                             required
                             tabIndex={2}
                             autoComplete="current-password"
-                            placeholder="Password"
+                            placeholder="Enter your password"
                             className="focus:ring-emerald-500 focus:border-emerald-500"
                         />
                         <InputError message={errors.password} />
@@ -73,22 +73,22 @@ export default function VoterLogin() {
 
                     <Button
                         type="submit"
-                        className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                        className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-emerald-500/25 transition-all"
                         tabIndex={4}
                         disabled={processing}
                     >
                         {processing && <Spinner className="text-white" />}
-                        Log in as Voter
+                        Sign in to Vote
                     </Button>
                 </div>
 
                 <div className="text-center text-sm">
-                    <span className="text-muted-foreground">Are you an admin? </span>
+                    <span className="text-muted-foreground">Not a voter? </span>
                     <Link
                         href={(login()).url}
                         className="font-medium text-emerald-600 hover:text-emerald-500 hover:underline"
                     >
-                        Login here
+                        Go to Admin Login
                     </Link>
                 </div>
             </form>
