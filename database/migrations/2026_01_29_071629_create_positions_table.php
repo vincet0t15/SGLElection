@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('max_votes');
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

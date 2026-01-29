@@ -180,8 +180,6 @@ export default function YearLevel({ yearLevels, filters }: Props) {
                                 </TableRow>
                             )}
                         </TableBody>
-
-
                     </Table>
                 </div>
                 <div>

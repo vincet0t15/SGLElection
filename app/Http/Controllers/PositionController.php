@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\Position;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,11 +13,15 @@ class PositionController extends Controller
     public function index(Request $request)
     {
         $search = request()->input('search');
-
+        $events = Event::query()
+            ->where('is_active', true)
+            ->orderBy('name', 'asc')
+            ->get();
         $positions = Position::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             })
+            ->with('events')
             ->orderBy('name', 'asc')
             ->paginate(20)
             ->withQueryString();
@@ -24,6 +29,7 @@ class PositionController extends Controller
         return Inertia::render('Position/index', [
             'filters' => $request->only('search'),
             'positions' => $positions,
+            'events' => $events,
         ]);
     }
 

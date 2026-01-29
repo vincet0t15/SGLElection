@@ -53,6 +53,7 @@ import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 import yearSection from '@/routes/year-section';
 import event from '@/routes/event';
+import position from '@/routes/position';
 
 
 type Props = {
@@ -66,6 +67,7 @@ const navItems = [
 const settingsItems = [
     { title: 'Year Level', href: yearLevel.index().url, icon: LayoutGrid },
     { title: 'Events', href: event.index().url, icon: Folder },
+    { title: 'Positions', href: position.index().url, icon: BookOpen },
 ];
 
 const activeItemStyles =

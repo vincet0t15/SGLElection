@@ -32,7 +32,7 @@ interface Props {
     filters: FilterProps,
 }
 export default function Event({ events, filters }: Props) {
-    console.log(events)
+
     const [search, setSearch] = useState(filters.search || '');
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);

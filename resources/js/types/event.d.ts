@@ -1,3 +1,5 @@
+import { PositionProps } from "./position";
+
 export interface EventProps {
     id: number;
     name: string;
@@ -6,6 +8,7 @@ export interface EventProps {
     location: string;
     description: string;
     is_active: boolean;
+    positions: PositionProps[];
 }
 
 export type EventType = {

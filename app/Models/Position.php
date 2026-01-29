@@ -8,5 +8,10 @@ class Position extends Model
 {
     //
     protected $table = 'positions';
-    protected $fillable = ['name', 'max_votes'];
+    protected $fillable = ['name', 'max_votes', 'event_id'];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
 }

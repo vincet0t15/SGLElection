@@ -14,4 +14,9 @@ class Event extends Model
         'description',
         'is_active',
     ];
+
+    public function positions()
+    {
+        return $this->hasMany(Position::class);
+    }
 }
