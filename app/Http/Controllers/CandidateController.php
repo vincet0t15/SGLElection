@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Candidate;
 use App\Models\CandidatePhoto;
+use App\Models\Position;
 use App\Models\YearLevel;
 use App\Models\YearSection;
 use Illuminate\Http\Request;
@@ -84,5 +85,23 @@ class CandidateController extends Controller
         }
 
         return redirect()->back()->with('success', 'Candidate created successfully.');
+    }
+
+    public function create(Request $request)
+    {
+        $events = Event::query()->where('is_active', true)->get();
+        $yearLevels = YearLevel::query()->with('section')->orderBy('name', 'asc')->get();
+
+        $positions = [];
+        if ($request->has('event_id')) {
+            $positions = Position::where('event_id', $request->event_id)->get();
+        }
+
+        return Inertia::render('Candidate/create', [
+            'events' => $events,
+            'yearLevels' => $yearLevels,
+            'positions' => $positions,
+            'event_id' => $request->event_id,
+        ]);
     }
 }

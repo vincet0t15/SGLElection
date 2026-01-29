@@ -15,6 +15,7 @@ import { PaginatedDataResponse } from '@/types/pagination';
 import { CandidateProps } from '@/types/candidate';
 import { FilterProps } from '@/types/filter';
 import { PositionProps } from '@/types/position';
+import candidate from '@/routes/candidate';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -72,7 +73,7 @@ export default function CandidateIndex({ candidates, events, yearLevels, filters
                         />
                     </div>
                     <Button className="cursor-pointer shadow-sm" asChild>
-                        <Link href="/candidate/create">
+                        <Link href={candidate.create().url}>
                             <PlusIcon className="h-4 w-4 mr-2" />
                             <span>Add Candidate</span>
                         </Link>
@@ -98,8 +99,8 @@ export default function CandidateIndex({ candidates, events, yearLevels, filters
 
                             {/* Positions and Candidates */}
                             {data.positions.map((position, index) => (
-                                <>
-                                    <div key={index} className="space-y-6">
+                                <div key={index} className="space-y-6">
+                                    <div key={index} className="space-y-2">
                                         <div className="text-center space-y-2">
                                             <h3 className="text-2xl font-bold tracking-tight text-foreground uppercase">
                                                 {position.name}
@@ -142,7 +143,7 @@ export default function CandidateIndex({ candidates, events, yearLevels, filters
                                             </div>
                                         ))}
                                     </div>
-                                </>
+                                </div>
 
                             ))}
                         </div>
