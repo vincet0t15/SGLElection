@@ -40,9 +40,13 @@ class VoteController extends Controller
             'votes.*.*' => 'exists:candidates,id',
         ]);
 
-        $user = Auth::user();
+        $voter = Auth::guard('voter')->user();
 
-        DB::transaction(function () use ($validated, $user) {
+        if (!$voter) {
+            abort(401, 'You must be logged in as a voter to vote.');
+        }
+
+        DB::transaction(function () use ($validated, $voter) {
             foreach ($validated['votes'] as $positionId => $candidateIds) {
                 // Skip if no candidates selected for this position
                 if (empty($candidateIds)) {
@@ -57,7 +61,7 @@ class VoteController extends Controller
                 }
 
                 // Check if already voted for this position
-                $existingVotes = Vote::where('user_id', $user->id)
+                $existingVotes = Vote::where('voter_id', $voter->id)
                     ->where('position_id', $positionId)
                     ->exists();
 
@@ -73,7 +77,7 @@ class VoteController extends Controller
                     }
 
                     Vote::create([
-                        'user_id' => $user->id,
+                        'voter_id' => $voter->id,
                         'candidate_id' => $candidateId,
                         'position_id' => $positionId,
                         'event_id' => $position->event_id,

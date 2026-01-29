@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import voter from '@/routes/voter';
 
 type Props = {
     status?: string;
@@ -96,6 +97,16 @@ export default function Login({
                                 {processing && <Spinner />}
                                 Log in
                             </Button>
+                        </div>
+
+                        <div className="text-center text-sm">
+                            <span className="text-muted-foreground">Are you a voter? </span>
+                            <Link
+                                href={(voter.login().url)}
+                                className="font-medium text-primary hover:text-primary/80 hover:underline"
+                            >
+                                Login here
+                            </Link>
                         </div>
 
                         {canRegister && (

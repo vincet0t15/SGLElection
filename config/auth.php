@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'voter' => [
+            'driver' => 'session',
+            'provider' => 'voters',
+        ],
     ],
 
     /*
@@ -64,11 +68,10 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'voters' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Voter::class,
+        ],
     ],
 
     /*
@@ -97,6 +100,12 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+        'voters' => [
+            'provider' => 'voters',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
     ],
 
     /*
@@ -104,9 +113,9 @@ return [
     | Password Confirmation Timeout
     |--------------------------------------------------------------------------
     |
-    | Here you may define the number of seconds before a password confirmation
-    | window expires and users are asked to re-enter their password via the
-    | confirmation screen. By default, the timeout lasts for three hours.
+    | Here you may define the amount of seconds before a password confirmation
+    | window expires and the user is prompted to re-enter their password via
+    | the confirmation screen. By default, the timeout lasts for three hours.
     |
     */
 

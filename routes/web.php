@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\VoterAuthController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PositionController;
@@ -17,13 +18,11 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('dashboard');
-})->middleware(['auth', 'verified', RedirectVoter::class])->name('dashboard');
-Route::middleware(['auth', 'verified'])->group(function () {
-    // VOTE
-    Route::get('vote', [VoteController::class, 'index'])->name('vote.index');
-    Route::post('vote', [VoteController::class, 'store'])->name('vote.store');
+// Admin Routes
+Route::middleware(['auth:web', 'verified'])->group(function () {
+    Route::get('dashboard', function () {
+        return Inertia::render('dashboard');
+    })->name('dashboard');
 
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');
@@ -56,6 +55,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('candidate/{candidate}/edit', [CandidateController::class, 'edit'])->name('candidate.edit');
     Route::post('candidate/{candidate}', [CandidateController::class, 'update'])->name('candidate.update');
     Route::delete('candidate/{candidate}', [CandidateController::class, 'destroy'])->name('candidate.destroy');
+});
+
+// Voter Routes
+Route::prefix('voter')->group(function () {
+    Route::middleware('guest:voter')->group(function () {
+        Route::get('login', [VoterAuthController::class, 'create'])->name('voter.login');
+        Route::post('login', [VoterAuthController::class, 'store']);
+    });
+
+    Route::middleware('auth:voter')->group(function () {
+        Route::post('logout', [VoterAuthController::class, 'destroy'])->name('voter.logout');
+
+        // VOTE
+        Route::get('vote', [VoteController::class, 'index'])->name('vote.index');
+        Route::post('vote', [VoteController::class, 'store'])->name('vote.store');
+    });
 });
 
 
