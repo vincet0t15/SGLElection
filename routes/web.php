@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\YearLevelController;
@@ -41,6 +42,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('position', [PositionController::class, 'store'])->name('position.store');
     Route::put('position/{position}', [PositionController::class, 'update'])->name('position.update');
     Route::delete('position/{position}', [PositionController::class, 'destroy'])->name('position.destroy');
+
+    // CANDIDATE
+    Route::get('candidate', [CandidateController::class, 'index'])->name('candidate.index');
+    Route::post('candidate', [CandidateController::class, 'store'])->name('candidate.store');
+    Route::put('candidate/{candidate}', [CandidateController::class, 'update'])->name('candidate.update');
+    Route::delete('candidate/{candidate}', [CandidateController::class, 'destroy'])->name('candidate.destroy');
 });
 
 

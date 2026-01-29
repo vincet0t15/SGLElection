@@ -1,3 +1,4 @@
+import { CandidateProps } from "./candidate";
 import { EventProps } from "./event";
 
 export interface PositionProps {
@@ -6,6 +7,7 @@ export interface PositionProps {
     max_votes: number;
     event_id: number;
     event: EventProps;
+    candidates: CandidateProps[];
 }
 
 export type PositionType = {
