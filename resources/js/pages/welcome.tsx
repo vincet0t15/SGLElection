@@ -1,7 +1,7 @@
-import { login } from '@/routes';
-import voter from '@/routes/voter';
 import { Head, Link } from '@inertiajs/react';
 import { CheckCircle, ShieldCheck, Users, Vote } from 'lucide-react';
+import { login } from '@/routes';
+import { login as voterLogin } from '@/routes/voter';
 
 export default function Welcome() {
     return (
@@ -19,7 +19,7 @@ export default function Welcome() {
                             <span className="text-xl font-bold tracking-tight text-emerald-900 dark:text-emerald-400">SGLL Voting System</span>
                         </div>
                         <nav className="hidden md:flex gap-6">
-                            <Link href={(login())} className="text-sm font-medium hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                            <Link href={login().url} className="text-sm font-medium hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
                                 Admin Portal
                             </Link>
                         </nav>
@@ -41,14 +41,14 @@ export default function Welcome() {
 
                             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                                 <Link
-                                    href={(voter.login().url)}
+                                    href={voterLogin().url}
                                     className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     <Users className="h-5 w-5" />
                                     Login as Voter
                                 </Link>
                                 <Link
-                                    href={(login())}
+                                    href={login().url}
                                     className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 text-gray-900 dark:text-white font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-2"
                                 >
                                     <ShieldCheck className="h-5 w-5" />
