@@ -59,16 +59,21 @@ class DashboardController extends Controller
                     ->get()
                     ->map(function ($position) {
                         // Calculate total votes for the position BEFORE filtering
-                        $position->total_votes = $position->candidates->sum('votes_count');
+                        $totalVotes = $position->candidates->sum('votes_count');
 
                         // We only need the winners (with at least 1 vote)
                         $winnersList = $position->candidates
                             ->filter(function ($candidate) {
                                 return $candidate->votes_count > 0;
                             })
-                            ->take($position->max_votes);
+                            ->take($position->max_votes)
+                            ->values(); // Ensure array keys are reset for JSON serialization
 
                         $position->setRelation('candidates', $winnersList);
+
+                        // Explicitly set total_votes attribute and append it to serialization
+                        $position->setAttribute('total_votes', $totalVotes);
+
                         return $position;
                     });
             }
