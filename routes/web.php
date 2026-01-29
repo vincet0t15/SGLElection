@@ -3,8 +3,10 @@
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\VoteController;
 use App\Http\Controllers\YearLevelController;
 use App\Http\Controllers\YearSectionController;
+use App\Http\Middleware\RedirectVoter;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -17,8 +19,11 @@ Route::get('/', function () {
 
 Route::get('dashboard', function () {
     return Inertia::render('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', RedirectVoter::class])->name('dashboard');
 Route::middleware(['auth', 'verified'])->group(function () {
+    // VOTE
+    Route::get('vote', [VoteController::class, 'index'])->name('vote.index');
+
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');
     Route::post('year-level', [YearLevelController::class, 'store'])->name('year-level.store');
