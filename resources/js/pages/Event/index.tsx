@@ -18,6 +18,7 @@ import { EventProps } from '@/types/event';
 import { EventCreateDialog } from './create';
 import event from '@/routes/event';
 import { EventEditDialog } from './edit';
+import DeleteEvent from './delete';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -167,6 +168,7 @@ export default function Event({ events, filters }: Props) {
 
             {openCreateDialog && <EventCreateDialog open={openCreateDialog} setOpen={setOpenCreateDialog} />}
             {openEditDialog && <EventEditDialog open={openEditDialog} setOpen={setOpenEditDialog} SelectedEvent={dataToEdit} />}
+            {openDeleteDialog && <DeleteEvent open={openDeleteDialog} setOpen={setOpenDeleteDialog} dataToDelete={dataToDelete} />}
         </AppLayout >
     );
 }
