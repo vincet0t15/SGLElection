@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\YearLevelController;
+use App\Http\Controllers\YearSectionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -20,6 +21,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('year-level', [YearLevelController::class, 'store'])->name('year-level.store');
     Route::put('year-level/{yearLevel}', [YearLevelController::class, 'update'])->name('year-level.update');
     Route::delete('year-level/{yearLevel}', [YearLevelController::class, 'destroy'])->name('year-level.destroy');
+
+    // SECTION
+    Route::get('year-section', [YearSectionController::class, 'index'])->name('year-section.index');
+    Route::post('year-section', [YearSectionController::class, 'store'])->name('year-section.store');
+    Route::put('year-section/{yearSection}', [YearSectionController::class, 'update'])->name('year-section.update');
+    Route::delete('year-section/{yearSection}', [YearSectionController::class, 'destroy'])->name('year-section.destroy');
 });
 
 

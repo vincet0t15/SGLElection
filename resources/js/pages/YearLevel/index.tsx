@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Delete, PlusIcon } from 'lucide-react';
+import { Delete, Dot, Minus, PlusIcon } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -9,11 +9,16 @@ import { PaginatedDataResponse } from '@/types/pagination';
 import { FilterProps } from '@/types/filter';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { YearLevelProps } from '@/types/yearlevel';
-import { KeyboardEventHandler, useState } from 'react';
+import React, { KeyboardEventHandler, useState } from 'react';
 import { YearLevelCreateDialog } from './create';
 import { YearLevelEditDialog } from './edit';
 import yearLevel from '@/routes/year-level';
 import DeleteYearLevel from './delete';
+import Pagination from '@/components/paginationData';
+import { YearSectionCreate } from '../YearSection/create';
+import { YearSectionProps } from '@/types/section';
+import { YearSectionEdit } from '../YearSection/edit';
+import DeleteYearSection from '../YearSection/delete';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -26,18 +31,32 @@ interface Props {
     filters: FilterProps
 }
 export default function YearLevel({ yearLevels, filters }: Props) {
+    console.log(yearLevels);
     const [search, setSearch] = useState(filters.search || '');
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [dataToEdit, setDataEdit] = useState<YearLevelProps | null>(null);
     const [dataToDelete, setDataDelete] = useState<YearLevelProps | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openCreateSection, setOpenCreateSection] = useState(false);
+    const [dataToCreateSection, setDataToCreateSection] = useState<YearLevelProps | null>(null);
+    const [yearSections, setYearSections] = useState<YearSectionProps | null>(null);
+    const [openEditYearSectionDialog, setOpenEditYearSectionDialog] = useState(false);
+    const [openDeleteSectionDialog, setOpenDeleteSectionDialog] = useState(false);
 
-
+    const handleCLickDeleteSection = (section: YearSectionProps) => {
+        setYearSections(section);
+        setOpenDeleteSectionDialog(true);
+    }
+    const handleClickEditSection = (section: YearSectionProps) => {
+        setYearSections(section);
+        setOpenEditYearSectionDialog(true);
+    }
     const handleClickEdit = (yearLevel: YearLevelProps) => {
         setDataEdit(yearLevel);
         setOpenEditDialog(true);
     }
+
     const handleClickDelete = (yearLevel: YearLevelProps) => {
         setDataDelete(yearLevel);
         setOpenDeleteDialog(true);
@@ -57,6 +76,11 @@ export default function YearLevel({ yearLevels, filters }: Props) {
                     preserveScroll: true,
                 })
         }
+    }
+
+    const handleClickCreateSection = (yearLevel: YearLevelProps) => {
+        setOpenCreateSection(true)
+        setDataToCreateSection(yearLevel)
     }
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -85,44 +109,83 @@ export default function YearLevel({ yearLevels, filters }: Props) {
                         </TableHeader>
                         <TableBody>
                             {yearLevels.data.length > 0 ? (
-                                yearLevels.data.map((yearLevel, index) => (
-                                    <TableRow key={index} className="text-sm">
-                                        <TableCell>
-                                            <span >{yearLevel.name}</span>
-                                        </TableCell>
+                                yearLevels.data.map((yearLevel) => (
+                                    <React.Fragment key={yearLevel.id}>
+                                        {/* Year Level row */}
+                                        <TableRow className="text-sm font-medium">
+                                            <TableCell>
+                                                {yearLevel.name}
+                                            </TableCell>
 
-                                        <TableCell className="text-sm gap-2 flex justify-end">
-                                            <span
-                                                className="cursor-pointer text-green-500 hover:text-green-700 hover:underline"
-                                                onClick={() => {
-                                                    handleClickEdit(yearLevel)
-                                                }}
+                                            <TableCell className="flex justify-end gap-3">
+                                                <span
+                                                    className="cursor-pointer text-teal-800 hover:text-teal-900 hover:underline"
+                                                    onClick={() => handleClickCreateSection(yearLevel)}
+                                                >
+                                                    Create Section
+                                                </span>
+                                                <span
+                                                    className="cursor-pointer text-green-500 hover:text-green-700 hover:underline"
+                                                    onClick={() => handleClickEdit(yearLevel)}
+                                                >
+                                                    Edit
+                                                </span>
 
-                                            >
-                                                Edit
-                                            </span>
-                                            <span
-                                                className="text-red-500 cursor-pointer hover:text-orange-700 hover:underline"
-                                                onClick={() => {
-                                                    handleClickDelete(yearLevel);
+                                                <span
+                                                    className="cursor-pointer text-red-500 hover:text-red-700 hover:underline"
+                                                    onClick={() => handleClickDelete(yearLevel)}
+                                                >
+                                                    Delete
+                                                </span>
+                                            </TableCell>
+                                        </TableRow>
 
-                                                }}
-                                            >
-                                                Delete
-                                            </span>
+                                        {/* Section rows */}
+                                        {yearLevel.section.map((section) => (
+                                            <TableRow key={section.id} className="text-sm bg-gray-50">
+                                                <TableCell>
+                                                    <div className="pl-8 flex items-center gap-1">
+                                                        <Minus className="h-4 w-4 text-gray-400" />
+                                                        <span>{section.name}</span>
+                                                    </div>
+                                                </TableCell>
 
-                                        </TableCell>
-                                    </TableRow>
+                                                <TableCell>
+                                                    <div className="flex justify-end gap-3">
+                                                        <span
+                                                            className="cursor-pointer text-blue-500 hover:text-blue-700 hover:underline"
+                                                            onClick={() => handleClickEditSection(section)}
+                                                        >
+                                                            Edit
+                                                        </span>
+
+                                                        <span
+                                                            className="cursor-pointer text-red-500 hover:text-red-700 hover:underline"
+                                                            onClick={() => handleCLickDeleteSection(section)}
+                                                        >
+                                                            Delete
+                                                        </span>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+
+                                        ))}
+                                    </React.Fragment>
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="py-3 text-center text-gray-500">
+                                    <TableCell colSpan={2} className="py-3 text-center text-gray-500">
                                         No data available.
                                     </TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
+
+
                     </Table>
+                </div>
+                <div>
+                    <Pagination data={yearLevels} />
                 </div>
             </div>
             {
@@ -139,6 +202,20 @@ export default function YearLevel({ yearLevels, filters }: Props) {
             {
                 openDeleteDialog && dataToDelete && (
                     <DeleteYearLevel open={openDeleteDialog} setOpen={setOpenDeleteDialog} dataToDelete={dataToDelete} />
+                )
+            }
+
+            {openCreateSection && (
+                <YearSectionCreate open={openCreateSection} setOpen={setOpenCreateSection} yearLevel={dataToCreateSection} />
+            )}
+
+            {openEditYearSectionDialog && yearSections && (
+                <YearSectionEdit open={openEditYearSectionDialog} setOpen={setOpenEditYearSectionDialog} dataToEdit={yearSections} />
+            )}
+
+            {
+                openDeleteSectionDialog && yearSections && (
+                    <DeleteYearSection open={openDeleteSectionDialog} setOpen={setOpenDeleteSectionDialog} dataToDelete={yearSections} />
                 )
             }
         </AppLayout >

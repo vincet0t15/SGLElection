@@ -12,10 +12,13 @@ class YearLevelController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+
         $yearLevels = YearLevel::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             })
+            ->with('section')
+            ->orderBy('name', 'asc')
             ->paginate(20)->withQueryString();
 
         return Inertia::render('YearLevel/index', [

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class YearLevel extends Model
 {
@@ -10,4 +11,9 @@ class YearLevel extends Model
     protected $fillable = [
         'name',
     ];
+
+    public function section(): HasMany
+    {
+        return $this->hasMany(YearSection::class);
+    }
 }
