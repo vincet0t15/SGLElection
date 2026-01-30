@@ -85,7 +85,7 @@ class ReportController extends Controller
         $positions = $event->positions()
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->with(['candidatePhotos', 'yearLevel', 'yearSection'])
+                $query->with(['candidatePhotos', 'yearLevel', 'yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
                     }])
@@ -93,16 +93,27 @@ class ReportController extends Controller
             }])
             ->get();
 
-        // Calculate total voters who voted in this event
-        $totalVoters = \App\Models\Vote::where('event_id', $event->id)
+        // Calculate actual voters (turnout)
+        $actualVoters = \App\Models\Vote::where('event_id', $event->id)
             ->distinct('voter_id')
             ->count();
+
+        // Calculate total registered voters for this event
+        $registeredVoters = \App\Models\Voter::where('event_id', $event->id)->count();
+
+        // Calculate total sections (precincts equivalent)
+        $totalSections = \App\Models\Voter::where('event_id', $event->id)
+            ->distinct('year_section_id')
+            ->count('year_section_id');
 
         return Inertia::render('Reports/Print', [
             'event' => $event,
             'positions' => $positions,
             'stats' => [
-                'total_voters' => $totalVoters
+                'actual_voters' => $actualVoters,
+                'registered_voters' => $registeredVoters,
+                'total_sections' => $totalSections,
+                'turnout' => $registeredVoters > 0 ? round(($actualVoters / $registeredVoters) * 100, 2) : 0,
             ]
         ]);
     }
