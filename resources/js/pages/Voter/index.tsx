@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Delete, PlusIcon } from 'lucide-react';
+import { Delete, PlusIcon, Upload } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -122,8 +122,8 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             </Button>
                         </Link>
 
-                        <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)}>
-                            <PlusIcon className=" h-4 w-4" />
+                        <Button className="cursor-pointer bg-blue-800 text-white" onClick={() => setOpenCreateDialog(true)} >
+                            <Upload className=" h-4 w-4" />
                             <span className="rounded-sm lg:inline">Import</span>
                         </Button>
 
