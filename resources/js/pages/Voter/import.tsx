@@ -68,8 +68,8 @@ export default function ImportVoter({ events }: Props) {
     };
 
     const handleDownloadTemplate = () => {
-        const headers = ['Learners Reference Number', 'Name', 'Section', 'Grade Level'];
-        const sample = ['123456789012', 'Doe, John Smith', '3', '3'];
+        const headers = ['LRN NUMBER', 'NAME', 'SECTION', 'GRADE LEVEL'];
+        const sample = ['111201170026', 'Abao, Aldrich Franz Caabay', '3', '3'];
         const csvContent = "data:text/csv;charset=utf-8,"
             + headers.join(",") + "\n"
             + sample.join(",");

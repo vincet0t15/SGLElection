@@ -14,14 +14,21 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 class VotersImport implements ToModel, WithHeadingRow, WithValidation
 {
     protected $eventId;
+    protected $headingRow;
     protected $yearLevels;
     protected $yearSections;
 
-    public function __construct($eventId)
+    public function __construct($eventId, $headingRow = 1)
     {
         $this->eventId = $eventId;
+        $this->headingRow = $headingRow;
         $this->yearLevels = YearLevel::all();
         $this->yearSections = YearSection::all();
+    }
+
+    public function headingRow(): int
+    {
+        return $this->headingRow;
     }
 
     /**
@@ -31,34 +38,49 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
      */
     public function model(array $row)
     {
-        $name = trim($row['NAME']);
-        $lrn = trim($row['LRN NUMBER']);
-        $gradeLevel = trim($row['GRADE LEVEL']);
-        $sectionName = trim($row['SECTION']);
 
-        // Generate Username and Password
-        // Format: lastname + lrn (e.g., abao111201170026)
-        $lastName = Str::lower(explode(',', $name)[0]);
+        $name = $row['name'] ?? $row['student_name'] ?? null;
+        $lrn = $row['learners_reference_number'] ?? $row['lrn'] ?? $row['lrn_number'] ?? null;
+        $gradeLevel = $row['grade_level'] ?? $row['level'] ?? $row['year_level'] ?? null;
+        $sectionName = $row['section'] ?? $row['class_section'] ?? null;
+
+        if (!$name || !$lrn) {
+            return null; // 
+        }
+
+        $name = trim($name);
+        $lrn = trim($lrn);
+        $gradeLevel = trim($gradeLevel);
+        $sectionName = trim($sectionName);
+
+
+        if (str_contains($name, ',')) {
+            $lastName = Str::lower(trim(explode(',', $name)[0]));
+        } else {
+
+            $parts = explode(' ', $name);
+            $lastName = Str::lower($parts[0]);
+        }
+
+
+        $lastName = str_replace(' ', '', $lastName);
+
         $username = $lastName . $lrn;
-        $password = $username; // Password is same as username initially
+        $password = $username;
 
-        // Find Year Level
+
         $yearLevel = $this->yearLevels->first(function ($level) use ($gradeLevel) {
             return $level->name == $gradeLevel || $level->id == $gradeLevel;
         });
 
-        if (!$yearLevel) {
-            throw new \Exception("Grade Level '{$gradeLevel}' not found.");
-        }
+
 
         // Find Section
         $section = $this->yearSections->first(function ($sec) use ($sectionName, $yearLevel) {
             return ($sec->name == $sectionName || $sec->id == $sectionName) && $sec->year_level_id == $yearLevel->id;
         });
 
-        if (!$section) {
-            throw new \Exception("Section '{$sectionName}' not found for Grade Level '{$yearLevel->name}'.");
-        }
+
 
         return new Voter([
             'name'            => $name,
@@ -75,8 +97,11 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
+            // The user's file has headers: LRN NUMBER, NAME, SECTION, GRADE LEVEL
+            // Slugs: lrn_number, name, section, grade_level
+
             'lrn_number' => 'required|unique:voters,lrn_number',
+            'name' => 'required|string',
             'grade_level' => 'required',
             'section' => 'required',
         ];
