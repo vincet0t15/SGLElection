@@ -70,12 +70,25 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
 
 
         $yearLevel = $this->yearLevels->first(function ($level) use ($gradeLevel) {
-            return $level->name == $gradeLevel || $level->id == $gradeLevel;
+            return strcasecmp($level->name, $gradeLevel) === 0 || $level->id == $gradeLevel;
         });
 
+        if (!$yearLevel) {
+            $yearLevel = YearLevel::create(['name' => $gradeLevel]);
+            $this->yearLevels->push($yearLevel);
+        }
+
         $section = $this->yearSections->first(function ($sec) use ($sectionName, $yearLevel) {
-            return ($sec->name == $sectionName || $sec->id == $sectionName) && $sec->year_level_id == $yearLevel->id;
+            return (strcasecmp($sec->name, $sectionName) === 0 || $sec->id == $sectionName) && $sec->year_level_id == $yearLevel->id;
         });
+
+        if (!$section) {
+            $section = YearSection::create([
+                'name' => $sectionName,
+                'year_level_id' => $yearLevel->id
+            ]);
+            $this->yearSections->push($section);
+        }
 
         return new Voter([
             'name'            => $name,
