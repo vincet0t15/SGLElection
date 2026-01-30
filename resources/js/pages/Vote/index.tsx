@@ -255,8 +255,7 @@ export default function VoteIndex({ events }: Props) {
                                                                 <User className="h-10 w-10 sm:h-20 sm:w-20" />
                                                             </div>
                                                         )}
-                                                        {/* Gradient Overlay for Partylist on Mobile */}
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 sm:opacity-100 transition-opacity" />
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 sm:opacity-0 transition-opacity" />
 
                                                         {/* Partylist Badge (Desktop Overlay) */}
                                                         {candidate.partylist && (
