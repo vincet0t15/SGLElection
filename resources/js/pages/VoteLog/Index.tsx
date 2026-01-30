@@ -1,5 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Table,
@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Pagination from '@/components/paginationData';
+import { PaginatedDataResponse } from '@/types/pagination';
 import {
     Dialog,
     DialogContent,
@@ -18,8 +21,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Eye, User } from 'lucide-react';
-import { useState } from 'react';
+import { Eye, Search, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { voteLogs } from '@/routes';
 
 interface Vote {
     id: number;
@@ -47,12 +51,30 @@ interface Position {
 }
 
 interface Props {
-    voters: Voter[];
+    voters: PaginatedDataResponse<Voter>;
     positions: Position[];
+    filters: {
+        search?: string;
+    };
 }
 
-export default function VoteLog({ voters, positions }: Props) {
+export default function VoteLog({ voters, positions, filters }: Props) {
     const [selectedVoter, setSelectedVoter] = useState<Voter | null>(null);
+    const [search, setSearch] = useState(filters.search || '');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (search !== (filters.search || '')) {
+                router.get(
+                    voteLogs().url,
+                    { search },
+                    { preserveState: true, replace: true, preserveScroll: true }
+                );
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     return (
         <AppLayout breadcrumbs={[
@@ -60,21 +82,33 @@ export default function VoteLog({ voters, positions }: Props) {
         ]}>
             <Head title="Vote Logs" />
 
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex flex-col gap-6 p-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold tracking-tight">Vote Logs</h1>
                 </div>
 
-                <Card className='rounded-sm'>
+                <Card>
                     <CardHeader>
                         <CardTitle>Voter List</CardTitle>
                         <CardDescription>
                             List of voters and their voting activity.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <div className="relative flex-1 max-w-sm">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search voters..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className="pl-8"
+                                />
+                            </div>
+                        </div>
+
                         <Table>
-                            <TableHeader className="bg-muted/50">
+                            <TableHeader>
                                 <TableRow>
                                     <TableHead className="w-[300px]">Voter Name</TableHead>
                                     <TableHead>Total Votes</TableHead>
@@ -82,15 +116,15 @@ export default function VoteLog({ voters, positions }: Props) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {voters.length === 0 ? (
+                                {voters.data.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
                                             No voters found.
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    voters.map((voter) => (
-                                        <TableRow key={voter.id} className='text-sm hover:bg-muted/50'>
+                                    voters.data.map((voter) => (
+                                        <TableRow key={voter.id}>
                                             <TableCell className="font-medium">
                                                 <div>{voter.name}</div>
                                                 <div className="text-xs text-muted-foreground">{voter.username}</div>
@@ -101,18 +135,22 @@ export default function VoteLog({ voters, positions }: Props) {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <span
-                                                    className='text-teal-700 hover:text-teal900 hover:font-bold cursor-pointer hover:underline'
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
                                                     onClick={() => setSelectedVoter(voter)}
                                                 >
+                                                    <Eye className="mr-2 h-4 w-4" />
                                                     View Votes
-                                                </span>
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))
                                 )}
                             </TableBody>
                         </Table>
+
+                        <Pagination data={voters} />
                     </CardContent>
                 </Card>
 
