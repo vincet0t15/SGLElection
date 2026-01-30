@@ -70,6 +70,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
 
     // VOTER
     Route::get('voter', [VoterController::class, 'index'])->name('voter.index');
+    Route::get('voter/import', [VoterController::class, 'importView'])->name('voter.import.view');
     Route::post('voter/import', [VoterController::class, 'import'])->name('voter.import');
     Route::get('voter/create', [VoterController::class, 'create'])->name('voter.create');
     Route::post('voter', [VoterController::class, 'store'])->name('voter.store');

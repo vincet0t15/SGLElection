@@ -61,11 +61,31 @@ class VoterController extends Controller
         ]);
     }
 
+    public function importView()
+    {
+        return Inertia::render('Voter/import');
+    }
+
     public function import(Request $request)
     {
-        Excel::import(new VotersImport, $request->file('file'));
 
-        return redirect('/')->with('success', 'All good!');
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            Excel::import(new VotersImport, $request->file('file'));
+            return redirect()->route('voter.index')->with('success', 'Voters imported successfully.');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $messages = [];
+            foreach ($failures as $failure) {
+                $messages[] = 'Row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return back()->withErrors(['file' => implode(' | ', $messages)]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Error importing file: ' . $e->getMessage()]);
+        }
     }
 
 

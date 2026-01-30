@@ -122,10 +122,12 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             </Button>
                         </Link>
 
-                        <Button className="cursor-pointer bg-blue-800 text-white" onClick={() => setOpenCreateDialog(true)} >
-                            <Upload className=" h-4 w-4" />
-                            <span className="rounded-sm lg:inline">Import</span>
-                        </Button>
+                        <Link href="/voter/import">
+                            <Button className="cursor-pointer bg-blue-800 text-white">
+                                <Upload className=" h-4 w-4" />
+                                <span className="rounded-sm lg:inline">Import</span>
+                            </Button>
+                        </Link>
 
                     </div>
                     <div className="flex items-center gap-2 flex-wrap justify-end">
