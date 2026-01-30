@@ -16,4 +16,9 @@ class YearLevel extends Model
     {
         return $this->hasMany(YearSection::class);
     }
+
+    public function positions()
+    {
+        return $this->belongsToMany(Position::class, 'position_year_level');
+    }
 }

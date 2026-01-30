@@ -17,6 +17,7 @@ import { PositionCreateDialog } from './create';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PositionEditDialog } from './edit';
 import DeletePosition from './delete';
+import { YearLevelProps } from '@/types/yearlevel';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -25,12 +26,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+
 interface Props {
     positions: PaginatedDataResponse<PositionProps>;
     filters: FilterProps,
     events: EventProps[],
+    yearLevels: YearLevelProps[],
 }
-export default function Position({ positions, filters, events }: Props) {
+export default function Position({ positions, filters, events, yearLevels }: Props) {
 
     const [search, setSearch] = useState(filters.search || '');
     const [eventId, setEventId] = useState<string>(filters.event_id ? String(filters.event_id) : 'all');
@@ -77,7 +80,7 @@ export default function Position({ positions, filters, events }: Props) {
     }
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Year Level" />
+            <Head title="Position" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)}>
@@ -166,8 +169,8 @@ export default function Position({ positions, filters, events }: Props) {
                 </div>
             </div>
 
-            {openCreateDialog && <PositionCreateDialog open={openCreateDialog} setOpen={setOpenCreateDialog} events={events} />}
-            {openEditDialog && selectedPosition && <PositionEditDialog open={openEditDialog} setOpen={setOpenEditDialog} events={events} SelectedPosition={selectedPosition} />}
+            {openCreateDialog && <PositionCreateDialog open={openCreateDialog} setOpen={setOpenCreateDialog} events={events} yearLevels={yearLevels} />}
+            {openEditDialog && selectedPosition && <PositionEditDialog open={openEditDialog} setOpen={setOpenEditDialog} events={events} SelectedPosition={selectedPosition} yearLevels={yearLevels} />}
             {openDeleteDialog && selectedPosition && <DeletePosition open={openDeleteDialog} setOpen={setOpenDeleteDialog} selectedPosition={selectedPosition} />}
         </AppLayout >
     );

@@ -21,16 +21,21 @@ import { toast } from "sonner";
 import { PositionType } from "@/types/position";
 import { EventProps } from "@/types/event";
 import CustomSelect from "@/components/custom-select";
+import { Checkbox } from "@/components/ui/checkbox"
+import { YearLevelProps } from "@/types/yearlevel";
+
 interface Props {
     open: boolean;
     setOpen: (open: boolean) => void;
     events: EventProps[],
+    yearLevels: YearLevelProps[],
 }
-export function PositionCreateDialog({ open, setOpen, events }: Props) {
+export function PositionCreateDialog({ open, setOpen, events, yearLevels }: Props) {
     const { data, setData, post, reset, processing, errors } = useForm<PositionType>({
         name: '',
         max_votes: 1,
         event_id: 0,
+        year_level_ids: [],
     })
 
     const eventOptions = events.map((event) => ({
@@ -50,6 +55,14 @@ export function PositionCreateDialog({ open, setOpen, events }: Props) {
             ...data,
             event_id: Number(eventId),
         })
+    }
+
+    const handleYearLevelChange = (checked: boolean, yearLevelId: number) => {
+        if (checked) {
+            setData('year_level_ids', [...data.year_level_ids, yearLevelId]);
+        } else {
+            setData('year_level_ids', data.year_level_ids.filter(id => id !== yearLevelId));
+        }
     }
 
     const submit: SubmitEventHandler = (e) => {
@@ -93,6 +106,25 @@ export function PositionCreateDialog({ open, setOpen, events }: Props) {
                             <Label htmlFor="max_votes">Max Votes</Label>
                             <Input id="max_votes" name="max_votes" type="number" onChange={handleChange} />
                             <InputError message={errors.max_votes} />
+                        </div>
+
+                        <div className="grid gap-3">
+                            <Label>Restricted to Year Levels (Optional)</Label>
+                            <div className="grid grid-cols-2 gap-2 border p-3 rounded-md">
+                                {yearLevels.map((yl) => (
+                                    <div key={yl.id} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={`yl-${yl.id}`}
+                                            checked={data.year_level_ids.includes(yl.id)}
+                                            onCheckedChange={(checked) => handleYearLevelChange(checked as boolean, yl.id)}
+                                        />
+                                        <Label htmlFor={`yl-${yl.id}`} className="font-normal cursor-pointer">
+                                            {yl.name}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-xs text-muted-foreground">If none selected, all year levels can vote.</p>
                         </div>
                     </div>
                     <DialogFooter>

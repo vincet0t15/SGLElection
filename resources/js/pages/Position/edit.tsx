@@ -21,17 +21,21 @@ import { toast } from "sonner";
 import { PositionProps, PositionType } from "@/types/position";
 import { EventProps } from "@/types/event";
 import CustomSelect from "@/components/custom-select";
+import { YearLevelProps } from "@/types/yearlevel";
+import { Checkbox } from "@/components/ui/checkbox";
 interface Props {
     open: boolean;
     setOpen: (open: boolean) => void;
     events: EventProps[],
     SelectedPosition: PositionProps,
+    yearLevels: YearLevelProps[]
 }
-export function PositionEditDialog({ open, setOpen, events, SelectedPosition }: Props) {
+export function PositionEditDialog({ open, setOpen, events, SelectedPosition, yearLevels }: Props) {
     const { data, setData, put, reset, processing, errors } = useForm<PositionType>({
         name: SelectedPosition?.name || '',
         max_votes: SelectedPosition?.max_votes || 1,
         event_id: SelectedPosition?.event_id || 0,
+        year_level_ids: SelectedPosition?.year_levels?.map(yearLevel => yearLevel.id) || [],
     })
 
     const eventOptions = events.map((event) => ({
@@ -94,6 +98,31 @@ export function PositionEditDialog({ open, setOpen, events, SelectedPosition }: 
                             <Label htmlFor="max_votes">Max Votes</Label>
                             <Input id="max_votes" name="max_votes" type="number" onChange={handleChange} value={data.max_votes} />
                             <InputError message={errors.max_votes} />
+                        </div>
+                        <div className="grid gap-3">
+                            <Label>Restricted to Year Levels (Optional)</Label>
+                            <div className="grid grid-cols-2 gap-2 border p-3 rounded-md">
+                                {yearLevels.map((yl) => (
+                                    <div key={yl.id} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={`edit-yl-${yl.id}`}
+                                            checked={data.year_level_ids.includes(yl.id)}
+                                            onCheckedChange={(checked) => {
+                                                setData(prev => ({
+                                                    ...prev,
+                                                    year_level_ids: checked
+                                                        ? [...prev.year_level_ids, yl.id]
+                                                        : prev.year_level_ids.filter(id => id !== yl.id)
+                                                }));
+                                            }}
+                                        />
+                                        <Label htmlFor={`edit-yl-${yl.id}`} className="font-normal cursor-pointer">
+                                            {yl.name}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-xs text-muted-foreground">If none selected, all year levels can vote.</p>
                         </div>
                     </div>
                     <DialogFooter>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Position;
+use App\Models\YearLevel;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -28,14 +29,18 @@ class PositionController extends Controller
                 $query->where('event_id', $eventId);
             })
             ->with('event')
+            ->with('yearLevels')
             ->orderBy('name', 'asc')
             ->paginate(20)
             ->withQueryString();
+
+        $yearLevels = YearLevel::all();
 
         return Inertia::render('Position/index', [
             'filters' => $request->only(['search', 'event_id']),
             'positions' => $positions,
             'events' => $events,
+            'yearLevels' => $yearLevels,
         ]);
     }
 
@@ -45,9 +50,15 @@ class PositionController extends Controller
             'name' => 'required|string',
             'max_votes' => 'required|integer',
             'event_id' => 'required|integer',
+            'year_level_ids' => 'nullable|array',
+            'year_level_ids.*' => 'exists:year_levels,id',
         ]);
 
-        Position::create($request->all());
+        $position = Position::create($request->only(['name', 'max_votes', 'event_id']));
+
+        if ($request->has('year_level_ids')) {
+            $position->yearLevels()->sync($request->year_level_ids);
+        }
 
         return redirect()->back()->with('success', 'Position created successfully');
     }
@@ -59,10 +70,16 @@ class PositionController extends Controller
             'name' => 'required|string',
             'max_votes' => 'required|integer',
             'event_id' => 'required|integer',
+            'year_level_ids' => 'nullable|array',
+            'year_level_ids.*' => 'exists:year_levels,id',
         ]);
 
 
-        $position->update($request->all());
+        $position->update($request->only(['name', 'max_votes', 'event_id']));
+
+        if ($request->has('year_level_ids')) {
+            $position->yearLevels()->sync($request->year_level_ids);
+        }
 
         return redirect()->back()->with('success', 'Position updated successfully');
     }

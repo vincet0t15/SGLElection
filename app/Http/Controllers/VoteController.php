@@ -26,8 +26,15 @@ class VoteController extends Controller
         $events = Event::query()
             ->where('is_active', true)
             ->with([
-                'positions' => function ($q) {
-                    $q->orderBy('id', 'asc');
+                'positions' => function ($q) use ($voter) {
+                    $q->where(function ($query) use ($voter) {
+                        $query->whereDoesntHave('yearLevels');
+                        if ($voter) {
+                            $query->orWhereHas('yearLevels', function ($subQuery) use ($voter) {
+                                $subQuery->where('year_levels.id', $voter->year_level_id);
+                            });
+                        }
+                    })->orderBy('id', 'asc');
                 },
                 'positions.candidates.candidatePhotos',
                 'positions.candidates.yearLevel',
@@ -80,6 +87,12 @@ class VoteController extends Controller
                 // SECURITY CHECK: Ensure the position belongs to the voter's assigned event
                 if ($voter->event_id != $position->event_id) {
                     abort(403, "You are not authorized to vote for positions in this event.");
+                }
+
+                // SECURITY CHECK: Grade Level Restriction
+                $allowedYearLevels = $position->yearLevels()->pluck('year_levels.id')->toArray();
+                if (!empty($allowedYearLevels) && !in_array($voter->year_level_id, $allowedYearLevels)) {
+                    abort(403, "You are not authorized to vote for position: {$position->name} due to grade level restrictions.");
                 }
 
                 // Check max votes
