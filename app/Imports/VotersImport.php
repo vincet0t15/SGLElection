@@ -45,7 +45,7 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
         $sectionName = $row['section'] ?? $row['class_section'] ?? null;
 
         if (!$name || !$lrn) {
-            return null; // 
+            return null;
         }
 
         $name = trim($name);
@@ -65,7 +65,7 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
 
         $lastName = str_replace(' ', '', $lastName);
 
-        $username = $lastName . $lrn;
+        $username = substr($lastName, 0, 2) . substr($lrn, -4);
         $password = $username;
 
 
@@ -73,14 +73,9 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
             return $level->name == $gradeLevel || $level->id == $gradeLevel;
         });
 
-
-
-        // Find Section
         $section = $this->yearSections->first(function ($sec) use ($sectionName, $yearLevel) {
             return ($sec->name == $sectionName || $sec->id == $sectionName) && $sec->year_level_id == $yearLevel->id;
         });
-
-
 
         return new Voter([
             'name'            => $name,
@@ -97,9 +92,6 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
     public function rules(): array
     {
         return [
-            // The user's file has headers: LRN NUMBER, NAME, SECTION, GRADE LEVEL
-            // Slugs: lrn_number, name, section, grade_level
-
             'lrn_number' => 'required|unique:voters,lrn_number',
             'name' => 'required|string',
             'grade_level' => 'required',
