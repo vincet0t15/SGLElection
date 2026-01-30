@@ -8,6 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -34,6 +42,14 @@ interface Voter {
     username: string;
     is_active: boolean;
     has_voted: boolean;
+}
+
+interface Vote {
+    id: number;
+    position: string;
+    candidate: string;
+    partylist: string;
+    candidate_photo: string | null;
 }
 
 interface PaginatedVoters {
@@ -73,6 +89,26 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
 
     const [search, setSearch] = useState(filters.search || '');
     const [status, setStatus] = useState(filters.status || 'all');
+    const [selectedVoter, setSelectedVoter] = useState<Voter | null>(null);
+    const [votes, setVotes] = useState<Vote[]>([]);
+    const [isLoadingVotes, setIsLoadingVotes] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleViewVotes = async (voter: Voter) => {
+        setSelectedVoter(voter);
+        setIsLoadingVotes(true);
+        setIsDialogOpen(true);
+        setVotes([]); // Clear previous votes
+        try {
+            const response = await fetch(`/reports/${event.id}/voters/${voter.id}/votes`);
+            const data = await response.json();
+            setVotes(data);
+        } catch (error) {
+            console.error('Failed to fetch votes', error);
+        } finally {
+            setIsLoadingVotes(false);
+        }
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -326,6 +362,7 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                             <TableHead>Name</TableHead>
                                             <TableHead>Username</TableHead>
                                             <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -337,6 +374,17 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                     <Badge variant={voter.has_voted ? "default" : "outline"} className={voter.has_voted ? "bg-emerald-600" : ""}>
                                                         {voter.has_voted ? "Voted" : "Not Voted"}
                                                     </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    {voter.has_voted && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => handleViewVotes(voter)}
+                                                        >
+                                                            View Votes
+                                                        </Button>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -418,6 +466,40 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                     </TabsContent>
                 </Tabs>
             </div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Votes for {selectedVoter?.name}</DialogTitle>
+                        <DialogDescription>
+                            List of candidates voted by {selectedVoter?.name}
+                        </DialogDescription>
+                    </DialogHeader>
+                    {isLoadingVotes ? (
+                        <div className="flex justify-center p-4">Loading...</div>
+                    ) : (
+                        <div className="space-y-4">
+                            {votes.length === 0 ? (
+                                <p className="text-center text-muted-foreground">No votes found.</p>
+                            ) : (
+                                votes.map((vote) => (
+                                    <div key={vote.id} className="flex items-center gap-4 p-3 border rounded-lg">
+                                        <Avatar className="h-12 w-12">
+                                            <AvatarImage src={vote.candidate_photo ? `/storage/${vote.candidate_photo}` : undefined} />
+                                            <AvatarFallback>{vote.candidate.substring(0, 2)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-medium">{vote.position}</p>
+                                            <p className="text-sm font-semibold">{vote.candidate}</p>
+                                            <p className="text-xs text-muted-foreground">{vote.partylist}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </AppLayout>
     );
 }

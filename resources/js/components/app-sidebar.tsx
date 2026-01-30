@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BarChart3Icon, BookOpen, Calendar1Icon, CheckIcon, File, FlagIcon, Folder, Layers3Icon, LayoutGrid, Lock, User, UserCheck2, Users, Vote } from 'lucide-react';
+import { BarChart3Icon, BookOpen, Calendar1Icon, CheckIcon, File, FlagIcon, Folder, Gamepad2, Layers3Icon, LayoutGrid, Lock, User, UserCheck2, Users, Vote } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -12,7 +12,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, playground } from '@/routes';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 import results from '@/routes/results';
@@ -38,6 +38,11 @@ const mainNavItems: NavItem[] = [
                 title: 'Results',
                 href: results.index().url,
                 icon: BookOpen,
+            },
+            {
+                title: 'Playground',
+                href: playground(),
+                icon: Gamepad2,
             },
 
         ]

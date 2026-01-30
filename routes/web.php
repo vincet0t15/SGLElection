@@ -27,6 +27,7 @@ Route::get('/', function () {
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PartylistController;
+use App\Http\Controllers\PlaygroundController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\Settings\SignatoryController;
@@ -35,12 +36,14 @@ use App\Http\Controllers\VoterController;
 // Admin Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('playground', [PlaygroundController::class, 'index'])->name('playground');
     Route::get('results', [ResultController::class, 'index'])->name('results.index');
 
     // Reports
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/{event}', [ReportController::class, 'show'])->name('reports.show');
     Route::get('reports/print/{event}', [ReportController::class, 'print'])->name('reports.print');
+    Route::get('reports/{event}/voters/{voter}/votes', [ReportController::class, 'getVoterVotes'])->name('reports.voter-votes');
 
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');

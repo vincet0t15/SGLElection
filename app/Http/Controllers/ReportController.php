@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Signatory;
+use App\Models\Voter;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -126,5 +127,24 @@ class ReportController extends Controller
                 'turnout' => $registeredVoters > 0 ? round(($actualVoters / $registeredVoters) * 100, 2) : 0,
             ]
         ]);
+    }
+
+    public function getVoterVotes(Event $event, Voter $voter)
+    {
+        $votes = \App\Models\Vote::where('event_id', $event->id)
+            ->where('voter_id', $voter->id)
+            ->with(['candidate.partylist', 'position'])
+            ->get()
+            ->map(function ($vote) {
+                return [
+                    'id' => $vote->id,
+                    'position' => $vote->position->name,
+                    'candidate' => $vote->candidate->name,
+                    'partylist' => $vote->candidate->partylist ? $vote->candidate->partylist->name : 'Independent',
+                    'candidate_photo' => $vote->candidate->candidatePhotos->first() ? $vote->candidate->candidatePhotos->first()->path : null,
+                ];
+            });
+
+        return response()->json($votes);
     }
 }
