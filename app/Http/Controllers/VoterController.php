@@ -19,11 +19,14 @@ class VoterController extends Controller
         $events = Event::all();
         $voters = Voter::query()
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('lrn_number', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%");
             })
             ->when($eventId, function ($query, $eventId) {
                 $query->where('event_id', $eventId);
             })
+            ->with(['yearLevel', 'yearSection', 'event'])
             ->paginate(25)
             ->withQueryString();
 
@@ -36,7 +39,11 @@ class VoterController extends Controller
 
     public function create()
     {
-        return Inertia::render('Voter/create');
+        return Inertia::render('Voter/create', [
+            'yearLevels' => \App\Models\YearLevel::all(),
+            'yearSections' => \App\Models\YearSection::all(),
+            'events' => Event::where('is_active', true)->get(),
+        ]);
     }
 
     public function import(Request $request)
@@ -44,5 +51,33 @@ class VoterController extends Controller
         Excel::import(new VotersImport, $request->file('file'));
 
         return redirect('/')->with('success', 'All good!');
+    }
+
+
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'lrn_number' => 'required|string|unique:voters,lrn_number',
+            'username' => 'required|string|unique:voters,username',
+            'password' => 'required|string|min:8',
+            'year_level_id' => 'required|exists:year_levels,id',
+            'year_section_id' => 'required|exists:year_sections,id',
+            'event_id' => 'required|exists:events,id',
+        ]);
+
+        Voter::create([
+            'name' => $request->name,
+            'lrn_number' => $request->lrn_number,
+            'username' => $request->username,
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'year_level_id' => $request->year_level_id,
+            'year_section_id' => $request->year_section_id,
+            'event_id' => $request->event_id,
+            'is_active' => true,
+        ]);
+
+        return redirect()->back()->with('success', 'Voter created successfully.');
     }
 }

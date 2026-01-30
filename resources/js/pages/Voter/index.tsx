@@ -30,7 +30,7 @@ interface Props {
     events: EventProps[],
 }
 export default function Voter({ voters, filters, events }: Props) {
-
+    console.log(voters)
     const [search, setSearch] = useState(filters.search || '');
     const [eventId, setEventId] = useState<string>(filters.event_id ? String(filters.event_id) : 'all');
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
@@ -64,7 +64,7 @@ export default function Voter({ voters, filters, events }: Props) {
 
     const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (e.key === 'Enter') {
-            router.get(position.index().url, {
+            router.get(voter.index().url, {
                 search: search,
                 event_id: eventId === 'all' ? undefined : eventId
             },
@@ -116,10 +116,14 @@ export default function Voter({ voters, filters, events }: Props) {
                     <Table>
                         <TableHeader className="bg-muted/50">
                             <TableRow>
-                                <TableHead className="text-primary font-bold">Position Name</TableHead>
+                                <TableHead className="text-primary font-bold">Name</TableHead>
+                                <TableHead className="text-primary font-bold">Username</TableHead>
+                                <TableHead className="text-primary font-bold">LRN</TableHead>
+                                <TableHead className="text-primary font-bold">Year Level</TableHead>
+                                <TableHead className="text-primary font-bold">Section</TableHead>
+                                <TableHead className="text-primary font-bold">Status</TableHead>
                                 <TableHead className="text-primary font-bold">Event</TableHead>
-                                <TableHead className="text-primary font-bold">Max Votes</TableHead>
-                                <TableHead className="text-primary font-bold text-center w-25">Position Actions</TableHead>
+                                <TableHead className="text-primary font-bold text-center w-25">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -136,13 +140,16 @@ export default function Voter({ voters, filters, events }: Props) {
                                             <span >{voter.lrn_number}</span>
                                         </TableCell>
                                         <TableCell>
-                                            <span >{voter.yearLevel.name}</span>
+                                            <span >{voter.year_level.name}</span>
                                         </TableCell>
                                         <TableCell>
-                                            <span >{voter.yearSection.name}</span>
+                                            <span >{voter.year_section.name}</span>
                                         </TableCell>
                                         <TableCell>
-                                            <span >{voter.is_active ? 'Active' : 'Inactive'}</span>
+                                            <span >{voter.is_active ? <span className="text-green-500">Active</span> : <span className="text-red-500">Inactive</span>}</span>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span >{voter.event.name}</span>
                                         </TableCell>
                                         <TableCell className="text-sm gap-2 flex justify-end">
                                             <span

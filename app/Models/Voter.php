@@ -42,4 +42,14 @@ class Voter extends Authenticatable
     {
         return $this->hasMany(Vote::class);
     }
+
+    public function yearLevel()
+    {
+        return $this->belongsTo(YearLevel::class, 'year_level_id');
+    }
+
+    public function yearSection()
+    {
+        return $this->belongsTo(YearSection::class, 'year_section_id');
+    }
 }

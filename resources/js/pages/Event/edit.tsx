@@ -30,10 +30,16 @@ export function EventEditDialog({ open, setOpen, SelectedEvent }: Props) {
     if (!SelectedEvent) {
         return null;
     }
+    const formatDateTimeForInput = (dateString: string) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().slice(0, 16);
+    };
+
     const { data, setData, put, reset, processing, errors } = useForm<EventType>({
         name: SelectedEvent.name,
-        dateTime_start: SelectedEvent.dateTime_start,
-        dateTime_end: SelectedEvent.dateTime_end,
+        dateTime_start: formatDateTimeForInput(SelectedEvent.dateTime_start),
+        dateTime_end: formatDateTimeForInput(SelectedEvent.dateTime_end),
         location: SelectedEvent.location,
         description: SelectedEvent.description,
         is_active: SelectedEvent.is_active,
