@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { EventProps, EventType } from "@/types/event";
 import event from "@/routes/event";
 import { Textarea } from "@/components/ui/textarea";
+import { DatePickerTime } from "@/components/custom-date-time-picker";
 interface Props {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -99,7 +100,9 @@ export function EventCreateDialog({ open, setOpen }: Props) {
 
                             <InputError message={errors.description} />
                         </div>
-
+                        <div>
+                            <DatePickerTime />
+                        </div>
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
