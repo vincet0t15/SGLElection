@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, File, Folder, LayoutGrid, Lock, User } from 'lucide-react';
+import { BarChart3Icon, BookOpen, Calendar1Icon, File, Folder, Layers3Icon, LayoutGrid, Lock, User, UserCheck2, Users, Vote } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -43,12 +43,12 @@ const mainNavItems: NavItem[] = [
     {
         name: 'Settings',
         items: [
-            { title: 'Year Level', href: yearLevel.index().url, icon: LayoutGrid },
-            { title: 'Events', href: event.index().url, icon: Folder },
-            { title: 'Positions', href: position.index().url, icon: BookOpen },
-            { title: 'Candidates', href: candidate.index().url, icon: User },
-            { title: 'Reports', href: reports.index().url, icon: File },
-            { title: 'Voters', href: voter.index().url, icon: Lock },
+            { title: 'Year Level', href: yearLevel.index().url, icon: Layers3Icon },
+            { title: 'Events', href: event.index().url, icon: Calendar1Icon },
+            { title: 'Positions', href: position.index().url, icon: Vote },
+            { title: 'Candidates', href: candidate.index().url, icon: UserCheck2 },
+            { title: 'Reports', href: reports.index().url, icon: BarChart3Icon },
+            { title: 'Voters', href: voter.index().url, icon: Users },
         ]
     }
 
