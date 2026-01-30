@@ -8,7 +8,6 @@ use App\Models\Partylist;
 use App\Models\Position;
 use App\Models\Vote;
 use App\Models\Voter;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
