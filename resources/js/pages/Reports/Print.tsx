@@ -97,13 +97,13 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
                 </div>
 
                 {/* Results Section */}
-                <div className="space-y-8">
+                <div className="space-y-8 print:space-y-4">
                     {positions.map((position) => {
                         const totalVotes = position.candidates.reduce((sum, c) => sum + (c.votes_count || 0), 0);
 
                         return (
                             <div key={position.id} className="break-inside-avoid">
-                                <h3 className="font-bold uppercase mb-2 text-sm">
+                                <h3 className="font-bold uppercase mb-2 print:mb-1 text-sm">
                                     {position.name} (TOP {position.max_votes})
                                 </h3>
 
