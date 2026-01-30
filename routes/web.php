@@ -34,7 +34,6 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('reports/{event}', [ReportController::class, 'show'])->name('reports.show');
     Route::get('reports/print/{event}', [ReportController::class, 'print'])->name('reports.print');
 
-
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');
     Route::post('year-level', [YearLevelController::class, 'store'])->name('year-level.store');

@@ -6,31 +6,16 @@ import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
-import { edit } from '@/routes/profile';
-import { show } from '@/routes/two-factor';
-import { edit as editPassword } from '@/routes/user-password';
+
 import type { NavItem } from '@/types';
+import { Settings2 } from 'lucide-react';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
-        href: edit(),
-        icon: null,
-    },
-    {
-        title: 'Password',
-        href: editPassword(),
-        icon: null,
-    },
-    {
-        title: 'Two-Factor Auth',
-        href: show(),
-        icon: null,
-    },
-    {
-        title: 'Appearance',
-        href: editAppearance(),
-        icon: null,
+        name: 'Appearance',
+        href: editAppearance().url,
+        icon: Settings2,
+        items: [],
     },
 ];
 
@@ -69,7 +54,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                     {item.icon && (
                                         <item.icon className="h-4 w-4" />
                                     )}
-                                    {item.title}
+                                    {item.name}
                                 </Link>
                             </Button>
                         ))}

@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -35,9 +37,18 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $settings = SystemSetting::firstOrCreate(
+            ['id' => 1],
+            ['system_name' => 'SGLL Voting System']
+        );
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            'system_settings' => [
+                'name' => $settings->system_name,
+                'logo' => $settings->system_logo ? Storage::url($settings->system_logo) : null,
+            ],
             'auth' => [
                 'user' => $request->user(),
             ],
