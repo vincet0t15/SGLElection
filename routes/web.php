@@ -17,6 +17,9 @@ Route::get('/', function () {
     if (Auth::guard('web')->check()) {
         return redirect()->route('dashboard');
     }
+    if (Auth::guard('voter')->check()) {
+        return redirect()->route('vote.index');
+    }
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
     ]);
