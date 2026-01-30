@@ -23,11 +23,14 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        Voter::create([
-            'name' => 'ZYRUS VINCE B. FAMINI',
-            'username' => 'voter',
-            'password' => Hash::make('admin123'),
-            'is_active' => true,
-        ]);
+        // Voter::create([
+        //     'name' => 'ZYRUS VINCE B. FAMINI',
+        //     'username' => 'voter',
+        //     'password' => Hash::make('admin123'),
+        //     'lrn_number' => '1234567890123',
+        //     'year_level_id' => 1,
+        //     'year_section_id' => 1,
+        //     'is_active' => true,
+        // ]);
     }
 }

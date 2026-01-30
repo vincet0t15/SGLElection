@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('username')->unique();
+            $table->string('lrn_number')->unique();
+            $table->foreignId('year_level_id')->constrained('year_levels');
+            $table->foreignId('year_section_id')->constrained('year_sections');
             $table->string('password');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
