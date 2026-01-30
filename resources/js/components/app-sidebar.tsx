@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BarChart3Icon, BookOpen, Calendar1Icon, File, FlagIcon, Folder, Layers3Icon, LayoutGrid, Lock, User, UserCheck2, Users, Vote } from 'lucide-react';
+import { BarChart3Icon, BookOpen, Calendar1Icon, CheckIcon, File, FlagIcon, Folder, Layers3Icon, LayoutGrid, Lock, User, UserCheck2, Users, Vote } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -23,6 +23,7 @@ import candidate from '@/routes/candidate';
 import reports from '@/routes/reports';
 import voter from '@/routes/voter';
 import partylist from '@/routes/partylist';
+import signatories from '@/routes/signatories';
 
 const mainNavItems: NavItem[] = [
     {
@@ -51,6 +52,7 @@ const mainNavItems: NavItem[] = [
             { title: 'Candidates', href: candidate.index().url, icon: UserCheck2 },
             { title: 'Reports', href: reports.index().url, icon: BarChart3Icon },
             { title: 'Voters', href: voter.index().url, icon: Users },
+            { title: 'Signatories', href: signatories.index().url, icon: CheckIcon },
         ]
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Signatory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -106,9 +107,14 @@ class ReportController extends Controller
             ->distinct('year_section_id')
             ->count('year_section_id');
 
+        $signatories = Signatory::where('is_active', true)
+            ->orderBy('order')
+            ->get();
+
         return Inertia::render('Reports/Print', [
             'event' => $event,
             'positions' => $positions,
+            'signatories' => $signatories,
             'stats' => [
                 'actual_voters' => $actualVoters,
                 'registered_voters' => $registeredVoters,

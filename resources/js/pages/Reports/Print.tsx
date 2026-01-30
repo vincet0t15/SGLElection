@@ -5,9 +5,17 @@ import { PositionProps } from '@/types/position';
 import { SharedData } from '@/types';
 import AppLogoIcon from '@/components/app-logo-icon';
 
+interface Signatory {
+    id: number;
+    name: string;
+    position: string;
+    description: string | null;
+}
+
 interface Props {
     event: EventProps;
     positions: PositionProps[];
+    signatories: Signatory[];
     stats: {
         actual_voters: number;
         registered_voters: number;
@@ -16,7 +24,7 @@ interface Props {
     };
 }
 
-export default function ReportsPrint({ event, positions, stats }: Props) {
+export default function ReportsPrint({ event, positions, signatories, stats }: Props) {
     const { system_settings } = usePage<SharedData>().props;
 
     useEffect(() => {
@@ -162,15 +170,31 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
                                 <div className="mt-16 break-inside-avoid print:mt-12">
                                     <p className="text-xs font-bold uppercase mb-8">Certified Correct:</p>
 
-                                    <div className="flex justify-between items-end gap-8">
-                                        <div className="text-center flex-1">
-                                            <div className="border-b border-black w-full mb-2"></div>
-                                            <p className="text-xs uppercase font-bold">Election Committee Head</p>
-                                        </div>
-                                        <div className="text-center flex-1">
-                                            <div className="border-b border-black w-full mb-2"></div>
-                                            <p className="text-xs uppercase font-bold">School Administrator</p>
-                                        </div>
+                                    <div className="grid grid-cols-2 gap-8 gap-y-12">
+                                        {signatories.length > 0 ? (
+                                            signatories.map((signatory) => (
+                                                <div key={signatory.id} className="text-center break-inside-avoid px-4">
+                                                    <p className="uppercase font-bold mb-1 text-sm">{signatory.name}</p>
+                                                    <div className="border-b border-black w-full mb-2"></div>
+                                                    <p className="text-xs uppercase font-bold">{signatory.position}</p>
+                                                    {signatory.description && (
+                                                        <p className="text-[10px] text-gray-500 mt-0.5">{signatory.description}</p>
+                                                    )}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            /* Fallback for when no signatories are defined yet */
+                                            <>
+                                                <div className="text-center flex-1">
+                                                    <div className="border-b border-black w-full mb-2"></div>
+                                                    <p className="text-xs uppercase font-bold">Election Committee Head</p>
+                                                </div>
+                                                <div className="text-center flex-1">
+                                                    <div className="border-b border-black w-full mb-2"></div>
+                                                    <p className="text-xs uppercase font-bold">School Administrator</p>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
 
                                     <div className="mt-8 pt-4 border-t text-[10px] text-gray-400 flex justify-between">

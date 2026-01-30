@@ -42,12 +42,12 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                     >
                         {sidebarNavItems.map((item, index) => (
                             <Button
-                                key={`${toUrl(item.href)}-${index}`}
+                                key={index}
                                 size="sm"
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {
-                                    'bg-muted': isCurrentUrl(item.href),
+                                    'bg-muted': item.href ? isCurrentUrl(item.href) : false,
                                 })}
                             >
                                 <Link href={item.href}>

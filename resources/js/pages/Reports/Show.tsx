@@ -129,7 +129,7 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                             </Badge>
                         </div>
                     </div>
-                    <Button asChild variant="outline" className="gap-2">
+                    <Button asChild variant="outline" className="gap-2 bg-emerald-600 text-white">
                         <a href={`/reports/print/${event.id}`} target="_blank" rel="noopener noreferrer">
                             <Printer className="h-4 w-4" />
                             Print Official Report

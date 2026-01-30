@@ -26,6 +26,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PartylistController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\Settings\SignatoryController;
 use App\Http\Controllers\VoterController;
 
 // Admin Routes
@@ -90,6 +91,13 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::put('voter/{voter}', [VoterController::class, 'update'])->name('voter.update');
     Route::patch('voter/{voter}/toggle-status', [VoterController::class, 'toggleStatus'])->name('voter.toggle-status');
     Route::delete('voter/{voter}', [VoterController::class, 'destroy'])->name('voter.destroy');
+
+
+    // Signatories
+    Route::get('signatories', [SignatoryController::class, 'index'])->name('signatories.index');
+    Route::post('signatories', [SignatoryController::class, 'store'])->name('signatories.store');
+    Route::put('signatories/{signatory}', [SignatoryController::class, 'update'])->name('signatories.update');
+    Route::delete('signatories/{signatory}', [SignatoryController::class, 'destroy'])->name('signatories.destroy');
 });
 
 // Voter Routes
