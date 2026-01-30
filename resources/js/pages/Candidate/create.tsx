@@ -130,17 +130,43 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
         setData('partylist_id', Number(partylistId));
     }
 
+    // const handlePhotoChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    //     const file = e.target.files?.[0];
+    //     if (file) {
+    //         setData('photo', file);
+    //         const reader = new FileReader();
+    //         reader.onloadend = () => {
+    //             setPreviewUrl(reader.result as string);
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
+    // }
+
     const handlePhotoChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         const file = e.target.files?.[0];
-        if (file) {
-            setData('photo', file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewUrl(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+
+        if (!file) return;
+
+        // OPTIONAL: validate size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Image must be less than 5MB");
+            return;
         }
-    }
+
+        setData('photo', file);
+
+        // Revoke old preview to avoid memory leaks
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
+        // Create preview
+        const objectUrl = URL.createObjectURL(file);
+        setPreviewUrl(objectUrl);
+
+        // 🔑 IMPORTANT: reset input so same file can be reselected
+        e.target.value = "";
+    };
 
     const submit: SubmitEventHandler = (e) => {
         e.preventDefault();
