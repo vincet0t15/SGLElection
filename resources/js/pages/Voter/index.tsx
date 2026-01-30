@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Delete, PlusIcon, Upload } from 'lucide-react';
+import { Delete, PlusIcon, Upload, Download, Printer } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -109,6 +109,26 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         ? yearSections.filter(section => section.year_level_id.toString() === yearLevelId)
         : yearSections;
 
+    const handleExport = () => {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (eventId !== 'all') params.append('event_id', eventId);
+        if (yearLevelId !== 'all') params.append('year_level_id', yearLevelId);
+        if (yearSectionId !== 'all') params.append('year_section_id', yearSectionId);
+
+        window.location.href = `/voter/export?${params.toString()}`;
+    };
+
+    const handlePrint = () => {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (eventId !== 'all') params.append('event_id', eventId);
+        if (yearLevelId !== 'all') params.append('year_level_id', yearLevelId);
+        if (yearSectionId !== 'all') params.append('year_section_id', yearSectionId);
+
+        window.open(`/voter/print?${params.toString()}`, '_blank');
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Voters" />
@@ -128,6 +148,22 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                                 <span className="rounded-sm lg:inline">Import</span>
                             </Button>
                         </Link>
+
+                        <Button
+                            className="cursor-pointer bg-green-600 text-white"
+                            onClick={handleExport}
+                        >
+                            <Download className="h-4 w-4" />
+                            <span className="rounded-sm lg:inline">Export</span>
+                        </Button>
+
+                        <Button
+                            className="cursor-pointer bg-gray-600 text-white"
+                            onClick={handlePrint}
+                        >
+                            <Printer className="h-4 w-4" />
+                            <span className="rounded-sm lg:inline">Print</span>
+                        </Button>
 
                     </div>
                     <div className="flex items-center gap-2 flex-wrap justify-end">

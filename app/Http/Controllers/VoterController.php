@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\VotersImport;
+use App\Exports\VotersExport;
 use App\Models\Event;
 use App\Models\Voter;
 use Maatwebsite\Excel\Facades\Excel;
@@ -54,7 +55,7 @@ class VoterController extends Controller
 
     public function create()
     {
-        return Inertia::render('Voter/create', [
+        return Inertia::render('Voter/Create', [
             'yearLevels' => \App\Models\YearLevel::all(),
             'yearSections' => \App\Models\YearSection::all(),
             'events' => Event::where('is_active', true)->get(),
@@ -92,7 +93,59 @@ class VoterController extends Controller
         }
     }
 
+    public function export(Request $request)
+    {
+        return Excel::download(new VotersExport($request->all()), 'voters.xlsx');
+    }
 
+    public function print(Request $request)
+    {
+        $search = $request->query('search');
+        $eventId = request()->input('event_id');
+        $yearLevelId = request()->input('year_level_id');
+        $yearSectionId = request()->input('year_section_id');
+
+        $query = Voter::query()->with(['yearLevel', 'yearSection', 'event']);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('lrn_number', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%");
+            });
+        }
+
+        if ($eventId && $eventId !== 'all') {
+            $query->where('event_id', $eventId);
+        }
+
+        if ($yearLevelId && $yearLevelId !== 'all') {
+            $query->where('year_level_id', $yearLevelId);
+        }
+
+        if ($yearSectionId && $yearSectionId !== 'all') {
+            $query->where('year_section_id', $yearSectionId);
+        }
+
+        $voters = $query->get();
+
+        // Prepare filter labels for the view
+        $filters = $request->all();
+        if ($eventId && $eventId !== 'all') {
+            $filters['event_name'] = Event::find($eventId)->name ?? null;
+        }
+        if ($yearLevelId && $yearLevelId !== 'all') {
+            $filters['year_level_name'] = \App\Models\YearLevel::find($yearLevelId)->name ?? null;
+        }
+        if ($yearSectionId && $yearSectionId !== 'all') {
+            $filters['section_name'] = \App\Models\YearSection::find($yearSectionId)->name ?? null;
+        }
+
+        return Inertia::render('Voter/Print', [
+            'voters' => $voters,
+            'filters' => $filters,
+        ]);
+    }
 
     public function store(Request $request)
     {
