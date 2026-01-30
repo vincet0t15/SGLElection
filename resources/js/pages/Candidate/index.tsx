@@ -1,19 +1,22 @@
-import { Head, router, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { PlusIcon, Search, Pencil, Trash, MoreVertical, Upload, Download, Printer } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import candidateRoutes from '@/routes/candidate';
 import type { BreadcrumbItem } from '@/types';
-import { EventProps } from '@/types/event';
 import { Button } from '@/components/ui/button';
-import { PlusIcon, User, Search, MoreVertical, Pencil, Trash } from 'lucide-react';
-import { useState, KeyboardEventHandler, useMemo } from 'react';
-import { YearLevelProps } from '@/types/yearlevel';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { PaginatedDataResponse } from '@/types/pagination';
-import { CandidateProps } from '@/types/candidate';
 import { FilterProps } from '@/types/filter';
-import { PositionProps } from '@/types/position';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { KeyboardEventHandler, useState } from 'react';
+import Pagination from '@/components/paginationData';
+import { EventProps } from '@/types/event';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { CandidateProps } from '@/types/candidate';
+import { YearLevelProps } from '@/types/yearlevel';
+import { YearSectionProps } from '@/types/section';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -21,12 +24,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from 'sonner';
-import candidate from '@/routes/candidate';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
         href: dashboard().url,
+    },
+    {
+        title: 'Candidates',
+        href: candidateRoutes.index().url,
     },
 ];
 
@@ -34,162 +40,226 @@ interface Props {
     candidates: PaginatedDataResponse<CandidateProps>;
     events: EventProps[];
     yearLevels: YearLevelProps[];
+    yearSections: YearSectionProps[];
     filters: FilterProps;
 }
 
-
-export default function CandidateIndex({ candidates, events, yearLevels, filters }: Props) {
+export default function CandidateIndex({ candidates, events, yearLevels, yearSections, filters }: Props) {
 
     const [search, setSearch] = useState(filters.search || '');
+    const [eventId, setEventId] = useState<string>(filters.event_id ? String(filters.event_id) : 'all');
+    const [yearLevelId, setYearLevelId] = useState<string>(filters.year_level_id ? String(filters.year_level_id) : 'all');
+    const [yearSectionId, setYearSectionId] = useState<string>(filters.year_section_id ? String(filters.year_section_id) : 'all');
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
     }
 
+    const updateFilters = (newFilters: any) => {
+        router.get(candidateRoutes.index().url, {
+            search: search,
+            event_id: eventId === 'all' ? undefined : eventId,
+            year_level_id: yearLevelId === 'all' ? undefined : yearLevelId,
+            year_section_id: yearSectionId === 'all' ? undefined : yearSectionId,
+            ...newFilters
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    }
+
+    const handleEventFilter = (value: string) => {
+        setEventId(value);
+        updateFilters({ event_id: value === 'all' ? undefined : value });
+    }
+
+    const handleYearLevelFilter = (value: string) => {
+        setYearLevelId(value);
+        setYearSectionId('all');
+        updateFilters({
+            year_level_id: value === 'all' ? undefined : value,
+            year_section_id: undefined
+        });
+    }
+
+    const handleYearSectionFilter = (value: string) => {
+        setYearSectionId(value);
+        updateFilters({ year_section_id: value === 'all' ? undefined : value });
+    }
+
     const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (e.key === 'Enter') {
-            router.get(candidateRoutes.index().url, {
-                search: search,
-            }, {
-                preserveState: true,
-                preserveScroll: true,
-            })
+            updateFilters({});
         }
     }
 
+    // Filter sections based on selected year level
+    const filteredSections = yearLevelId !== 'all'
+        ? yearSections.filter(section => section.year_level_id.toString() === yearLevelId)
+        : yearSections;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Candidates" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-y-auto rounded-xl p-4 md:p-8 bg-background">
-                {/* Header Section */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-2 border-b">
-                    <div className="relative flex-1 max-w-sm">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search candidates..."
-                            value={search}
-                            onChange={handleSearch}
-                            onKeyDown={handleKeyDown}
-                            className="pl-9"
-                        />
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className='gap-2 flex'>
+                        <Button className="cursor-pointer" asChild>
+                            <Link href={candidateRoutes.create().url}>
+                                <PlusIcon className=" h-4 w-4" />
+                                <span className="rounded-sm lg:inline">Candidate</span>
+                            </Link>
+                        </Button>
                     </div>
-                    <Button className="cursor-pointer shadow-sm" asChild>
-                        <Link href={candidate.create().url}>
-                            <PlusIcon className="h-4 w-4 mr-2" />
-                            <span>Add Candidate</span>
-                        </Link>
-                    </Button>
-                </div>
+                    <div className="flex items-center gap-2 flex-wrap justify-end">
+                        <Select value={yearLevelId} onValueChange={handleYearLevelFilter}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by Year" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Year Levels</SelectItem>
+                                {yearLevels.map((level) => (
+                                    <SelectItem key={level.id} value={String(level.id)}>
+                                        {level.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
 
-                {/* Content Section */}
-                <div className="space-y-12">
-                    {events.map((data, index) => (
-                        <div key={index} className="space-y-8 animate-in fade-in duration-500">
-                            {/* Event Header */}
-                            <div className="text-center space-y-2 border-b pb-6">
-                                <h2 className="text-2xl font-bold tracking-tight text-foreground uppercase">
-                                    OFFICIAL CANDIDATES
-                                </h2>
-                                <div className="flex items-center justify-center gap-2">
-                                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-widest">to the</span>
-                                </div>
-                                <h1 className="text-3xl md:text-4xl font-black text-primary uppercase tracking-tight">
-                                    {data.name}
-                                </h1>
-                            </div>
+                        <Select value={yearSectionId} onValueChange={handleYearSectionFilter}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by Section" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Sections</SelectItem>
+                                {filteredSections.map((section) => (
+                                    <SelectItem key={section.id} value={String(section.id)}>
+                                        {section.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
 
-                            {/* Positions and Candidates */}
-                            {data.positions.map((position, index) => (
-                                <div key={index} className="space-y-6">
-                                    <div key={index} className="space-y-2">
-                                        <div className="text-center space-y-2">
-                                            <h3 className="text-2xl font-bold tracking-tight text-foreground uppercase">
-                                                {position.name}
-                                            </h3>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap justify-center gap-6">
-                                        {position.candidates.map((candidate, index) => (
-                                            <div key={index} className="flex flex-col items-center justify-center bg-card text-card-foreground rounded-xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all group relative overflow-hidden w-full sm:w-[300px]">
-                                                {/* Actions */}
-                                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted">
-                                                                <MoreVertical className="h-4 w-4" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem asChild>
-                                                                <Link href={`/candidate/${candidate.id}/edit`} className="cursor-pointer flex items-center">
-                                                                    <Pencil className="mr-2 h-4 w-4" />
-                                                                    Edit
-                                                                </Link>
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem
-                                                                className="text-destructive focus:text-destructive cursor-pointer flex items-center"
-                                                                onClick={() => {
-                                                                    if (confirm('Are you sure you want to delete this candidate?')) {
-                                                                        router.delete(`/candidate/${candidate.id}`, {
-                                                                            onSuccess: () => toast.success('Candidate deleted successfully')
-                                                                        });
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <Trash className="mr-2 h-4 w-4" />
-                                                                Delete
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </div>
-
-                                                {/* Background decoration */}
-                                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                                                <div className="flex flex-col items-center justify-center gap-4 pt-2">
-                                                    <Avatar className="h-32 w-32 border-[4px] border-yellow-400 shadow-lg ring-4 ring-background">
-                                                        <AvatarImage
-                                                            src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : ''}
-                                                            alt={candidate.name}
-                                                            className="object-cover"
-                                                        />
-                                                        <AvatarFallback className="text-2xl font-bold bg-muted text-muted-foreground">
-                                                            {candidate.name.substring(0, 2).toUpperCase()}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-
-                                                    <div className="text-center space-y-1 w-full">
-                                                        <h4 className="text-lg font-black tracking-tight text-foreground uppercase leading-tight px-2">
-                                                            {candidate.name}
-                                                        </h4>
-
-                                                        <div className="flex flex-col gap-0.5">
-                                                            <p className="text-sm font-medium text-muted-foreground italic">
-                                                                {candidate.year_level?.name || 'N/A'}
-                                                            </p>
-                                                            <p className="text-xs font-bold text-primary/80 uppercase tracking-wide">
-                                                                {candidate.year_section?.name}
-                                                            </p>
-                                                            {candidate.partylist && (
-                                                                <p className="text-xs font-semibold text-foreground/80 mt-1">
-                                                                    {candidate.partylist.name}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                            ))}
+                        <Select value={eventId} onValueChange={handleEventFilter}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by Event" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Events</SelectItem>
+                                {events.map((event) => (
+                                    <SelectItem key={event.id} value={String(event.id)}>
+                                        {event.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search candidates..."
+                                value={search}
+                                onChange={handleSearch}
+                                onKeyDown={handleKeyDown}
+                                className="pl-9 w-[200px]"
+                            />
                         </div>
-                    ))}
-
+                    </div>
                 </div>
 
+                <div className="w-full overflow-hidden rounded-sm border shadow-sm">
+                    <Table>
+                        <TableHeader className="bg-muted/50">
+                            <TableRow>
+                                <TableHead className="w-[80px]">Photo</TableHead>
+                                <TableHead className="text-primary font-bold">Name</TableHead>
+                                <TableHead className="text-primary font-bold">Event</TableHead>
+                                <TableHead className="text-primary font-bold">Position</TableHead>
+                                <TableHead className="text-primary font-bold">Partylist</TableHead>
+                                <TableHead className="text-primary font-bold">Year/Section</TableHead>
+                                <TableHead className="text-primary font-bold text-center w-25">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {candidates.data.length > 0 ? (
+                                candidates.data.map((candidate, index) => (
+                                    <TableRow key={index} className="text-sm">
+                                        <TableCell>
+                                            <Avatar className="h-10 w-10">
+                                                <AvatarImage
+                                                    src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : ''}
+                                                    alt={candidate.name}
+                                                    className="object-cover"
+                                                />
+                                                <AvatarFallback>
+                                                    {candidate.name.substring(0, 2).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span className="font-medium">{candidate.name}</span>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span>{candidate.event?.name}</span>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span>{candidate.position?.name}</span>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span>{candidate.partylist?.name || '-'}</span>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex flex-col">
+                                                <span>{candidate.year_level?.name}</span>
+                                                <span className="text-xs text-muted-foreground">{candidate.year_section?.name}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted">
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={`/candidate/${candidate.id}/edit`} className="cursor-pointer flex items-center">
+                                                                <Pencil className="mr-2 h-4 w-4" />
+                                                                Edit
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="text-destructive focus:text-destructive cursor-pointer flex items-center"
+                                                            onClick={() => {
+                                                                if (confirm('Are you sure you want to delete this candidate?')) {
+                                                                    router.delete(`/candidate/${candidate.id}`, {
+                                                                        onSuccess: () => toast.success('Candidate deleted successfully')
+                                                                    });
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Trash className="mr-2 h-4 w-4" />
+                                                            Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={7} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+                <div className="flex w-full justify-center mt-4">
+                    <Pagination data={candidates} />
+                </div>
             </div>
         </AppLayout>
     );

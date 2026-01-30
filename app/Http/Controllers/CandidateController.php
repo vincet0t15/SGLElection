@@ -18,62 +18,44 @@ class CandidateController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $eventId = $request->input('event_id');
+        $yearLevelId = $request->input('year_level_id');
+        $yearSectionId = $request->input('year_section_id');
 
-        $events = Event::query()
-            ->where('is_active', true)
+        $candidates = Candidate::query()
+            ->with(['event', 'position', 'partylist', 'yearLevel', 'yearSection', 'candidatePhotos'])
             ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhereHas('positions', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%")
-                            ->orWhereHas('candidates', function ($qq) use ($search) {
-                                $qq->where('name', 'like', "%{$search}%");
-                            });
-                    });
+                $query->where('name', 'like', "%{$search}%");
             })
-            ->with([
-                'positions' => function ($q) use ($search) {
-                    $q->orderBy('id', 'asc');
-                    if ($search) {
-                        $q->where(function ($query) use ($search) {
-                            $query->where('name', 'like', "%{$search}%")
-                                ->orWhereHas('candidates', function ($subQuery) use ($search) {
-                                    $subQuery->where('name', 'like', "%{$search}%");
-                                })
-                                ->orWhereHas('event', function ($subQuery) use ($search) {
-                                    $subQuery->where('name', 'like', "%{$search}%");
-                                });
-                        });
-                    }
-                },
-                'positions.candidates' => function ($q) use ($search) {
-                    if ($search) {
-                        $q->where(function ($query) use ($search) {
-                            $query->where('name', 'like', "%{$search}%")
-                                ->orWhereHas('position', function ($subQuery) use ($search) {
-                                    $subQuery->where('name', 'like', "%{$search}%");
-                                })
-                                ->orWhereHas('event', function ($subQuery) use ($search) {
-                                    $subQuery->where('name', 'like', "%{$search}%");
-                                });
-                        });
-                    }
-                },
-                'positions.candidates.candidatePhotos',
-                'positions.candidates.yearLevel',
-                'positions.candidates.yearSection',
-                'positions.candidates.partylist',
-            ])
-            ->get();
+            ->when($eventId, function ($query) use ($eventId) {
+                $query->where('event_id', $eventId);
+            })
+            ->when($yearLevelId, function ($query) use ($yearLevelId) {
+                $query->where('year_level_id', $yearLevelId);
+            })
+            ->when($yearSectionId, function ($query) use ($yearSectionId) {
+                $query->where('year_section_id', $yearSectionId);
+            })
+            ->orderBy('event_id')
+            ->orderBy('position_id')
+            ->paginate(10)
+            ->withQueryString();
+
+        $events = Event::query()->where('is_active', true)->get();
 
         $yearLevels = YearLevel::query()
             ->with('section')
             ->orderBy('name', 'asc')
             ->get();
+        
+        $yearSections = YearSection::all();
 
         return Inertia::render('Candidate/index', [
+            'candidates' => $candidates,
             'events' => $events,
-            'filters' => $request->only('search'),
             'yearLevels' => $yearLevels,
+            'yearSections' => $yearSections,
+            'filters' => $request->only(['search', 'event_id', 'year_level_id', 'year_section_id']),
         ]);
     }
 
