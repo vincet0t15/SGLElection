@@ -27,7 +27,7 @@ Route::get('/', function () {
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PartylistController;
-use App\Http\Controllers\PlaygroundController;
+use App\Http\Controllers\VoteLogController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\Settings\SignatoryController;
@@ -36,7 +36,7 @@ use App\Http\Controllers\VoterController;
 // Admin Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('playground', [PlaygroundController::class, 'index'])->name('playground');
+    Route::get('vote-logs', [VoteLogController::class, 'index'])->name('vote-logs');
     Route::get('results', [ResultController::class, 'index'])->name('results.index');
 
     // Reports
