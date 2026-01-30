@@ -85,7 +85,7 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
             'year_level_id'   => $yearLevel->id,
             'year_section_id' => $section->id,
             'event_id'        => $this->eventId,
-            'is_active'       => true,
+            'is_active'       => false,
         ]);
     }
 

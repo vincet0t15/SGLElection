@@ -15,68 +15,70 @@ export default function Print({ voters, filters }: Props) {
     }, []);
 
     return (
-        <div className="bg-white p-8 min-h-screen text-black">
+        <div className="bg-white p-4 md:p-8 min-h-screen text-black font-sans">
             <Head title="Print Voters" />
             
             <div className="mb-6 text-center">
-                <h1 className="text-2xl font-bold uppercase tracking-wider mb-2">List of Voters</h1>
-                <div className="text-sm text-gray-600 space-y-1">
+                <h1 className="text-xl font-bold uppercase tracking-wider mb-2">List of Voters</h1>
+                <div className="text-xs text-gray-600 space-y-1 flex flex-wrap justify-center gap-4">
                     {filters.event_name && <p>Event: <span className="font-semibold">{filters.event_name}</span></p>}
                     {filters.year_level_name && <p>Year Level: <span className="font-semibold">{filters.year_level_name}</span></p>}
                     {filters.section_name && <p>Section: <span className="font-semibold">{filters.section_name}</span></p>}
                 </div>
             </div>
 
-            <div className="w-full border border-gray-300">
-                <Table>
-                    <TableHeader className="bg-gray-100">
-                        <TableRow className="border-b border-gray-300">
-                            <TableHead className="text-black font-bold border-r border-gray-300 h-10">Name</TableHead>
-                            <TableHead className="text-black font-bold border-r border-gray-300 h-10">LRN</TableHead>
-                            <TableHead className="text-black font-bold border-r border-gray-300 h-10">Username</TableHead>
-                            <TableHead className="text-black font-bold border-r border-gray-300 h-10">Year Level</TableHead>
-                            <TableHead className="text-black font-bold border-r border-gray-300 h-10">Section</TableHead>
-                            <TableHead className="text-black font-bold h-10">Status</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
+            <div className="w-full border border-gray-400">
+                <table className="w-full text-xs text-left border-collapse">
+                    <thead>
+                        <tr className="bg-gray-200 border-b border-gray-400">
+                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[30%]">Name</th>
+                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[15%]">LRN</th>
+                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[10%]">Username</th>
+                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[15%]">Year Level</th>
+                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[15%]">Section</th>
+                            <th className="p-2 font-bold uppercase w-[10%]">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {voters.length > 0 ? (
                             voters.map((voter, index) => (
-                                <TableRow key={index} className="border-b border-gray-300 text-sm">
-                                    <TableCell className="py-2 border-r border-gray-300 font-medium">{voter.name}</TableCell>
-                                    <TableCell className="py-2 border-r border-gray-300">{voter.lrn_number}</TableCell>
-                                    <TableCell className="py-2 border-r border-gray-300 font-mono">{voter.username}</TableCell>
-                                    <TableCell className="py-2 border-r border-gray-300">{voter.year_level.name}</TableCell>
-                                    <TableCell className="py-2 border-r border-gray-300">{voter.year_section.name}</TableCell>
-                                    <TableCell className="py-2">
+                                <tr key={index} className="border-b border-gray-300 even:bg-gray-50">
+                                    <td className="p-1 px-2 border-r border-gray-300 font-medium">{voter.name}</td>
+                                    <td className="p-1 px-2 border-r border-gray-300">{voter.lrn_number}</td>
+                                    <td className="p-1 px-2 border-r border-gray-300 font-mono">{voter.username}</td>
+                                    <td className="p-1 px-2 border-r border-gray-300">{voter.year_level.name}</td>
+                                    <td className="p-1 px-2 border-r border-gray-300">{voter.year_section.name}</td>
+                                    <td className="p-1 px-2 text-center">
                                         {voter.is_active ? 'Active' : 'Inactive'}
-                                    </TableCell>
-                                </TableRow>
+                                    </td>
+                                </tr>
                             ))
                         ) : (
-                            <TableRow>
-                                <TableCell colSpan={6} className="py-4 text-center text-gray-500">
+                            <tr>
+                                <td colSpan={6} className="py-4 text-center text-gray-500">
                                     No voters found.
-                                </TableCell>
-                            </TableRow>
+                                </td>
+                            </tr>
                         )}
-                    </TableBody>
-                </Table>
+                    </tbody>
+                </table>
             </div>
 
             <div className="mt-8 flex justify-center print:hidden">
                 <button 
                     onClick={() => window.print()}
-                    className="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition"
+                    className="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition flex items-center gap-2"
                 >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                     Print List
                 </button>
             </div>
 
             <style>{`
                 @media print {
-                    @page { margin: 0.5in; }
-                    body { -webkit-print-color-adjust: exact; }
+                    @page { margin: 0.5cm; size: auto; }
+                    body { -webkit-print-color-adjust: exact; font-size: 10pt; }
+                    .print\\:hidden { display: none !important; }
                 }
             `}</style>
         </div>
