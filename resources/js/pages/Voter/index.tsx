@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Delete, PlusIcon, Upload, Download, Printer } from 'lucide-react';
+import { Delete, PlusIcon, Upload, Download, Printer, ShieldBan } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -129,6 +129,23 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         window.open(`/voter/print?${params.toString()}`, '_blank');
     };
 
+    const handleBulkInactive = () => {
+        if (confirm('Are you sure you want to deactivate all voters matching the current filters? This action cannot be undone.')) {
+            router.post(voter.bulkStatus().url, {
+                status: false,
+                search: search,
+                event_id: eventId,
+                year_level_id: yearLevelId,
+                year_section_id: yearSectionId,
+            }, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    // Toast or alert is handled by flash message usually
+                }
+            });
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Voters" />
@@ -163,6 +180,15 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         >
                             <Printer className="h-4 w-4" />
                             <span className="rounded-sm lg:inline">Print</span>
+                        </Button>
+
+                        <Button
+                            className="cursor-pointer bg-red-600 text-white"
+                            onClick={handleBulkInactive}
+                            title="Deactivate All Matching Voters"
+                        >
+                            <ShieldBan className="h-4 w-4" />
+                            <span className="rounded-sm lg:inline">Inactive All</span>
                         </Button>
 
                     </div>

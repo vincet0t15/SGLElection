@@ -147,6 +147,45 @@ class VoterController extends Controller
         ]);
     }
 
+    public function bulkStatus(Request $request)
+    {
+        $request->validate([
+            'status' => 'required|boolean',
+        ]);
+
+        $search = $request->input('search');
+        $eventId = $request->input('event_id');
+        $yearLevelId = $request->input('year_level_id');
+        $yearSectionId = $request->input('year_section_id');
+
+        $query = Voter::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('lrn_number', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%");
+            });
+        }
+
+        if ($eventId && $eventId !== 'all') {
+            $query->where('event_id', $eventId);
+        }
+
+        if ($yearLevelId && $yearLevelId !== 'all') {
+            $query->where('year_level_id', $yearLevelId);
+        }
+
+        if ($yearSectionId && $yearSectionId !== 'all') {
+            $query->where('year_section_id', $yearSectionId);
+        }
+
+        $count = $query->update(['is_active' => $request->status]);
+        $statusText = $request->status ? 'activated' : 'deactivated';
+
+        return back()->with('success', "Successfully {$statusText} {$count} voters.");
+    }
+
     public function store(Request $request)
     {
         $request->validate([
