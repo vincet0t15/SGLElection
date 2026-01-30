@@ -228,8 +228,6 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                                             <TableRow>
                                                 <TableHead className="w-[80px]">Photo</TableHead>
                                                 <TableHead className="text-primary font-bold">Name</TableHead>
-                                                {/* Position column removed as it's now a section header */}
-                                                <TableHead className="text-primary font-bold">Year/Section</TableHead>
                                                 <TableHead className="text-primary font-bold text-center w-25">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -250,15 +248,14 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                                                     </TableCell>
                                                     <TableCell className='flex flex-col'>
                                                         <span className="font-medium">{candidate.name}</span>
-                                                        <span className="text-xs text-muted-foreground">{candidate.partylist?.name || '-'}</span>
-                                                    </TableCell>
-                                                    {/* Position cell removed */}
-                                                    <TableCell>
-                                                        <div className="flex flex-col">
-                                                            <span>{candidate.year_level?.name}</span>
+                                                        <div className="flex gap-2 items-center">
+                                                            <span className='text-xs text-muted-foreground'>{candidate.year_level?.name}</span>
                                                             <span className="text-xs text-muted-foreground">{candidate.year_section?.name}</span>
                                                         </div>
+                                                        <span className="text-xs text-muted-foreground">{candidate.partylist?.name || '-'}</span>
                                                     </TableCell>
+
+
                                                     <TableCell className="text-right">
                                                         <div className="flex justify-end gap-2">
                                                             <DropdownMenu>
