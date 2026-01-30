@@ -14,7 +14,7 @@ class ResultController extends Controller
         $event = Event::where('is_active', true)->latest()->first() ?? Event::latest()->first();
 
         if (!$event) {
-             return Inertia::render('Results/Index', [
+            return Inertia::render('Results/Index', [
                 'event' => null,
                 'positions' => [],
             ]);
@@ -23,7 +23,7 @@ class ResultController extends Controller
         $positions = $event->positions()
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->with(['candidatePhotos', 'yearLevel', 'yearSection'])
+                $query->with(['candidatePhotos', 'yearLevel', 'yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
                     }])

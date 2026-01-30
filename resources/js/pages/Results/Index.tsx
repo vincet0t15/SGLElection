@@ -24,12 +24,18 @@ interface YearSection {
     name: string;
 }
 
+interface Partylist {
+    id: number;
+    name: string;
+}
+
 interface Candidate {
     id: number;
     name: string;
     candidate_photos: CandidatePhoto[];
     year_level: YearLevel;
     year_section: YearSection;
+    partylist: Partylist | null;
     votes_count: number;
 }
 
@@ -205,7 +211,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                                             <TableBody>
                                                 {position.candidates.length === 0 ? (
                                                     <TableRow>
-                                                        <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                                                        <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                                                             No candidates for this position.
                                                         </TableCell>
                                                     </TableRow>
@@ -215,13 +221,9 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                             ? Math.round((candidate.votes_count / totalVotes) * 100)
                                                             : 0;
 
-                                                        // Determine winner if results should be shown
-                                                        const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0;
-                                                        // Only show 2nd/3rd place medals if they are NOT winners
-                                                        const isSecond = showResults && !isWinner && index === 1 && candidate.votes_count > 0;
-                                                        const isThird = showResults && !isWinner && index === 2 && candidate.votes_count > 0;
 
-                                                        // Use the showResults flag for details visibility
+                                                        const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0; const isSecond = showResults && !isWinner && index === 1 && candidate.votes_count > 0;
+                                                        const isThird = showResults && !isWinner && index === 2 && candidate.votes_count > 0;
                                                         const showDetails = showResults;
 
                                                         return (
@@ -282,9 +284,13 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                                     {candidate.year_level?.name} - {candidate.year_section?.name}
                                                                                 </p>
                                                                             )}
+                                                                            <span className="text-sm font-medium text-muted-foreground">
+                                                                                {showDetails ? (candidate.partylist?.name || 'Independent') : '---'}
+                                                                            </span>
                                                                         </div>
                                                                     </div>
                                                                 </TableCell>
+
                                                                 <TableCell className="text-right">
                                                                     <div className="font-mono text-lg font-bold leading-none">
                                                                         {candidate.votes_count.toLocaleString()}
