@@ -19,7 +19,7 @@ Route::get('/', function () {
 })->name('home');
 
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\PartylistController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\VoterController;
@@ -58,6 +58,12 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::post('position', [PositionController::class, 'store'])->name('position.store');
     Route::put('position/{position}', [PositionController::class, 'update'])->name('position.update');
     Route::delete('position/{position}', [PositionController::class, 'destroy'])->name('position.destroy');
+
+    // PARTYLIST
+    Route::get('partylist', [PartylistController::class, 'index'])->name('partylist.index');
+    Route::post('partylist', [PartylistController::class, 'store'])->name('partylist.store');
+    Route::put('partylist/{partylist}', [PartylistController::class, 'update'])->name('partylist.update');
+    Route::delete('partylist/{partylist}', [PartylistController::class, 'destroy'])->name('partylist.destroy');
 
     // CANDIDATE
     Route::get('candidate', [CandidateController::class, 'index'])->name('candidate.index');

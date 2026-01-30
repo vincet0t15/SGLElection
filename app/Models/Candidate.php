@@ -13,6 +13,7 @@ class Candidate extends Model
         'year_section_id',
         'event_id',
         'position_id',
+        'partylist_id',
     ];
 
     public function yearLevel()
@@ -33,6 +34,11 @@ class Candidate extends Model
     public function position()
     {
         return $this->belongsTo(Position::class);
+    }
+
+    public function partylist()
+    {
+        return $this->belongsTo(Partylist::class);
     }
 
     public function candidatePhotos()

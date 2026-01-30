@@ -2,6 +2,7 @@ import { EventProps } from "./event";
 import { PositionProps } from "./position";
 import { YearLevelProps } from "./yearlevel";
 import { YearSectionProps } from "./section";
+import { PartylistProps } from "./partylist";
 
 export interface CandidatePhoto {
     id: number;
@@ -15,9 +16,11 @@ export interface CandidateProps {
     year_section_id: number;
     event_id: number;
     position_id: number;
+    partylist_id?: number | null;
     photo?: File[]
     event?: EventProps;
     position?: PositionProps;
+    partylist?: PartylistProps;
     candidate_photos?: CandidatePhoto[];
     year_level?: YearLevelProps;
     year_section?: YearSectionProps;

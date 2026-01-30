@@ -25,4 +25,9 @@ class Event extends Model
     {
         return $this->hasMany(Position::class);
     }
+
+    public function partylists()
+    {
+        return $this->hasMany(Partylist::class);
+    }
 }

@@ -4,11 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import CustomSelect from "@/components/custom-select";
 import InputError from "@/components/input-error";
-import { ChangeEventHandler, FormEventHandler, useMemo, useState } from "react";
+import { ChangeEventHandler, SubmitEventHandler, useMemo, useState } from "react";
 import { LoaderCircle, ChevronLeft, Upload, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import { EventProps } from "@/types/event";
 import { YearLevelProps } from "@/types/yearlevel";
+import { PartylistProps } from "@/types/partylist";
 import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
 import { dashboard } from "@/routes";
@@ -27,6 +28,7 @@ interface Props {
     events: EventProps[];
     yearLevels: YearLevelProps[];
     positions: Position[];
+    partylists: PartylistProps[];
 }
 
 type CandidateForm = {
@@ -35,6 +37,7 @@ type CandidateForm = {
     year_section_id: number;
     event_id: number;
     position_id: number;
+    partylist_id: number | null;
     photo?: File | null;
 }
 
@@ -53,13 +56,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function CandidateEdit({ candidate, events, yearLevels, positions }: Props) {
+export default function CandidateEdit({ candidate, events, yearLevels, positions, partylists }: Props) {
     const { data, setData, post, processing, errors } = useForm<CandidateForm>({
         name: candidate.name,
         year_level_id: candidate.year_level_id,
         year_section_id: candidate.year_section_id,
         event_id: candidate.event_id,
         position_id: candidate.position_id,
+        partylist_id: candidate.partylist_id ?? null,
         photo: null,
     });
 
@@ -120,13 +124,17 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
         router.get(`/candidate/${candidate.id}/edit`, { event_id: eventId }, {
             preserveState: true,
             preserveScroll: true,
-            only: ['positions'],
+            only: ['positions', 'partylists'],
             replace: true,
         });
     }
 
     const onChangePosition = (positionId: string) => {
         setData('position_id', Number(positionId));
+    }
+
+    const onChangePartylist = (partylistId: string) => {
+        setData('partylist_id', Number(partylistId));
     }
 
     const handlePhotoChange: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -141,7 +149,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
         }
     }
 
-    const submit: FormEventHandler = (e) => {
+    const submit: SubmitEventHandler = (e) => {
         e.preventDefault();
         post(`/candidate/${candidate.id}`, {
             onSuccess: () => {
@@ -155,6 +163,11 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
         });
     }
 
+
+    const partylistOptions = useMemo(() => partylists.map(pl => ({
+        value: String(pl.id),
+        label: pl.name,
+    })), [partylists]);
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Candidate" />
@@ -248,7 +261,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                                                     <Label>Year Level</Label>
                                                     <CustomSelect
                                                         options={yearLevelOptions}
-                                                        value={data.year_level_id ? String(data.year_level_id) : ''}
+                                                        value={data.year_level_id ? String(data.year_level_id) : '0'}
                                                         onChange={onChangeYearLevel}
                                                         placeholder="Select Year Level"
                                                     />
@@ -259,7 +272,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                                                     <Label>Section</Label>
                                                     <CustomSelect
                                                         options={yearSectionOptions}
-                                                        value={data.year_section_id ? String(data.year_section_id) : ''}
+                                                        value={data.year_section_id ? String(data.year_section_id) : '0'}
                                                         onChange={onChangeYearSection}
                                                         placeholder="Select Section"
                                                         disabled={!data.year_level_id}
@@ -274,12 +287,12 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                                         <h3 className="text-lg font-medium">Candidacy Details</h3>
                                         <Separator className="my-2" />
                                         <div className="grid gap-4 mt-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                 <div className="grid gap-2">
                                                     <Label>Event</Label>
                                                     <CustomSelect
                                                         options={eventOptions}
-                                                        value={data.event_id ? String(data.event_id) : ''}
+                                                        value={data.event_id ? String(data.event_id) : '0'}
                                                         onChange={onChangeEvent}
                                                         placeholder="Select Event"
                                                     />
@@ -290,14 +303,27 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                                                     <Label>Position</Label>
                                                     <CustomSelect
                                                         options={positionOptions}
-                                                        value={data.position_id ? String(data.position_id) : ''}
+                                                        value={data.position_id ? String(data.position_id) : '0'}
                                                         onChange={onChangePosition}
                                                         placeholder="Select Position"
                                                         disabled={!data.event_id || positions.length === 0}
                                                     />
                                                     <InputError message={errors.position_id} />
                                                 </div>
+                                                <div className="grid gap-2">
+                                                    <Label>Partylist (Optional)</Label>
+                                                    <CustomSelect
+                                                        options={partylistOptions}
+                                                        value={data.partylist_id ? String(data.partylist_id) : '0'}
+                                                        onChange={onChangePartylist}
+                                                        placeholder="Select Partylist"
+                                                        disabled={!data.event_id || partylists.length === 0}
+                                                    />
+                                                    <InputError message={errors.partylist_id} />
+                                                </div>
                                             </div>
+
+
                                         </div>
                                     </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Candidate;
 use App\Models\CandidatePhoto;
+use App\Models\Partylist;
 use App\Models\Position;
 use App\Models\YearLevel;
 use App\Models\YearSection;
@@ -60,6 +61,7 @@ class CandidateController extends Controller
                 'positions.candidates.candidatePhotos',
                 'positions.candidates.yearLevel',
                 'positions.candidates.yearSection',
+                'positions.candidates.partylist',
             ])
             ->get();
 
@@ -83,6 +85,7 @@ class CandidateController extends Controller
             'year_section_id' => 'required|exists:year_sections,id',
             'event_id' => 'required|exists:events,id',
             'position_id' => 'required|exists:positions,id',
+            'partylist_id' => 'nullable|exists:partylists,id',
             'photo' => 'nullable|image|max:5120',
         ]);
 
@@ -92,6 +95,7 @@ class CandidateController extends Controller
             'year_section_id' => $validated['year_section_id'],
             'event_id' => $validated['event_id'],
             'position_id' => $validated['position_id'],
+            'partylist_id' => $validated['partylist_id'] ?? null,
         ]);
 
         if ($request->hasFile('photo')) {
@@ -117,31 +121,36 @@ class CandidateController extends Controller
         $yearLevels = YearLevel::query()->with('section')->orderBy('name', 'asc')->get();
 
         $positions = [];
+        $partylists = [];
         if ($request->has('event_id')) {
             $positions = Position::where('event_id', $request->event_id)->get();
+            $partylists = Partylist::where('event_id', $request->event_id)->get();
         }
 
         return Inertia::render('Candidate/create', [
             'events' => $events,
             'yearLevels' => $yearLevels,
             'positions' => $positions,
+            'partylists' => $partylists,
             'event_id' => $request->event_id,
         ]);
     }
 
     public function edit(Candidate $candidate)
     {
-        $candidate->load(['candidatePhotos', 'event', 'position', 'yearLevel', 'yearSection']);
+        $candidate->load(['candidatePhotos', 'event', 'position', 'yearLevel', 'yearSection', 'partylist']);
 
         $events = Event::query()->where('is_active', true)->get();
         $yearLevels = YearLevel::query()->with('section')->orderBy('name', 'asc')->get();
         $positions = Position::where('event_id', $candidate->event_id)->get();
+        $partylists = Partylist::where('event_id', $candidate->event_id)->get();
 
         return Inertia::render('Candidate/edit', [
             'candidate' => $candidate,
             'events' => $events,
             'yearLevels' => $yearLevels,
             'positions' => $positions,
+            'partylists' => $partylists,
         ]);
     }
 
@@ -153,6 +162,7 @@ class CandidateController extends Controller
             'year_section_id' => 'required|exists:year_sections,id',
             'event_id' => 'required|exists:events,id',
             'position_id' => 'required|exists:positions,id',
+            'partylist_id' => 'nullable|exists:partylists,id',
             'photo' => 'nullable|image|max:5120',
         ]);
 
@@ -162,6 +172,7 @@ class CandidateController extends Controller
             'year_section_id' => $validated['year_section_id'],
             'event_id' => $validated['event_id'],
             'position_id' => $validated['position_id'],
+            'partylist_id' => $validated['partylist_id'] ?? null,
         ]);
 
         if ($request->hasFile('photo')) {

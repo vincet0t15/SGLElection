@@ -171,6 +171,11 @@ export default function CandidateIndex({ candidates, events, yearLevels, filters
                                                             <p className="text-xs font-bold text-primary/80 uppercase tracking-wide">
                                                                 {candidate.year_section?.name}
                                                             </p>
+                                                            {candidate.partylist && (
+                                                                <p className="text-xs font-semibold text-foreground/80 mt-1">
+                                                                    {candidate.partylist.name}
+                                                                </p>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
