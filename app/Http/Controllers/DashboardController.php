@@ -8,6 +8,7 @@ use App\Models\Partylist;
 use App\Models\Position;
 use App\Models\Vote;
 use App\Models\Voter;
+use App\Models\YearLevel;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -81,9 +82,31 @@ class DashboardController extends Controller
             }
         }
 
+        // Calculate Turnout by Year Level
+        $turnoutByYearLevel = YearLevel::withCount([
+            'voters as total_voters',
+            'voters as voted_voters' => function ($query) use ($activeEvent) {
+                if ($activeEvent) {
+                    $query->whereHas('votes', function ($q) use ($activeEvent) {
+                        $q->where('event_id', $activeEvent->id);
+                    });
+                } else {
+                    $query->whereRaw('0 = 1'); // No votes if no active event
+                }
+            }
+        ])->get()->map(function ($yl) {
+            return [
+                'name' => $yl->name,
+                'voted' => $yl->voted_voters,
+                'not_voted' => $yl->total_voters - $yl->voted_voters,
+                'total' => $yl->total_voters,
+            ];
+        });
+
         return Inertia::render('dashboard', [
             'stats' => $stats,
-            'winners' => $winners
+            'winners' => $winners,
+            'turnoutByYearLevel' => $turnoutByYearLevel
         ]);
     }
 }

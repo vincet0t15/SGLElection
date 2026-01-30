@@ -16,6 +16,19 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell,
+} from 'recharts';
 import results from '@/routes/results';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -77,12 +90,31 @@ interface Position {
     total_votes?: number;
 }
 
+interface TurnoutData {
+    name: string;
+    total: number;
+    voted: number;
+    not_voted: number;
+}
+
 interface Props {
     stats: Stats;
     winners: Position[];
+    turnoutByYearLevel: TurnoutData[];
 }
 
-export default function Dashboard({ stats, winners = [] }: Props) {
+export default function Dashboard({ stats, winners = [], turnoutByYearLevel = [] }: Props) {
+    // Pie Chart Data
+    const totalVoted = turnoutByYearLevel.reduce((acc, curr) => acc + curr.voted, 0);
+    const totalNotVoted = turnoutByYearLevel.reduce((acc, curr) => acc + curr.not_voted, 0);
+
+    const pieData = [
+        { name: 'Voted', value: totalVoted },
+        { name: 'Not Voted', value: totalNotVoted },
+    ];
+
+    const COLORS = ['#2563eb', '#e2e8f0']; // blue-600, slate-200
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -169,6 +201,91 @@ export default function Dashboard({ stats, winners = [] }: Props) {
                 </div>
 
 
+
+                {/* Analytics Section */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                    <Card className="col-span-4">
+                        <CardHeader>
+                            <CardTitle>Voter Turnout by Year Level</CardTitle>
+                            <CardDescription>
+                                Comparison of total voters vs. actual votes cast across year levels.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="pl-2">
+                            <ResponsiveContainer width="100%" height={350}>
+                                <BarChart data={turnoutByYearLevel}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                    <XAxis
+                                        dataKey="name"
+                                        stroke="#888888"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#888888"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickFormatter={(value) => `${value}`}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'transparent' }}
+                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    />
+                                    <Legend />
+                                    <Bar dataKey="voted" name="Voted" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                                    <Bar dataKey="not_voted" name="Not Voted" fill="#e2e8f0" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                    <Card className="col-span-3">
+                        <CardHeader>
+                            <CardTitle>Overall Turnout</CardTitle>
+                            <CardDescription>
+                                Percentage of registered voters who have cast their votes.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-[350px] w-full flex items-center justify-center relative">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={pieData}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={80}
+                                            outerRadius={110}
+                                            fill="#8884d8"
+                                            paddingAngle={5}
+                                            dataKey="value"
+                                        >
+                                            {pieData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                    <span className="text-4xl font-bold">{stats.turnout_percentage}%</span>
+                                    <span className="text-sm text-muted-foreground">Turnout</span>
+                                </div>
+                            </div>
+                            <div className="flex justify-center gap-6 mt-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+                                    <span className="text-sm text-muted-foreground">Voted ({totalVoted})</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-slate-200"></div>
+                                    <span className="text-sm text-muted-foreground">Not Voted ({totalNotVoted})</span>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
                 {/* Stats Grid */}
                 <div>
