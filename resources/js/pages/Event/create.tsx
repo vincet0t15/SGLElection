@@ -22,6 +22,8 @@ import { EventProps, EventType } from "@/types/event";
 import event from "@/routes/event";
 import { Textarea } from "@/components/ui/textarea";
 import { DatePickerTime } from "@/components/custom-date-time-picker";
+import { format } from "date-fns";
+
 interface Props {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -75,15 +77,19 @@ export function EventCreateDialog({ open, setOpen }: Props) {
 
                         <div className="grid gap-3">
                             <Label htmlFor="dateTime_start">Event Start Date and Time</Label>
-                            <Input id="dateTime_start" name="dateTime_start" type="datetime-local" onChange={handleChange} />
-
+                            <DatePickerTime
+                                date={data.dateTime_start ? new Date(data.dateTime_start) : undefined}
+                                setDate={(date) => setData('dateTime_start', date ? format(date, "yyyy-MM-dd'T'HH:mm") : '')}
+                            />
                             <InputError message={errors.dateTime_start} />
                         </div>
 
                         <div className="grid gap-3">
                             <Label htmlFor="dateTime_end">Event End Date and Time</Label>
-                            <Input id="dateTime_end" name="dateTime_end" type="datetime-local" onChange={handleChange} />
-
+                            <DatePickerTime
+                                date={data.dateTime_end ? new Date(data.dateTime_end) : undefined}
+                                setDate={(date) => setData('dateTime_end', date ? format(date, "yyyy-MM-dd'T'HH:mm") : '')}
+                            />
                             <InputError message={errors.dateTime_end} />
                         </div>
 
@@ -99,9 +105,6 @@ export function EventCreateDialog({ open, setOpen }: Props) {
                             <Textarea id="description" name="description" placeholder="e.g. This is the 1st Year General Meeting" onChange={handleChange} />
 
                             <InputError message={errors.description} />
-                        </div>
-                        <div>
-                            <DatePickerTime />
                         </div>
                     </div>
                     <DialogFooter>

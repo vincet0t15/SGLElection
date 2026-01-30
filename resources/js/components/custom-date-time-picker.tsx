@@ -13,23 +13,54 @@ import {
 import { format } from "date-fns"
 import { ChevronDownIcon } from "lucide-react"
 
-export function DatePickerTime() {
+export interface DatePickerTimeProps {
+    date: Date | undefined
+    setDate: (date: Date | undefined) => void
+}
+
+export function DatePickerTime({ date, setDate }: DatePickerTimeProps) {
     const [open, setOpen] = React.useState(false)
-    const [date, setDate] = React.useState<Date | undefined>(undefined)
+
+    const handleDateSelect = (selectedDate: Date | undefined) => {
+        if (!selectedDate) {
+            setDate(undefined)
+            return
+        }
+
+        const newDate = new Date(selectedDate)
+        if (date) {
+            newDate.setHours(date.getHours())
+            newDate.setMinutes(date.getMinutes())
+            newDate.setSeconds(date.getSeconds())
+        }
+        setDate(newDate)
+        setOpen(false)
+    }
+
+    const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const timeValue = e.target.value
+        if (!timeValue || !date) return
+
+        const [hours, minutes] = timeValue.split(':').map(Number)
+        const newDate = new Date(date)
+        newDate.setHours(hours)
+        newDate.setMinutes(minutes)
+        setDate(newDate)
+    }
 
     return (
-        <FieldGroup className="mx-auto max-w-xs flex-row">
-            <Field>
-                <FieldLabel htmlFor="date-picker-optional">Date</FieldLabel>
+        <FieldGroup className="w-full flex-row gap-2">
+            <Field className="flex-1">
+                <FieldLabel htmlFor="date-picker">Date</FieldLabel>
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
                         <Button
                             variant="outline"
-                            id="date-picker-optional"
-                            className="w-32 justify-between font-normal"
+                            id="date-picker"
+                            className="w-full justify-between font-normal"
                         >
                             {date ? format(date, "PPP") : "Select date"}
-                            <ChevronDownIcon />
+                            <ChevronDownIcon className="h-4 w-4 opacity-50" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto overflow-hidden p-0" align="start">
@@ -37,23 +68,21 @@ export function DatePickerTime() {
                             mode="single"
                             selected={date}
                             captionLayout="dropdown"
-                            defaultMonth={date}
-                            onSelect={(date) => {
-                                setDate(date)
-                                setOpen(false)
-                            }}
+                            defaultMonth={date || new Date()}
+                            onSelect={handleDateSelect}
                         />
                     </PopoverContent>
                 </Popover>
             </Field>
             <Field className="w-32">
-                <FieldLabel htmlFor="time-picker-optional">Time</FieldLabel>
+                <FieldLabel htmlFor="time-picker">Time</FieldLabel>
                 <Input
                     type="time"
-                    id="time-picker-optional"
-                    step="1"
-                    defaultValue="10:30:00"
-                    className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                    id="time-picker"
+                    value={date ? format(date, "HH:mm") : ""}
+                    onChange={handleTimeChange}
+                    disabled={!date}
+                    className="bg-background"
                 />
             </Field>
         </FieldGroup>
