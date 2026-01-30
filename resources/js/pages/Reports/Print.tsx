@@ -10,6 +10,7 @@ interface Signatory {
     name: string;
     position: string;
     description: string | null;
+    type: 'certified_correct' | 'attested_by';
 }
 
 interface Props {
@@ -168,34 +169,62 @@ export default function ReportsPrint({ event, positions, signatories, stats }: P
 
                                 {/* Footer / Certification */}
                                 <div className="mt-16 break-inside-avoid print:mt-12">
-                                    <p className="text-xs font-bold uppercase mb-8">Certified Correct:</p>
+                                    {/* Certified Correct Section */}
+                                    <div className="mb-12">
+                                        <p className="text-xs font-bold uppercase mb-8">Certified Correct:</p>
 
-                                    <div className="grid grid-cols-2 gap-8 gap-y-12">
-                                        {signatories.length > 0 ? (
-                                            signatories.map((signatory) => (
-                                                <div key={signatory.id} className="text-center break-inside-avoid px-4">
-                                                    <p className="uppercase font-bold mb-1 text-sm">{signatory.name}</p>
-                                                    <div className="border-b border-black w-full mb-2"></div>
-                                                    <p className="text-xs uppercase font-bold">{signatory.position}</p>
-                                                    {signatory.description && (
-                                                        <p className="text-[10px] text-gray-500 mt-0.5">{signatory.description}</p>
-                                                    )}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            /* Fallback for when no signatories are defined yet */
-                                            <>
-                                                <div className="text-center flex-1">
-                                                    <div className="border-b border-black w-full mb-2"></div>
-                                                    <p className="text-xs uppercase font-bold">Election Committee Head</p>
-                                                </div>
-                                                <div className="text-center flex-1">
-                                                    <div className="border-b border-black w-full mb-2"></div>
-                                                    <p className="text-xs uppercase font-bold">School Administrator</p>
-                                                </div>
-                                            </>
-                                        )}
+                                        <div className="grid grid-cols-2 gap-8 gap-y-12">
+                                            {signatories.filter(s => s.type === 'certified_correct' || !s.type).length > 0 ? (
+                                                signatories
+                                                    .filter(s => s.type === 'certified_correct' || !s.type)
+                                                    .map((signatory) => (
+                                                        <div key={signatory.id} className="text-center break-inside-avoid px-4">
+                                                            <p className="uppercase font-bold mb-1 text-sm">{signatory.name}</p>
+                                                            <div className="border-b border-black w-full mb-2"></div>
+                                                            <p className="text-xs uppercase font-bold">{signatory.position}</p>
+                                                            {signatory.description && (
+                                                                <p className="text-[10px] text-gray-500 mt-0.5">{signatory.description}</p>
+                                                            )}
+                                                        </div>
+                                                    ))
+                                            ) : (
+                                                /* Fallback for when no signatories are defined yet */
+                                                <>
+                                                    <div className="text-center flex-1">
+                                                        <div className="border-b border-black w-full mb-2"></div>
+                                                        <p className="text-xs uppercase font-bold">Election Committee Head</p>
+                                                    </div>
+                                                    <div className="text-center flex-1">
+                                                        <div className="border-b border-black w-full mb-2"></div>
+                                                        <p className="text-xs uppercase font-bold">School Administrator</p>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
+
+                                    {/* Attested By Section */}
+                                    {signatories.filter(s => s.type === 'attested_by').length > 0 && (
+                                        <div className="mb-8">
+                                            <p className="text-xs font-bold uppercase mb-8">Attested By:</p>
+
+                                            <div className="grid grid-cols-2 gap-8 gap-y-12">
+                                                {signatories
+                                                    .filter(s => s.type === 'attested_by')
+                                                    .map((signatory) => (
+                                                        <div key={signatory.id} className="text-center break-inside-avoid px-4">
+                                                            <p className="uppercase font-bold mb-1 text-sm">{signatory.name}</p>
+                                                            <div className="border-b border-black w-full mb-2"></div>
+                                                            <p className="text-xs uppercase font-bold">{signatory.position}</p>
+                                                            {signatory.description && (
+                                                                <p className="text-[10px] text-gray-500 mt-0.5">{signatory.description}</p>
+                                                            )}
+                                                        </div>
+                                                    ))
+                                                }
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className="mt-8 pt-4 border-t text-[10px] text-gray-400 flex justify-between">
                                         <span>Generated by {system_settings.name || 'System'}</span>

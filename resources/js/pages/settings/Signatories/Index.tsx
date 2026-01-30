@@ -19,6 +19,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -30,8 +37,16 @@ import { Switch } from '@/components/ui/switch';
 import { BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';
 
+interface Event {
+    id: number;
+    name: string;
+}
+
 interface Signatory {
     id: number;
+    event_id: number | null;
+    event?: Event;
+    type: 'certified_correct' | 'attested_by';
     name: string;
     position: string;
     description: string | null;
@@ -41,6 +56,7 @@ interface Signatory {
 
 interface Props {
     signatories: Signatory[];
+    events: Event[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -54,11 +70,13 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Signatories({ signatories }: Props) {
+export default function Signatories({ signatories, events }: Props) {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [editingSignatory, setEditingSignatory] = useState<Signatory | null>(null);
 
     const { data, setData, post, put, processing, reset, errors, clearErrors } = useForm({
+        event_id: null as number | null,
+        type: 'certified_correct' as 'certified_correct' | 'attested_by',
         name: '',
         position: '',
         description: '',
@@ -76,6 +94,8 @@ export default function Signatories({ signatories }: Props) {
     const handleEdit = (signatory: Signatory) => {
         setEditingSignatory(signatory);
         setData({
+            event_id: signatory.event_id,
+            type: signatory.type,
             name: signatory.name,
             position: signatory.position,
             description: signatory.description || '',
@@ -141,6 +161,8 @@ export default function Signatories({ signatories }: Props) {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Order</TableHead>
+                                <TableHead>Event</TableHead>
+                                <TableHead>Type</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Position</TableHead>
                                 <TableHead>Active</TableHead>
@@ -150,7 +172,7 @@ export default function Signatories({ signatories }: Props) {
                         <TableBody>
                             {signatories.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                                    <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                                         No signatories found. Add one to get started.
                                     </TableCell>
                                 </TableRow>
@@ -158,6 +180,20 @@ export default function Signatories({ signatories }: Props) {
                                 signatories.map((signatory) => (
                                     <TableRow key={signatory.id}>
                                         <TableCell>{signatory.order}</TableCell>
+                                        <TableCell>
+                                            {signatory.event ? (
+                                                <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                    {signatory.event.name}
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                                                    Global
+                                                </span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {signatory.type === 'certified_correct' ? 'Certified Correct' : 'Attested By'}
+                                        </TableCell>
                                         <TableCell className="font-medium">{signatory.name}</TableCell>
                                         <TableCell>{signatory.position}</TableCell>
                                         <TableCell>
@@ -165,8 +201,8 @@ export default function Signatories({ signatories }: Props) {
                                                 checked={signatory.is_active}
                                                 onCheckedChange={(checked) => {
                                                     router.put(updateSignatory({ signatory: signatory.id }).url, {
-                                                        ...signatory,
                                                         is_active: checked
+
                                                     }, {
                                                         preserveScroll: true,
                                                         onSuccess: () => toast.success('Status updated'),
@@ -212,6 +248,44 @@ export default function Signatories({ signatories }: Props) {
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={submit} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="event_id">Event (Optional)</Label>
+                            <Select
+                                value={data.event_id?.toString() || "global"}
+                                onValueChange={(value) => setData('event_id', value === "global" ? null : parseInt(value))}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Event" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="global">All Events (Global)</SelectItem>
+                                    {events.map((event) => (
+                                        <SelectItem key={event.id} value={event.id.toString()}>
+                                            {event.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <p className="text-[0.8rem] text-muted-foreground">
+                                Select an event to make this signatory specific to that event. Leave as "All Events" for global signatories.
+                            </p>
+                            {errors.event_id && <p className="text-sm text-destructive">{errors.event_id}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="type">Type</Label>
+                            <Select
+                                value={data.type}
+                                onValueChange={(value) => setData('type', value as 'certified_correct' | 'attested_by')}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="certified_correct">Certified Correct</SelectItem>
+                                    <SelectItem value="attested_by">Attested By</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="name">Name</Label>
                             <Input

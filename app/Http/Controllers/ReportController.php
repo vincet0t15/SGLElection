@@ -108,6 +108,10 @@ class ReportController extends Controller
             ->count('year_section_id');
 
         $signatories = Signatory::where('is_active', true)
+            ->where(function ($query) use ($event) {
+                $query->where('event_id', $event->id)
+                    ->orWhereNull('event_id');
+            })
             ->orderBy('order')
             ->get();
 
