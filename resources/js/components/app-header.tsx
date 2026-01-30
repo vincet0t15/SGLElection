@@ -52,11 +52,11 @@ import * as yearLevel from '@/routes/year-level';
 import type { BreadcrumbItem, SharedData } from '@/types';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
-import yearSection from '@/routes/year-section';
 import event from '@/routes/event';
 import position from '@/routes/position';
 import candidate from '@/routes/candidate';
 import reports from '@/routes/reports';
+import voter from '@/routes/voter';
 
 
 type Props = {
@@ -73,6 +73,7 @@ const settingsItems = [
     { title: 'Positions', href: position.index().url, icon: BookOpen },
     { title: 'Candidates', href: candidate.index().url, icon: User },
     { title: 'Reports', href: reports.index().url, icon: FileText },
+    { title: 'Voters', href: voter.index().url, icon: Lock },
 ];
 
 const activeItemStyles =

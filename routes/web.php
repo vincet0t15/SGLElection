@@ -22,6 +22,7 @@ use App\Http\Controllers\DashboardController;
 
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\VoterController;
 
 // Admin Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
@@ -65,6 +66,16 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('candidate/{candidate}/edit', [CandidateController::class, 'edit'])->name('candidate.edit');
     Route::post('candidate/{candidate}', [CandidateController::class, 'update'])->name('candidate.update');
     Route::delete('candidate/{candidate}', [CandidateController::class, 'destroy'])->name('candidate.destroy');
+
+
+    // VOTER
+    Route::get('voter', [VoterController::class, 'index'])->name('voter.index');
+    Route::post('voter/import', [VoterController::class, 'import'])->name('voter.import');
+    Route::get('voter/create', [VoterController::class, 'create'])->name('voter.create');
+    Route::post('voter', [VoterController::class, 'store'])->name('voter.store');
+    Route::get('voter/{voter}/edit', [VoterController::class, 'edit'])->name('voter.edit');
+    Route::put('voter/{voter}', [VoterController::class, 'update'])->name('voter.update');
+    Route::delete('voter/{voter}', [VoterController::class, 'destroy'])->name('voter.destroy');
 });
 
 // Voter Routes
