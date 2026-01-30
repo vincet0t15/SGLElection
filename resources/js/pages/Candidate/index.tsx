@@ -199,10 +199,8 @@ export default function CandidateIndex({ candidates, events, yearLevels, yearSec
                                             <TableRow>
                                                 <TableHead className="w-[80px]">Photo</TableHead>
                                                 <TableHead className="text-primary font-bold">Name</TableHead>
-                                                <TableHead className="text-primary font-bold">Event</TableHead>
-                                                {/* Position column removed as it's now a section header */}
-                                                <TableHead className="text-primary font-bold">Partylist</TableHead>
-                                                <TableHead className="text-primary font-bold">Year/Section</TableHead>
+
+                                                <TableHead className="text-primary font-bold w-[120px]">Year/Section</TableHead>
                                                 <TableHead className="text-primary font-bold text-center w-25">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -221,16 +219,11 @@ export default function CandidateIndex({ candidates, events, yearLevels, yearSec
                                                             </AvatarFallback>
                                                         </Avatar>
                                                     </TableCell>
-                                                    <TableCell>
+                                                    <TableCell className='flex flex-col'>
                                                         <span className="font-medium">{candidate.name}</span>
+                                                        <span className="text-xs text-muted-foreground">{candidate.partylist?.name || '-'}</span>
                                                     </TableCell>
-                                                    <TableCell>
-                                                        <span>{candidate.event?.name}</span>
-                                                    </TableCell>
-                                                    {/* Position cell removed */}
-                                                    <TableCell>
-                                                        <span>{candidate.partylist?.name || '-'}</span>
-                                                    </TableCell>
+
                                                     <TableCell>
                                                         <div className="flex flex-col">
                                                             <span>{candidate.year_level?.name}</span>
