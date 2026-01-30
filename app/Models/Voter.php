@@ -20,6 +20,7 @@ class Voter extends Authenticatable
         'year_level_id',
         'year_section_id',
         'event_id',
+        'is_active',
     ];
 
     protected $hidden = [

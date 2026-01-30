@@ -24,6 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 import type { VoterProps } from '@/types/voter';
 import voter from '@/routes/voter';
+import { toast } from 'sonner';
 
 interface YearLevel {
     id: number;
@@ -131,11 +132,10 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
     };
 
     const handleToggleStatus = (voter: VoterProps) => {
-        router.visit(`/voter/${voter.id}/toggle-status`, {
-            method: 'patch',
+        router.patch(`/voter/${voter.id}/toggle-status`, {}, {
             preserveScroll: true,
-            onSuccess: () => {
-                // Toast handled by flash
+            onSuccess: (response: { props: FlashProps }) => {
+                toast.success(response.props.flash?.success);
             }
         });
     };

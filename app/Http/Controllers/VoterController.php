@@ -190,7 +190,7 @@ class VoterController extends Controller
     {
 
         $voter->update(['is_active' => !$voter->is_active]);
-        $status = $voter->is_active ? true : false;
+        $status = $voter->is_active ? 'activated' : 'deactivated';
         return back()->with('success', "Voter {$voter->name} has been {$status}.");
     }
 
