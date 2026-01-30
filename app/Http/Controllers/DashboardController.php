@@ -34,19 +34,17 @@ class DashboardController extends Controller
 
             $stats['votes_cast'] = $votesCast;
 
-            // Calculate turnout based on total voters (or voters assigned to event if applicable)
-            // Assuming global voter pool for now based on simplicity
             if ($stats['total_voters'] > 0) {
                 $stats['turnout_percentage'] = round(($votesCast / $stats['total_voters']) * 100, 1);
             }
         }
 
-        // Logic for Winners
+
         $winners = [];
         $eventForWinners = $activeEvent ?? Event::latest()->first();
 
         if ($eventForWinners) {
-            // Check if event is ended (either inactive or time passed)
+
             $isEnded = !$eventForWinners->is_active || now()->greaterThan($eventForWinners->dateTime_end);
 
             if ($isEnded) {
@@ -64,17 +62,17 @@ class DashboardController extends Controller
                         // Calculate total votes for the position BEFORE filtering
                         $totalVotes = $position->candidates->sum('votes_count');
 
-                        // We only need the winners (with at least 1 vote)
+
                         $winnersList = $position->candidates
                             ->filter(function ($candidate) {
                                 return $candidate->votes_count > 0;
                             })
                             ->take($position->max_votes)
-                            ->values(); // Ensure array keys are reset for JSON serialization
+                            ->values();
 
                         $position->setRelation('candidates', $winnersList);
 
-                        // Explicitly set total_votes attribute and append it to serialization
+
                         $position->setAttribute('total_votes', $totalVotes);
 
                         return $position;
@@ -82,7 +80,7 @@ class DashboardController extends Controller
             }
         }
 
-        // Calculate Turnout by Year Level
+
         $turnoutByYearLevel = YearLevel::withCount([
             'voters as total_voters',
             'voters as voted_voters' => function ($query) use ($activeEvent) {
@@ -91,7 +89,7 @@ class DashboardController extends Controller
                         $q->where('event_id', $activeEvent->id);
                     });
                 } else {
-                    $query->whereRaw('0 = 1'); // No votes if no active event
+                    $query->whereRaw('0 = 1');
                 }
             }
         ])->get()->map(function ($yl) {
