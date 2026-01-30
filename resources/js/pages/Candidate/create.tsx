@@ -145,6 +145,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
     const submit: SubmitEventHandler = (e) => {
         e.preventDefault();
         post('/candidate', {
+            forceFormData: true,
             onSuccess: () => {
                 toast.success("Candidate created successfully");
                 reset();

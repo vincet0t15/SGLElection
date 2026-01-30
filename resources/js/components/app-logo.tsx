@@ -7,7 +7,7 @@ export default function AppLogo() {
 
     return (
         <>
-            <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-md text-sidebar-primary-foreground overflow-hidden">
                 {system_settings.logo ? (
                     <img src={system_settings.logo} alt="System Logo" className="size-full object-cover" />
                 ) : (
