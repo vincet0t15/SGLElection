@@ -12,7 +12,6 @@ class Signatory extends Model
 
     protected $fillable = [
         'event_id',
-        'type',
         'name',
         'position',
         'description',

@@ -25,7 +25,6 @@ class SignatoryController extends Controller
     {
         $request->validate([
             'event_id' => 'nullable|exists:events,id',
-            'type' => 'required|in:certified_correct,attested_by',
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'is_active' => 'boolean',
@@ -41,7 +40,6 @@ class SignatoryController extends Controller
     {
         $request->validate([
             'event_id' => 'nullable|exists:events,id',
-            'type' => 'required|in:certified_correct,attested_by',
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'is_active' => 'boolean',

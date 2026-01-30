@@ -46,7 +46,6 @@ interface Signatory {
     id: number;
     event_id: number | null;
     event?: Event;
-    type: 'certified_correct' | 'attested_by';
     name: string;
     position: string;
     description: string | null;
@@ -76,7 +75,6 @@ export default function Signatories({ signatories, events }: Props) {
 
     const { data, setData, post, put, processing, reset, errors, clearErrors } = useForm({
         event_id: null as number | null,
-        type: 'certified_correct' as 'certified_correct' | 'attested_by',
         name: '',
         position: '',
         description: '',
@@ -95,7 +93,6 @@ export default function Signatories({ signatories, events }: Props) {
         setEditingSignatory(signatory);
         setData({
             event_id: signatory.event_id,
-            type: signatory.type,
             name: signatory.name,
             position: signatory.position,
             description: signatory.description || '',
@@ -162,7 +159,6 @@ export default function Signatories({ signatories, events }: Props) {
                             <TableRow>
                                 <TableHead>Order</TableHead>
                                 <TableHead>Event</TableHead>
-                                <TableHead>Type</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Position</TableHead>
                                 <TableHead>Active</TableHead>
@@ -190,9 +186,6 @@ export default function Signatories({ signatories, events }: Props) {
                                                     Global
                                                 </span>
                                             )}
-                                        </TableCell>
-                                        <TableCell>
-                                            {signatory.type === 'certified_correct' ? 'Certified Correct' : 'Attested By'}
                                         </TableCell>
                                         <TableCell className="font-medium">{signatory.name}</TableCell>
                                         <TableCell>{signatory.position}</TableCell>
@@ -270,21 +263,6 @@ export default function Signatories({ signatories, events }: Props) {
                                 Select an event to make this signatory specific to that event. Leave as "All Events" for global signatories.
                             </p>
                             {errors.event_id && <p className="text-sm text-destructive">{errors.event_id}</p>}
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="type">Type</Label>
-                            <Select
-                                value={data.type}
-                                onValueChange={(value) => setData('type', value as 'certified_correct' | 'attested_by')}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select Type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="certified_correct">Certified Correct</SelectItem>
-                                    <SelectItem value="attested_by">Attested By</SelectItem>
-                                </SelectContent>
-                            </Select>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="name">Name</Label>
