@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import InputError from '@/components/input-error';
 import { Loader2, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
@@ -25,17 +26,32 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function ImportVoter() {
+interface Event {
+    id: number;
+    name: string;
+}
+
+interface Props {
+    events: Event[];
+}
+
+export default function ImportVoter({ events }: Props) {
     const { data, setData, post, processing, errors, reset } = useForm<{
         file: File | null;
+        event_id: string;
     }>({
         file: null,
+        event_id: '',
     });
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!data.file) {
             toast.error('Please select a file to upload.');
+            return;
+        }
+        if (!data.event_id) {
+            toast.error('Please select an event.');
             return;
         }
 
@@ -52,8 +68,8 @@ export default function ImportVoter() {
     };
 
     const handleDownloadTemplate = () => {
-        const headers = ['name', 'lrn_number', 'username', 'password', 'year_level_id', 'year_section_id', 'event_id'];
-        const sample = ['John Doe', '123456789012', 'johndoe', 'password123', '1', '1', '1'];
+        const headers = ['Learners Reference Number', 'Name', 'Section', 'Grade Level'];
+        const sample = ['123456789012', 'Doe, John Smith', '3', '3'];
         const csvContent = "data:text/csv;charset=utf-8,"
             + headers.join(",") + "\n"
             + sample.join(",");
@@ -86,6 +102,26 @@ export default function ImportVoter() {
                         <form onSubmit={submit}>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
+                                    <Label htmlFor="event">Election Event</Label>
+                                    <Select
+                                        value={data.event_id}
+                                        onValueChange={(value) => setData('event_id', value)}
+                                    >
+                                        <SelectTrigger id="event">
+                                            <SelectValue placeholder="Select Event" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {events.map((event) => (
+                                                <SelectItem key={event.id} value={event.id.toString()}>
+                                                    {event.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={errors.event_id} />
+                                </div>
+
+                                <div className="space-y-2">
                                     <Label htmlFor="file">File</Label>
                                     <Input
                                         id="file"
@@ -101,10 +137,10 @@ export default function ImportVoter() {
                                     <p className="font-semibold">Instructions:</p>
                                     <ul className="list-disc pl-5 mt-2 space-y-1">
                                         <li>File must be in .xlsx, .xls, or .csv format.</li>
-                                        <li>The first row must contain the column headers.</li>
-                                        <li>Required columns: <strong>name, lrn_number, username, password, year_level_id, year_section_id, event_id</strong>.</li>
-                                        <li>Ensure <strong>lrn_number</strong> and <strong>username</strong> are unique.</li>
-                                        <li>Use IDs for Year Level, Section, and Event (check the database or admin panel for IDs).</li>
+                                        <li>The first row must contain the column headers: <strong>Learners Reference Number, Name, Section, Grade Level</strong>.</li>
+                                        <li>Name format should be "Lastname, Firstname MiddleName" (e.g., Abao, Aldrich Franz Caabay).</li>
+                                        <li>Section and Grade Level should match the name in the system (e.g., "3").</li>
+                                        <li>Username and Password will be auto-generated based on Name and LRN.</li>
                                     </ul>
                                 </div>
                             </CardContent>
@@ -113,7 +149,7 @@ export default function ImportVoter() {
                                     <Download className="mr-2 h-4 w-4" />
                                     Download Template
                                 </Button>
-                                <Button type="submit" disabled={processing || !data.file}>
+                                <Button type="submit" disabled={processing || !data.file || !data.event_id}>
                                     {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     <Upload className="mr-2 h-4 w-4" />
                                     Import Voters

@@ -63,18 +63,22 @@ class VoterController extends Controller
 
     public function importView()
     {
-        return Inertia::render('Voter/import');
+        return Inertia::render('Voter/import', [
+            'events' => Event::where('is_active', true)->get(),
+        ]);
     }
 
     public function import(Request $request)
     {
-
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
+            'event_id' => 'required|exists:events,id',
+            'header_row' => 'nullable|integer|min:1',
         ]);
 
         try {
-            Excel::import(new VotersImport, $request->file('file'));
+            $headingRow = $request->input('header_row', 1);
+            Excel::import(new VotersImport($request->event_id, $headingRow), $request->file('file'));
             return redirect()->route('voter.index')->with('success', 'Voters imported successfully.');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
