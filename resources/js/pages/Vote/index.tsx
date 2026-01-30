@@ -240,13 +240,13 @@ export default function VoteIndex({ events }: Props) {
                                                     )}
 
                                                     {/* Image Section */}
-                                                    <div className="w-24 sm:w-full sm:h-56 shrink-0 bg-slate-100 relative overflow-hidden">
+                                                    <div className="w-24 h-24 sm:w-full sm:h-auto sm:aspect-square shrink-0 bg-slate-100 relative overflow-hidden">
                                                         {photoUrl ? (
                                                             <img
                                                                 src={photoUrl}
                                                                 alt={candidate.name}
                                                                 className={cn(
-                                                                    "w-full h-full object-cover transition-transform duration-500",
+                                                                    "w-full h-full object-cover object-top transition-transform duration-500",
                                                                     selected ? "scale-105" : "group-hover:scale-105"
                                                                 )}
                                                             />
