@@ -215,12 +215,12 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                                             <span >{voter.event.name}</span>
                                         </TableCell>
                                         <TableCell className="text-sm gap-2 flex justify-end">
-                                            <span
+                                            <Link
+                                                href={`/voter/${voter.id}/edit`}
                                                 className="cursor-pointer text-green-500 hover:text-green-700 hover:underline"
-
                                             >
                                                 Edit
-                                            </span>
+                                            </Link>
                                             <span
                                                 className="text-red-500 cursor-pointer hover:text-orange-700 hover:underline"
 

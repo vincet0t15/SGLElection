@@ -95,4 +95,46 @@ class VoterController extends Controller
 
         return redirect()->route('voter.index')->with('success', 'Voter created successfully.');
     }
+
+    public function edit(Voter $voter)
+    {
+        return Inertia::render('Voter/edit', [
+            'voter' => $voter,
+            'yearLevels' => \App\Models\YearLevel::all(),
+            'yearSections' => \App\Models\YearSection::all(),
+            'events' => Event::where('is_active', true)->get(),
+        ]);
+    }
+
+    public function update(Request $request, Voter $voter)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'lrn_number' => 'required|string|unique:voters,lrn_number,' . $voter->id,
+            'username' => 'required|string|unique:voters,username,' . $voter->id,
+            'password' => 'nullable|string|min:8',
+            'year_level_id' => 'required|exists:year_levels,id',
+            'year_section_id' => 'required|exists:year_sections,id',
+            'event_id' => 'required|exists:events,id',
+            'is_active' => 'boolean',
+        ]);
+
+        $voter->update([
+            'name' => $validated['name'],
+            'lrn_number' => $validated['lrn_number'],
+            'username' => $validated['username'],
+            'year_level_id' => $validated['year_level_id'],
+            'year_section_id' => $validated['year_section_id'],
+            'event_id' => $validated['event_id'],
+            'is_active' => $validated['is_active'] ?? $voter->is_active,
+        ]);
+
+        if ($request->filled('password')) {
+            $voter->update([
+                'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            ]);
+        }
+
+        return redirect()->route('voter.index')->with('success', 'Voter updated successfully.');
+    }
 }
