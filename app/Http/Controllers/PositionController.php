@@ -30,7 +30,7 @@ class PositionController extends Controller
             })
             ->with('event')
             ->with('yearLevels')
-            ->orderBy('name', 'asc')
+            ->orderBy('id', 'asc')
             ->paginate(20)
             ->withQueryString();
 
