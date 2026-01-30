@@ -107,68 +107,70 @@ export default function ResultsIndex({ event, positions }: Props) {
     const showResults = !event?.is_active || isTimeUp;
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
+        <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/50 text-foreground pb-20">
             <Head title="Election Results" />
 
-            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6 container mx-auto py-10">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Election Results</h1>
-                        <p className="text-muted-foreground">
-                            {event ? `Showing results for ${event.name}` : 'No active event found'}
+            {/* Hero Section with Countdown */}
+            <div className="bg-white dark:bg-slate-900 border-b shadow-sm mb-8">
+                <div className="container mx-auto py-12 px-4 md:px-6 flex flex-col items-center justify-center text-center space-y-6">
+                    <div className="space-y-2">
+                        <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                            Election Results
+                        </h1>
+                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                            {event ? `Live updates for ${event.name}` : 'No active event found'}
                         </p>
                     </div>
-                    {event && event.is_active && !isTimeUp && (
-                        <div className="flex items-center gap-4">
-                            {timeLeft && (
-                                <div className="hidden md:flex flex-col items-end">
-                                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-lg bg-emerald-100 dark:bg-emerald-900/20 px-4 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800">
-                                        <Clock className="h-5 w-5 animate-pulse" />
-                                        <span>
-                                            {timeLeft.days > 0 && `${timeLeft.days}d `}
-                                            {String(timeLeft.hours).padStart(2, '0')}:
-                                            {String(timeLeft.minutes).padStart(2, '0')}:
-                                            {String(timeLeft.seconds).padStart(2, '0')}
-                                        </span>
-                                        <span className="text-xs font-sans text-emerald-600/80 dark:text-emerald-500 ml-1 uppercase font-semibold">remaining</span>
+
+                    {event && event.is_active && !isTimeUp && timeLeft && (
+                        <div className="flex flex-col items-center animate-in fade-in zoom-in duration-500">
+                            <div className="flex items-center gap-2 mb-2 text-sm font-medium text-emerald-600 uppercase tracking-widest">
+                                <Clock className="w-4 h-4 animate-pulse" />
+                                Voting Ends In
+                            </div>
+                            <div className="grid grid-cols-4 gap-3 md:gap-6">
+                                {[
+                                    { label: 'Days', value: timeLeft.days },
+                                    { label: 'Hours', value: timeLeft.hours },
+                                    { label: 'Minutes', value: timeLeft.minutes },
+                                    { label: 'Seconds', value: timeLeft.seconds }
+                                ].map((item, i) => (
+                                    <div key={i} className="flex flex-col items-center">
+                                        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 w-16 h-20 md:w-24 md:h-28 flex items-center justify-center mb-2 relative overflow-hidden group">
+                                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50/50 dark:to-slate-900/50 pointer-events-none" />
+                                            <span className="text-3xl md:text-5xl font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums group-hover:scale-110 transition-transform duration-300">
+                                                {String(item.value).padStart(2, '0')}
+                                            </span>
+                                        </div>
+                                        <span className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider">{item.label}</span>
                                     </div>
-                                    <span className="text-[10px] text-muted-foreground mt-1 mr-2 font-medium">
-                                        Ends: {new Date(event.dateTime_end).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium' })}
+                                ))}
+                            </div>
+                            <div className="mt-6">
+                                <Badge variant="outline" className="border-emerald-500/50 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-1 animate-pulse shadow-sm">
+                                    <span className="relative flex h-2 w-2 mr-2">
+                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                     </span>
-                                </div>
-                            )}
-                            <Badge variant="outline" className="border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 animate-pulse">
-                                Live Updates
+                                    Live Updates Enabled
+                                </Badge>
+                            </div>
+                        </div>
+                    )}
+
+                    {event && (event.is_active && isTimeUp) && (
+                        <div className="flex flex-col items-center">
+                            <Badge className="bg-emerald-600 text-white hover:bg-emerald-700 px-6 py-2 text-base shadow-md">
+                                Voting Ended - Results Finalized
                             </Badge>
                         </div>
                     )}
-                    {event && (event.is_active && isTimeUp) && (
-                        <Badge variant="outline" className="border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20">
-                            Voting Ended - Results Finalized
-                        </Badge>
-                    )}
                 </div>
+            </div>
 
-                {/* Mobile Countdown */}
-                {event && event.is_active && timeLeft && !isTimeUp && (
-                    <div className="md:hidden flex flex-col gap-2">
-                        <div className="flex items-center justify-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-xl bg-emerald-100 dark:bg-emerald-900/20 px-4 py-3 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-sm">
-                            <Clock className="h-5 w-5 animate-pulse" />
-                            <span>
-                                {timeLeft.days > 0 && `${timeLeft.days}d `}
-                                {String(timeLeft.hours).padStart(2, '0')}:
-                                {String(timeLeft.minutes).padStart(2, '0')}:
-                                {String(timeLeft.seconds).padStart(2, '0')}
-                            </span>
-                        </div>
-                        <div className="text-center text-xs text-muted-foreground font-medium">
-                            Ends: {new Date(event.dateTime_end).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium' })}
-                        </div>
-                    </div>
-                )}
-
+            <div className="container mx-auto px-4 md:px-6 flex flex-col gap-10">
                 {!event ? (
-                    <Card className="border-dashed border-2">
+                    <Card className="border-dashed border-2 max-w-lg mx-auto mt-10">
                         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                             <div className="bg-muted/50 p-4 rounded-full mb-4">
                                 <AlertCircle className="h-8 w-8 text-muted-foreground" />
@@ -180,140 +182,172 @@ export default function ResultsIndex({ event, positions }: Props) {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="flex flex-col gap-10">
+                    <div className="grid gap-8 max-w-5xl mx-auto w-full">
                         {positions.map((position) => {
                             const totalVotes = getTotalVotes(position.candidates);
+                            
+                            // Sort candidates by votes just to be safe, though controller likely does it
+                            const sortedCandidates = [...position.candidates].sort((a, b) => b.votes_count - a.votes_count);
 
                             return (
-                                <div key={position.id} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                                    <div className="flex items-center justify-between border-b pb-2">
-                                        <div>
-                                            <h2 className="text-2xl font-bold text-primary tracking-tight">{position.name}</h2>
-                                            <p className="text-sm text-muted-foreground">
-                                                Top {position.max_votes} {position.max_votes > 1 ? 'candidates' : 'candidate'} will win
-                                            </p>
+                                <Card key={position.id} className="overflow-hidden border-none shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                    <CardHeader className="bg-slate-50/80 dark:bg-slate-800/50 border-b pb-4">
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                            <div>
+                                                <CardTitle className="text-2xl font-bold text-slate-800 dark:text-slate-100">{position.name}</CardTitle>
+                                                <CardDescription className="mt-1">
+                                                    Top {position.max_votes} {position.max_votes > 1 ? 'candidates' : 'candidate'} will win
+                                                </CardDescription>
+                                            </div>
+                                            <Badge variant="secondary" className="w-fit text-sm px-3 py-1 bg-white dark:bg-slate-800 border shadow-sm">
+                                                Total Votes: {totalVotes.toLocaleString()}
+                                            </Badge>
                                         </div>
-                                        <Badge variant="outline" className="text-base py-1 px-3">
-                                            Total Votes: {totalVotes.toLocaleString()}
-                                        </Badge>
-                                    </div>
-
-                                    <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
-                                        <Table>
-                                            <TableHeader className="bg-muted/50">
-                                                <TableRow>
-                                                    <TableHead className="w-[80px] text-center font-bold">Rank</TableHead>
-                                                    <TableHead className="font-bold">Candidate Info</TableHead>
-                                                    <TableHead className="text-right font-bold w-[150px]">Votes</TableHead>
-                                                    <TableHead className="w-[30%] font-bold">Percentage</TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {position.candidates.length === 0 ? (
-                                                    <TableRow>
-                                                        <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                                                            No candidates for this position.
-                                                        </TableCell>
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        <div className="overflow-x-auto">
+                                            <Table>
+                                                <TableHeader className="bg-muted/30">
+                                                    <TableRow className="hover:bg-transparent">
+                                                        <TableHead className="w-[80px] text-center font-bold">Rank</TableHead>
+                                                        <TableHead className="font-bold min-w-[200px]">Candidate</TableHead>
+                                                        <TableHead className="text-right font-bold w-[120px]">Votes</TableHead>
+                                                        <TableHead className="w-[35%] min-w-[150px] font-bold">Percentage</TableHead>
                                                     </TableRow>
-                                                ) : (
-                                                    position.candidates.map((candidate, index) => {
-                                                        const percentage = totalVotes > 0
-                                                            ? Math.round((candidate.votes_count / totalVotes) * 100)
-                                                            : 0;
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {sortedCandidates.length === 0 ? (
+                                                        <TableRow>
+                                                            <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
+                                                                No candidates for this position.
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ) : (
+                                                        sortedCandidates.map((candidate, index) => {
+                                                            const percentage = totalVotes > 0
+                                                                ? Math.round((candidate.votes_count / totalVotes) * 100)
+                                                                : 0;
 
+                                                            const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0;
+                                                            const rank = index + 1;
+                                                            
+                                                            // Distinct styles for Top 3
+                                                            let rowClass = "transition-all duration-300";
+                                                            let rankBadgeClass = "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
+                                                            
+                                                            if (isWinner) {
+                                                                if (rank === 1) {
+                                                                    rowClass = "bg-yellow-50/60 dark:bg-yellow-900/10 hover:bg-yellow-50 dark:hover:bg-yellow-900/20";
+                                                                    rankBadgeClass = "bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400/50 dark:bg-yellow-900/40 dark:text-yellow-400";
+                                                                } else if (rank === 2) {
+                                                                    rowClass = "bg-slate-50/60 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800/50";
+                                                                    rankBadgeClass = "bg-slate-200 text-slate-700 ring-2 ring-slate-400/50 dark:bg-slate-700 dark:text-slate-300";
+                                                                } else if (rank === 3) {
+                                                                    rowClass = "bg-orange-50/60 dark:bg-orange-900/10 hover:bg-orange-50 dark:hover:bg-orange-900/20";
+                                                                    rankBadgeClass = "bg-orange-100 text-orange-800 ring-2 ring-orange-400/50 dark:bg-orange-900/40 dark:text-orange-400";
+                                                                } else {
+                                                                    rowClass = "bg-emerald-50/30 dark:bg-emerald-900/10 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/20";
+                                                                    rankBadgeClass = "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-400/30 dark:bg-emerald-900/40 dark:text-emerald-400";
+                                                                }
+                                                            } else {
+                                                                rowClass = "hover:bg-muted/30";
+                                                            }
 
-                                                        const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0; const isSecond = showResults && !isWinner && index === 1 && candidate.votes_count > 0;
-                                                        const isThird = showResults && !isWinner && index === 2 && candidate.votes_count > 0;
-                                                        const showDetails = showResults;
-
-                                                        return (
-                                                            <TableRow
-                                                                key={candidate.id}
-                                                                className={`transition-colors ${isWinner ? 'bg-emerald-50/50 dark:bg-emerald-900/10 hover:bg-emerald-100/50 dark:hover:bg-emerald-900/20' : 'hover:bg-muted/50'}`}
-                                                            >
-                                                                <TableCell className="text-center">
-                                                                    <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold mx-auto shadow-sm
-                                                                        ${isWinner
-                                                                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 ring-2 ring-emerald-500/20'
-                                                                            : 'bg-muted text-muted-foreground'
-                                                                        }`}>
-                                                                        {index + 1}
-                                                                    </div>
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <div className="flex items-center gap-4">
-                                                                        <div className="relative shrink-0">
-                                                                            <Avatar className={`h-12 w-12 border-2 shadow-sm ${isWinner ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-border'}`}>
-                                                                                {showDetails ? (
-                                                                                    <AvatarImage
-                                                                                        src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
-                                                                                        alt={candidate.name}
-                                                                                        className="object-cover"
-                                                                                    />
-                                                                                ) : null}
-                                                                                <AvatarFallback className={!showDetails ? "bg-emerald-100 dark:bg-emerald-900/30 animate-pulse" : "bg-muted"}>
-                                                                                    {showDetails ? (
-                                                                                        <User className="h-5 w-5 text-muted-foreground" />
-                                                                                    ) : (
-                                                                                        <HelpCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                                                                    )}
-                                                                                </AvatarFallback>
-                                                                            </Avatar>
-                                                                            {isWinner && (
-                                                                                <div className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white p-1 rounded-full shadow-md animate-in zoom-in duration-300">
-                                                                                    <Trophy className="h-3 w-3 fill-current" />
-                                                                                </div>
-                                                                            )}
-                                                                            {isSecond && (
-                                                                                <div className="absolute -top-1.5 -right-1.5 bg-slate-400 text-white p-1 rounded-full shadow-md">
-                                                                                    <Medal className="h-3 w-3 fill-current" />
-                                                                                </div>
-                                                                            )}
-                                                                            {isThird && (
-                                                                                <div className="absolute -top-1.5 -right-1.5 bg-amber-700 text-white p-1 rounded-full shadow-md">
-                                                                                    <Medal className="h-3 w-3 fill-current" />
-                                                                                </div>
-                                                                            )}
+                                                            return (
+                                                                <TableRow key={candidate.id} className={rowClass}>
+                                                                    <TableCell className="text-center py-4">
+                                                                        <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold mx-auto shadow-sm transition-transform hover:scale-110 ${rankBadgeClass}`}>
+                                                                            {rank}
                                                                         </div>
-                                                                        <div>
-                                                                            <h4 className={`font-bold text-base leading-none ${isWinner ? 'text-emerald-700 dark:text-emerald-500' : ''} ${!showDetails ? 'text-emerald-600 dark:text-emerald-400 italic' : ''}`}>
-                                                                                {showDetails ? candidate.name : "Tallying..."}
-                                                                            </h4>
-                                                                            {showDetails && (
-                                                                                <p className="text-xs text-muted-foreground mt-1">
-                                                                                    {candidate.year_level?.name} - {candidate.year_section?.name}
-                                                                                </p>
-                                                                            )}
-                                                                            <span className="text-sm font-medium text-muted-foreground">
-                                                                                {showDetails ? (candidate.partylist?.name || 'Independent') : '---'}
-                                                                            </span>
+                                                                    </TableCell>
+                                                                    <TableCell className="py-4">
+                                                                        <div className="flex items-center gap-4">
+                                                                            <div className="relative shrink-0">
+                                                                                <Avatar className={`h-12 w-12 md:h-14 md:w-14 border-2 shadow-sm transition-transform duration-300 hover:scale-105 ${isWinner ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200 dark:border-slate-700'}`}>
+                                                                                    {showResults ? (
+                                                                                        <AvatarImage
+                                                                                            src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
+                                                                                            alt={candidate.name}
+                                                                                            className="object-cover"
+                                                                                        />
+                                                                                    ) : null}
+                                                                                    <AvatarFallback className={!showResults ? "bg-emerald-100 dark:bg-emerald-900/30 animate-pulse" : "bg-slate-100 dark:bg-slate-800"}>
+                                                                                        {showResults ? (
+                                                                                            <User className="h-6 w-6 text-slate-400" />
+                                                                                        ) : (
+                                                                                            <HelpCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                                                                                        )}
+                                                                                    </AvatarFallback>
+                                                                                </Avatar>
+                                                                                {isWinner && rank === 1 && (
+                                                                                    <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 p-1.5 rounded-full shadow-lg animate-in zoom-in duration-500 border-2 border-white dark:border-slate-900">
+                                                                                        <Trophy className="h-3 w-3 md:h-4 md:w-4 fill-current" />
+                                                                                    </div>
+                                                                                )}
+                                                                                {isWinner && rank === 2 && (
+                                                                                    <div className="absolute -top-2 -right-2 bg-slate-300 text-slate-800 p-1.5 rounded-full shadow-lg border-2 border-white dark:border-slate-900">
+                                                                                        <Medal className="h-3 w-3 md:h-4 md:w-4 fill-current" />
+                                                                                    </div>
+                                                                                )}
+                                                                                {isWinner && rank === 3 && (
+                                                                                    <div className="absolute -top-2 -right-2 bg-orange-400 text-orange-900 p-1.5 rounded-full shadow-lg border-2 border-white dark:border-slate-900">
+                                                                                        <Medal className="h-3 w-3 md:h-4 md:w-4 fill-current" />
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="flex flex-col">
+                                                                                <h4 className={`font-bold text-base md:text-lg leading-tight ${isWinner ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'} ${!showResults ? 'italic text-emerald-600 dark:text-emerald-400' : ''}`}>
+                                                                                    {showResults ? candidate.name : "Tallying..."}
+                                                                                </h4>
+                                                                                {showResults && (
+                                                                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs md:text-sm text-muted-foreground mt-1">
+                                                                                        <span className="font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded">
+                                                                                            {candidate.partylist?.name || 'Independent'}
+                                                                                        </span>
+                                                                                        <span className="hidden sm:inline">•</span>
+                                                                                        <span>
+                                                                                            {candidate.year_level?.name} {candidate.year_section?.name && `- ${candidate.year_section.name}`}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                </TableCell>
+                                                                    </TableCell>
 
-                                                                <TableCell className="text-right">
-                                                                    <div className="font-mono text-lg font-bold leading-none">
-                                                                        {candidate.votes_count.toLocaleString()}
-                                                                    </div>
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <div className="flex items-center gap-3">
-                                                                        <Progress
-                                                                            value={percentage}
-                                                                            className={`h-2.5 flex-1 bg-muted/50 ${isWinner ? 'bg-emerald-100/50 dark:bg-emerald-900/20' : ''}`}
-                                                                            indicatorClassName={`transition-all duration-500 ${isWinner ? 'bg-emerald-500' : 'bg-primary/70'}`}
-                                                                        />
-                                                                        <span className="text-xs font-medium w-10 text-right">{percentage}%</span>
-                                                                    </div>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        );
-                                                    })
-                                                )}
-                                            </TableBody>
-                                        </Table>
-                                    </div>
-                                </div>
+                                                                    <TableCell className="text-right py-4">
+                                                                        <div className="font-mono text-lg md:text-xl font-bold leading-none text-slate-800 dark:text-slate-100">
+                                                                            {candidate.votes_count.toLocaleString()}
+                                                                        </div>
+                                                                    </TableCell>
+                                                                    <TableCell className="py-4 pr-6">
+                                                                        <div className="flex flex-col gap-1.5">
+                                                                            <div className="flex items-center justify-between text-xs font-medium">
+                                                                                <span className={isWinner ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}>
+                                                                                    {percentage}%
+                                                                                </span>
+                                                                            </div>
+                                                                            <Progress
+                                                                                value={percentage}
+                                                                                className={`h-3 rounded-full bg-slate-100 dark:bg-slate-800 ${isWinner ? 'bg-emerald-100/50 dark:bg-emerald-900/20' : ''}`}
+                                                                                indicatorClassName={`transition-all duration-1000 ease-out rounded-full ${
+                                                                                    rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' :
+                                                                                    rank === 2 ? 'bg-gradient-to-r from-slate-400 to-slate-500' :
+                                                                                    rank === 3 ? 'bg-gradient-to-r from-orange-400 to-orange-500' :
+                                                                                    isWinner ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+                                                                                    'bg-slate-300 dark:bg-slate-600'
+                                                                                }`}
+                                                                            />
+                                                                        </div>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            );
+                                                        })
+                                                    )}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+                                    </CardContent>
+                                </Card>
                             );
                         })}
                     </div>
