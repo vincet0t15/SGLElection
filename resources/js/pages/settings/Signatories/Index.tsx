@@ -17,7 +17,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog';
 import {
     Select,
@@ -155,7 +154,7 @@ export default function Signatories({ signatories, events }: Props) {
 
                 <div className="rounded-md border">
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
                                 <TableHead>Order</TableHead>
                                 <TableHead>Event</TableHead>
@@ -174,7 +173,7 @@ export default function Signatories({ signatories, events }: Props) {
                                 </TableRow>
                             ) : (
                                 signatories.map((signatory) => (
-                                    <TableRow key={signatory.id}>
+                                    <TableRow key={signatory.id} className='text-sm'>
                                         <TableCell>{signatory.order}</TableCell>
                                         <TableCell>
                                             {signatory.event ? (
@@ -205,21 +204,8 @@ export default function Signatories({ signatories, events }: Props) {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => handleEdit(signatory)}
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="text-destructive hover:text-destructive"
-                                                    onClick={() => handleDelete(signatory)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
+                                                <span className='hover:underline hover:text-teal-900 hover:font-bold cursor-pointer text-teal-800 ' onClick={() => handleEdit(signatory)}>Edit</span>
+                                                <span className='hover:underline hover:text-red-900 hover:font-bold cursor-pointer text-red-800' onClick={() => handleDelete(signatory)}>Delete</span>
                                             </div>
                                         </TableCell>
                                     </TableRow>
