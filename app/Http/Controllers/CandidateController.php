@@ -38,7 +38,7 @@ class CandidateController extends Controller
             })
             ->orderBy('event_id')
             ->orderBy('position_id')
-            ->paginate(10)
+            ->paginate(100)
             ->withQueryString();
 
         $events = Event::query()->where('is_active', true)->get();
@@ -47,7 +47,7 @@ class CandidateController extends Controller
             ->with('section')
             ->orderBy('name', 'asc')
             ->get();
-        
+
         $yearSections = YearSection::all();
 
         return Inertia::render('Candidate/index', [
