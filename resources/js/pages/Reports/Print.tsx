@@ -173,6 +173,17 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
                 @media print {
                     @page { margin: 0; size: auto; }
                     body { margin: 10mm; -webkit-print-color-adjust: exact; }
+                       table {
+                        border-collapse: collapse;
+                    }
+
+                    td {
+                        padding: 4px 6px !important;
+                        font-size: 12px;
+                        page-break-inside: avoid;
+                    }
+
+                    
                 }
             `}</style>
         </div>
