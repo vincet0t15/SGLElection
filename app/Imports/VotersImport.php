@@ -18,13 +18,13 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
     public function model(array $row)
     {
         return new Voter([
-            'name'            => $row['name'],
-            'lrn_number'      => $row['lrn_number'],
-            'username'        => $row['username'],
-            'password'        => Hash::make($row['password']),
-            'year_level_id'   => $row['year_level_id'],
-            'year_section_id' => $row['year_section_id'],
-            'event_id'        => $row['event_id'],
+            'name'            => $row['NAME'],
+            'lrn_number'      => $row['LRN NUMBER'],
+            'username'        => $row['USERNAME'],
+            'password'        => Hash::make($row['PASSWORD']),
+            'year_level_id'   => $row['GRADE LEVEL'],
+            'year_section_id' => $row['SECTION'],
+            'event_id'        => $row['EVENT'],
             'is_active'       => true,
         ]);
     }

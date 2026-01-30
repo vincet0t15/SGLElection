@@ -19,7 +19,6 @@ class Voter extends Authenticatable
         'lrn_number',
         'year_level_id',
         'year_section_id',
-        'is_active',
         'event_id',
     ];
 
