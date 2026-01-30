@@ -86,7 +86,6 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
 
     const handleYearLevelFilter = (value: string) => {
         setYearLevelId(value);
-        // Reset section filter when year level changes
         setYearSectionId('all');
         updateFilters({
             year_level_id: value === 'all' ? undefined : value,

@@ -24,9 +24,11 @@ class VoterController extends Controller
 
         $voters = Voter::query()
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('lrn_number', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('lrn_number', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%");
+                });
             })
             ->when($eventId, function ($query, $eventId) {
                 $query->where('event_id', $eventId);
@@ -91,6 +93,6 @@ class VoterController extends Controller
             'is_active' => true,
         ]);
 
-        return redirect()->back()->with('success', 'Voter created successfully.');
+        return redirect()->route('voter.index')->with('success', 'Voter created successfully.');
     }
 }
