@@ -33,12 +33,12 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
     };
 
     return (
-        <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[210mm] mx-auto font-sans">
+        <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[300mm] mx-auto font-sans">
             <Head title={`Official Result - ${event.name}`} />
 
             {/* Print controls - hidden when printing */}
-            <div className="print:hidden mb-8 flex justify-between items-center border-b pb-4">
-                <h1 className="text-xl font-bold">Print Preview</h1>
+            <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4">
+
                 <button
                     onClick={() => window.print()}
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"
@@ -72,7 +72,7 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
                         </p>
                     </div>
                     <div className="text-right pt-2">
-                        <p className="text-xs font-mono text-gray-500">Ref: {event.id}-{new Date().getFullYear()}</p>
+                        <p className="text-xs  text-gray-500">Ref: {event.id}-{new Date().getFullYear()}</p>
                     </div>
                 </div>
 
@@ -123,10 +123,10 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
                                                         <td className="py-2 px-4 border-r border-black uppercase font-medium">
                                                             {rank}. {candidate.name} <span className="text-gray-600 font-normal">{partylistName}</span>
                                                         </td>
-                                                        <td className="py-2 px-4 w-32 text-center border-r border-black font-mono">
+                                                        <td className="py-2 px-4 w-32 text-center border-r border-black ">
                                                             {candidate.votes_count?.toLocaleString()}
                                                         </td>
-                                                        <td className="py-2 px-4 w-32 text-center font-mono">
+                                                        <td className="py-2 px-4 w-32 text-center ">
                                                             {percentage}%
                                                         </td>
                                                     </tr>
@@ -171,8 +171,8 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
 
             <style>{`
                 @media print {
-                    @page { margin: 15mm; size: auto; }
-                    body { margin: 0; -webkit-print-color-adjust: exact; }
+                    @page { margin: 0; size: auto; }
+                    body { margin: 10mm; -webkit-print-color-adjust: exact; }
                 }
             `}</style>
         </div>

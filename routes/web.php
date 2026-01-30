@@ -8,11 +8,15 @@ use App\Http\Controllers\VoteController;
 use App\Http\Controllers\YearLevelController;
 use App\Http\Controllers\YearSectionController;
 use App\Http\Middleware\RedirectVoter;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
+    if (Auth::guard('web')->check()) {
+        return redirect()->route('dashboard');
+    }
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
     ]);
