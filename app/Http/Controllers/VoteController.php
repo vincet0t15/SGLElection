@@ -39,6 +39,7 @@ class VoteController extends Controller
                 'positions.candidates.candidatePhotos',
                 'positions.candidates.yearLevel',
                 'positions.candidates.yearSection',
+                'positions.candidates.partylist',
             ])
             ->get();
 

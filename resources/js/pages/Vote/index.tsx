@@ -4,7 +4,7 @@ import { EventProps } from '@/types/event';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, User, Info, Vote } from 'lucide-react';
+import { Check, User, Vote, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import vote from '@/routes/vote';
@@ -25,6 +25,7 @@ export default function VoteIndex({ events }: Props) {
     // State to store votes: { [positionId]: [candidateId1, candidateId2, ...] }
     const [votes, setVotes] = useState<Record<number, number[]>>({});
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Calculate progress
     const totalPositions = useMemo(() => {
@@ -75,6 +76,7 @@ export default function VoteIndex({ events }: Props) {
     };
 
     const confirmSubmit = () => {
+        setIsSubmitting(true);
         router.post((vote.store().url), { votes }, {
             onSuccess: () => {
                 toast.success("Votes submitted successfully!");
@@ -86,6 +88,9 @@ export default function VoteIndex({ events }: Props) {
                     toast.error(error);
                 });
                 setIsConfirmOpen(false);
+            },
+            onFinish: () => {
+                setIsSubmitting(false);
             }
         });
     };
@@ -110,92 +115,106 @@ export default function VoteIndex({ events }: Props) {
     };
 
     return (
-        <div className="min-h-screen bg-emerald-50/30 pb-20 font-sans">
-            <Head title="Vote" />
-            <Toaster richColors position="top-right" />
+        <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-24">
+            <Head title="Official Ballot" />
+            <Toaster richColors position="top-center" />
 
-            {/* Sticky Header with Progress */}
-            <header className="sticky top-0 z-50 w-full border-b border-emerald-100 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
-                <div className="container mx-auto max-w-7xl px-4 md:px-8 h-16 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-2">
-                        <div className="bg-emerald-100 p-2 rounded-lg">
-                            <Vote className="h-6 w-6 text-emerald-600" />
+            {/* Top Navigation / Progress Bar */}
+            <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
+                <div className="container mx-auto max-w-5xl px-4 h-16 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-blue-600 text-white p-2 rounded-lg shadow-blue-200 shadow-md">
+                            <Vote className="h-5 w-5" />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight hidden md:block text-emerald-950">Official Ballot</h1>
-                    </div>
-
-                    <div className="flex-1 max-w-md flex flex-col gap-1.5">
-                        <div className="flex items-center justify-between text-xs font-medium text-emerald-700">
-                            <span>Voting Progress</span>
-                            <span>{votedPositions} of {totalPositions} positions</span>
-                        </div>
-                        {/* Custom Green Progress Bar */}
-                        <div className="h-2 w-full bg-emerald-100 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-emerald-500 transition-all duration-500 ease-out"
-                                style={{ width: `${progressPercentage}%` }}
-                            />
+                        <div>
+                            <h1 className="text-lg font-bold leading-none text-slate-900">Official Ballot</h1>
+                            <p className="text-xs text-slate-500 font-medium mt-1">
+                                {votedPositions} of {totalPositions} positions filled
+                            </p>
                         </div>
                     </div>
 
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={votedPositions === 0}
-                        className="hidden md:flex bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 shadow-lg"
-                    >
-                        Review & Submit
-                    </Button>
+                    <div className="flex items-center gap-4">
+                        {/* Progress Bar (Desktop) */}
+                        <div className="hidden md:flex flex-col w-48 gap-1.5">
+                            <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-blue-600 transition-all duration-500 ease-out"
+                                    style={{ width: `${progressPercentage}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={votedPositions === 0}
+                            className={cn(
+                                "hidden md:flex shadow-md transition-all",
+                                votedPositions === totalPositions
+                                    ? "bg-green-600 hover:bg-green-700 text-white shadow-green-200"
+                                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200"
+                            )}
+                        >
+                            {votedPositions === totalPositions ? 'Submit Vote' : 'Review & Submit'}
+                            <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+                {/* Mobile Progress Bar (Slim) */}
+                <div className="md:hidden w-full h-1 bg-slate-100">
+                    <div
+                        className="h-full bg-blue-600 transition-all duration-500 ease-out"
+                        style={{ width: `${progressPercentage}%` }}
+                    />
                 </div>
             </header>
 
-            <main className="container mx-auto max-w-7xl px-4 md:px-8 py-8 space-y-8">
+            <main className="container mx-auto max-w-5xl px-4 py-8 space-y-10">
                 {events.length === 0 ? (
-                    <Card className="border-dashed border-emerald-200 bg-emerald-50/50">
-                        <CardContent className="pt-6 pb-6 text-center text-emerald-600 flex flex-col items-center gap-2">
-                            <Info className="h-10 w-10 text-emerald-400" />
-                            <p>No active election events found.</p>
-                        </CardContent>
-                    </Card>
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <div className="bg-slate-100 p-4 rounded-full mb-4">
+                            <AlertCircle className="h-10 w-10 text-slate-400" />
+                        </div>
+                        <h2 className="text-xl font-semibold text-slate-700">No Active Elections</h2>
+                        <p className="text-slate-500 mt-2">There are no election events available for you at this time.</p>
+                    </div>
                 ) : (
                     events.map((event) => (
-                        <div key={event.id} className="space-y-12 animate-in fade-in duration-500">
-                            {/* Event Banner */}
-                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white p-6 md:p-10 shadow-xl shadow-emerald-200/50">
-                                <div className="relative z-10">
-                                    <Badge className="mb-3 bg-white/20 hover:bg-white/30 text-white border-none backdrop-blur-sm">
-                                        Official Election
-                                    </Badge>
-                                    <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">
-                                        {event.name}
-                                    </h2>
-                                    <p className="text-emerald-50 max-w-2xl text-lg font-medium">
-                                        {event.description}
-                                    </p>
-                                </div>
-                                <div className="absolute right-0 top-0 h-full w-1/3 bg-white/10 skew-x-12 translate-x-12 mix-blend-overlay" />
-                                <div className="absolute -left-12 -bottom-12 h-40 w-40 bg-white/10 rounded-full blur-2xl" />
+                        <div key={event.id} className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            {/* Event Header */}
+                            <div className="text-center space-y-2 mb-10">
+                                <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-100 px-3 py-1">
+                                    {event.name}
+                                </Badge>
+                                <p className="text-slate-500 max-w-2xl mx-auto">{event.description}</p>
                             </div>
 
                             {event.positions.map((position) => (
-                                <section key={position.id} className="scroll-mt-24">
-                                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 border-b border-emerald-100 pb-4">
-                                        <div>
-                                            <h3 className="text-2xl font-bold text-emerald-950">{position.name}</h3>
-                                            <p className="text-emerald-600/80 mt-1">
-                                                Select up to <span className="font-semibold text-emerald-700">{position.max_votes}</span> candidate{position.max_votes > 1 ? 's' : ''}
-                                            </p>
+                                <section key={position.id} className="scroll-mt-24 relative">
+                                    {/* Position Header */}
+                                    <div className="flex items-center justify-between mb-6 sticky top-16 z-30 bg-slate-50/95 backdrop-blur py-3 border-b border-slate-200">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-8 w-1 bg-blue-600 rounded-full" />
+                                            <div>
+                                                <h3 className="text-xl font-bold text-slate-900">{position.name}</h3>
+                                                <p className="text-xs text-slate-500 font-medium">
+                                                    Vote for <span className="text-blue-600 font-bold">{position.max_votes}</span>
+                                                </p>
+                                            </div>
                                         </div>
-                                        <Badge variant="outline" className={cn(
-                                            "text-sm px-3 py-1 border-emerald-200",
+
+                                        <div className={cn(
+                                            "text-xs font-bold px-3 py-1.5 rounded-full transition-colors",
                                             (votes[position.id] || []).length === position.max_votes
-                                                ? "bg-emerald-100 text-emerald-700 border-emerald-300"
-                                                : "bg-transparent text-emerald-600"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-slate-200 text-slate-600"
                                         )}>
-                                            Selected: {(votes[position.id] || []).length} / {position.max_votes}
-                                        </Badge>
+                                            {(votes[position.id] || []).length} / {position.max_votes} Selected
+                                        </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {/* Candidates Grid */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                                         {position.candidates.map((candidate) => {
                                             const selected = isSelected(position.id, candidate.id);
                                             const photoUrl = candidate.candidate_photos && candidate.candidate_photos.length > 0
@@ -205,66 +224,72 @@ export default function VoteIndex({ events }: Props) {
                                             return (
                                                 <div
                                                     key={candidate.id}
-                                                    className={cn(
-                                                        "group relative cursor-pointer rounded-xl bg-white transition-all duration-300 overflow-hidden",
-                                                        selected
-                                                            ? "ring-2 ring-emerald-500 shadow-xl shadow-emerald-100/50 scale-[1.02]"
-                                                            : "border border-emerald-100/50 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-50/50 hover:-translate-y-1"
-                                                    )}
                                                     onClick={() => handleVote(position.id, candidate.id, position.max_votes)}
+                                                    className={cn(
+                                                        "group relative flex flex-row sm:flex-col bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-200 border",
+                                                        selected
+                                                            ? "border-blue-500 ring-1 ring-blue-500 shadow-lg shadow-blue-100 z-10"
+                                                            : "border-slate-200 hover:border-blue-300 hover:shadow-md"
+                                                    )}
                                                 >
-                                                    {/* Selection Overlay/Indicator */}
-                                                    <div className={cn(
-                                                        "absolute inset-x-0 top-0 h-1 transition-colors duration-300 z-20",
-                                                        selected ? "bg-emerald-500" : "bg-transparent group-hover:bg-emerald-400/50"
-                                                    )} />
-
+                                                    {/* Selected Indicator Icon */}
                                                     {selected && (
-                                                        <div className="absolute right-3 top-3 z-20 rounded-full bg-emerald-500 text-white p-1.5 shadow-md animate-in zoom-in duration-200">
-                                                            <Check className="h-4 w-4 stroke-[3]" />
+                                                        <div className="absolute top-2 right-2 z-20 bg-blue-600 text-white p-1 rounded-full shadow-sm animate-in zoom-in duration-200">
+                                                            <Check className="h-3 w-3 stroke-[4]" />
                                                         </div>
                                                     )}
 
-                                                    <div className="aspect-square w-full overflow-hidden bg-emerald-50 relative">
+                                                    {/* Image Section */}
+                                                    <div className="w-24 sm:w-full sm:h-56 shrink-0 bg-slate-100 relative overflow-hidden">
                                                         {photoUrl ? (
                                                             <img
                                                                 src={photoUrl}
                                                                 alt={candidate.name}
                                                                 className={cn(
-                                                                    "h-full w-full object-cover object-top transition-transform duration-500",
+                                                                    "w-full h-full object-cover transition-transform duration-500",
                                                                     selected ? "scale-105" : "group-hover:scale-105"
                                                                 )}
                                                             />
                                                         ) : (
-                                                            <div className="flex h-full w-full items-center justify-center bg-emerald-100/50 text-emerald-300">
-                                                                <User className="h-20 w-20" />
+                                                            <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                                <User className="h-10 w-10 sm:h-20 sm:w-20" />
+                                                            </div>
+                                                        )}
+                                                        {/* Gradient Overlay for Partylist on Mobile */}
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 sm:opacity-100 transition-opacity" />
+
+                                                        {/* Partylist Badge (Desktop Overlay) */}
+                                                        {candidate.partylist && (
+                                                            <div className="absolute bottom-2 left-2 hidden sm:block">
+                                                                <Badge variant="secondary" className="bg-white/90 text-slate-900 text-[10px] font-bold shadow-sm backdrop-blur-sm border-0">
+                                                                    {candidate.partylist.name}
+                                                                </Badge>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Content Section */}
+                                                    <div className="flex-1 p-4 flex flex-col justify-center sm:justify-start">
+                                                        {/* Partylist Badge (Mobile) */}
+                                                        {candidate.partylist && (
+                                                            <div className="mb-1 sm:hidden">
+                                                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
+                                                                    {candidate.partylist.name}
+                                                                </span>
                                                             </div>
                                                         )}
 
-                                                        {/* Gradient Overlay */}
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                                                            <span className={cn(
-                                                                "text-white font-medium text-sm px-4 py-1 rounded-full backdrop-blur-md shadow-sm",
-                                                                selected ? "bg-emerald-600/90" : "bg-emerald-900/40"
-                                                            )}>
-                                                                {selected ? "Selected" : "Click to Select"}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="p-5">
-                                                        <h4 className="font-bold text-lg leading-tight truncate text-center mb-2 text-emerald-950" title={candidate.name}>
+                                                        <h4 className={cn(
+                                                            "font-bold text-base sm:text-lg leading-tight text-slate-900 mb-1",
+                                                            selected && "text-blue-700"
+                                                        )}>
                                                             {candidate.name}
                                                         </h4>
 
-                                                        <div className="flex items-center justify-center gap-2 text-sm">
-                                                            <span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
-                                                                {candidate.year_level?.name}
-                                                            </span>
-                                                            <span className="text-xs text-emerald-300">•</span>
-                                                            <span className="truncate max-w-[100px] text-emerald-600/80 text-xs">
-                                                                {candidate.year_section?.name}
-                                                            </span>
+                                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 mt-1">
+                                                            <span className="font-medium">{candidate.year_level?.name}</span>
+                                                            <span className="w-1 h-1 rounded-full bg-slate-300" />
+                                                            <span>{candidate.year_section?.name}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -272,9 +297,8 @@ export default function VoteIndex({ events }: Props) {
                                         })}
 
                                         {position.candidates.length === 0 && (
-                                            <div className="col-span-full py-12 text-center text-emerald-400 bg-emerald-50/30 rounded-xl border border-dashed border-emerald-200 flex flex-col items-center gap-3">
-                                                <User className="h-10 w-10 text-emerald-200" />
-                                                <p>No candidates available for this position yet.</p>
+                                            <div className="col-span-full py-10 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                                                <p className="text-slate-400 text-sm">No candidates available for this position.</p>
                                             </div>
                                         )}
                                     </div>
@@ -285,58 +309,76 @@ export default function VoteIndex({ events }: Props) {
                 )}
             </main>
 
-            {/* Mobile Floating Action Button */}
-            <div className="fixed bottom-6 left-0 right-0 p-4 flex justify-center md:hidden z-40 pointer-events-none">
+            {/* Floating Mobile Action Button */}
+            <div className="fixed bottom-6 left-4 right-4 md:hidden z-50">
                 <Button
                     size="lg"
-                    className="shadow-xl shadow-emerald-900/20 w-full max-w-sm pointer-events-auto bg-emerald-600 hover:bg-emerald-700 text-white"
+                    className={cn(
+                        "w-full shadow-xl text-lg font-bold h-14",
+                        votedPositions === totalPositions
+                            ? "bg-green-600 hover:bg-green-700 shadow-green-900/20"
+                            : "bg-blue-600 hover:bg-blue-700 shadow-blue-900/20"
+                    )}
                     onClick={handleSubmit}
                     disabled={votedPositions === 0}
                 >
-                    Review & Submit ({votedPositions})
+                    {votedPositions === totalPositions ? (
+                        <>Submit Vote <Check className="ml-2 h-5 w-5" /></>
+                    ) : (
+                        <>Review ({votedPositions}) <ChevronRight className="ml-2 h-5 w-5" /></>
+                    )}
                 </Button>
             </div>
 
+            {/* Review Dialog */}
             <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-                <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="text-emerald-950">Review Your Votes</DialogTitle>
+                <DialogContent className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+                    <DialogHeader className="p-6 pb-2">
+                        <DialogTitle className="text-xl">Review Your Votes</DialogTitle>
                         <DialogDescription>
-                            Please review your selected candidates before submitting. This action cannot be undone.
+                            Please review your selections carefully. This action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-4 my-4">
-                        {getVoteSummary().length === 0 ? (
-                            <p className="text-center text-muted-foreground">No candidates selected.</p>
-                        ) : (
-                            getVoteSummary().map((item, index) => (
-                                <div key={index} className="border-b border-emerald-100 last:border-0 pb-3 last:pb-0">
-                                    <h4 className="font-semibold text-emerald-800 text-sm mb-1">{item.position}</h4>
-                                    <ul className="list-disc list-inside text-sm text-emerald-600">
-                                        {item.candidates.map((candidate, idx) => (
-                                            <li key={idx}>{candidate}</li>
+                    <div className="flex-1 px-6 py-2 overflow-y-auto">
+                        <div className="space-y-6">
+                            {getVoteSummary().map((item, idx) => (
+                                <div key={idx} className="border-b border-slate-100 last:border-0 pb-4 last:pb-0">
+                                    <h4 className="font-bold text-xs text-slate-500 uppercase tracking-wider mb-2">
+                                        {item.position}
+                                    </h4>
+                                    <div className="space-y-2">
+                                        {item.candidates.map((name, cIdx) => (
+                                            <div key={cIdx} className="flex items-center gap-2 bg-slate-50 p-2 rounded-md border border-slate-100">
+                                                <div className="bg-blue-100 text-blue-700 p-1 rounded-full">
+                                                    <User className="h-3 w-3" />
+                                                </div>
+                                                <span className="font-medium text-sm text-slate-900">{name}</span>
+                                            </div>
                                         ))}
-                                    </ul>
+                                    </div>
                                 </div>
-                            ))
-                        )}
-
-                        <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-sm text-amber-800 flex items-start gap-2 mt-4">
-                            <Info className="h-4 w-4 mt-0.5 shrink-0" />
-                            <p>
-                                You have selected candidates for <span className="font-semibold">{votedPositions}</span> out of <span className="font-semibold">{totalPositions}</span> positions.
-                                {votedPositions < totalPositions && " You can still vote for the remaining positions."}
-                            </p>
+                            ))}
+                            {getVoteSummary().length === 0 && (
+                                <p className="text-center text-slate-500 py-4">No votes selected.</p>
+                            )}
                         </div>
                     </div>
 
-                    <DialogFooter className="flex-col sm:flex-row gap-2">
-                        <Button variant="outline" onClick={() => setIsConfirmOpen(false)} className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800">
-                            Keep Voting
+                    <DialogFooter className="p-6 pt-2 bg-slate-50 border-t border-slate-100">
+                        <Button variant="outline" onClick={() => setIsConfirmOpen(false)} disabled={isSubmitting}>
+                            Back to Ballot
                         </Button>
-                        <Button onClick={confirmSubmit} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                            Confirm & Submit
+                        <Button
+                            onClick={confirmSubmit}
+                            disabled={isSubmitting}
+                            className="bg-blue-600 hover:bg-blue-700 min-w-[120px]"
+                        >
+                            {isSubmitting ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                "Submit Ballot"
+                            )}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
