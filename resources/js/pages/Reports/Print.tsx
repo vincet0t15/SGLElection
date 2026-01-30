@@ -182,8 +182,6 @@ export default function ReportsPrint({ event, positions, stats }: Props) {
                         font-size: 12px;
                         page-break-inside: avoid;
                     }
-
-                    
                 }
             `}</style>
         </div>
