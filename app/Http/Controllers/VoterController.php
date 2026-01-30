@@ -186,6 +186,14 @@ class VoterController extends Controller
         return back()->with('success', "Successfully {$statusText} {$count} voters.");
     }
 
+    public function toggleStatus(Voter $voter)
+    {
+
+        $voter->update(['is_active' => !$voter->is_active]);
+        $status = $voter->is_active ? true : false;
+        return back()->with('success', "Voter {$voter->name} has been {$status}.");
+    }
+
     public function store(Request $request)
     {
         $request->validate([

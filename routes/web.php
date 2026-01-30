@@ -79,6 +79,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::post('voter', [VoterController::class, 'store'])->name('voter.store');
     Route::get('voter/{voter}/edit', [VoterController::class, 'edit'])->name('voter.edit');
     Route::put('voter/{voter}', [VoterController::class, 'update'])->name('voter.update');
+    Route::patch('voter/{voter}/toggle-status', [VoterController::class, 'toggleStatus'])->name('voter.toggle-status');
     Route::delete('voter/{voter}', [VoterController::class, 'destroy'])->name('voter.destroy');
 });
 

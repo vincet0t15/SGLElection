@@ -14,6 +14,7 @@ import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import position from '@/routes/position';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -127,6 +128,16 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         if (yearSectionId !== 'all') params.append('year_section_id', yearSectionId);
 
         window.open(`/voter/print?${params.toString()}`, '_blank');
+    };
+
+    const handleToggleStatus = (voter: VoterProps) => {
+        router.visit(`/voter/${voter.id}/toggle-status`, {
+            method: 'patch',
+            preserveScroll: true,
+            onSuccess: () => {
+                // Toast handled by flash
+            }
+        });
     };
 
     const handleBulkInactive = () => {
@@ -278,7 +289,13 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                                         <TableCell>
                                             <span >{voter.event.name}</span>
                                         </TableCell>
-                                        <TableCell className="text-sm gap-2 flex justify-end">
+                                        <TableCell className="text-sm gap-2 flex justify-end items-center">
+                                            <div title={voter.is_active ? "Deactivate" : "Activate"}>
+                                                <Switch
+                                                    checked={Boolean(voter.is_active)}
+                                                    onCheckedChange={() => handleToggleStatus(voter)}
+                                                />
+                                            </div>
                                             <Link
                                                 href={`/voter/${voter.id}/edit`}
                                                 className="cursor-pointer text-green-500 hover:text-green-700 hover:underline"
@@ -287,7 +304,6 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                                             </Link>
                                             <span
                                                 className="text-red-500 cursor-pointer hover:text-orange-700 hover:underline"
-
                                             >
                                                 Delete
                                             </span>
