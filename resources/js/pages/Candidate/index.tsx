@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from 'sonner';
 import { PositionProps } from '@/types/position';
+import { PartylistProps } from '@/types/partylist';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -40,17 +41,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface Props {
     candidates: PaginatedDataResponse<CandidateProps>;
     events: EventProps[];
+    partylists: PartylistProps[];
     yearLevels: YearLevelProps[];
     yearSections: YearSectionProps[];
     filters: FilterProps;
 }
 
-export default function CandidateIndex({ candidates, events, yearLevels, yearSections, filters }: Props) {
+export default function CandidateIndex({ candidates, events, partylists, yearLevels, yearSections, filters }: Props) {
 
     const [search, setSearch] = useState(filters.search || '');
     const [eventId, setEventId] = useState<string>(filters.event_id ? String(filters.event_id) : 'all');
     const [yearLevelId, setYearLevelId] = useState<string>(filters.year_level_id ? String(filters.year_level_id) : 'all');
     const [yearSectionId, setYearSectionId] = useState<string>(filters.year_section_id ? String(filters.year_section_id) : 'all');
+    const [partylistId, setPartylistId] = useState<string>(filters.partylist_id ? String(filters.partylist_id) : 'all');
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
@@ -62,6 +65,7 @@ export default function CandidateIndex({ candidates, events, yearLevels, yearSec
             event_id: eventId === 'all' ? undefined : eventId,
             year_level_id: yearLevelId === 'all' ? undefined : yearLevelId,
             year_section_id: yearSectionId === 'all' ? undefined : yearSectionId,
+            partylist_id: partylistId === 'all' ? undefined : partylistId,
             ...newFilters
         }, {
             preserveState: true,
@@ -88,6 +92,11 @@ export default function CandidateIndex({ candidates, events, yearLevels, yearSec
         updateFilters({ year_section_id: value === 'all' ? undefined : value });
     }
 
+    const handlePartylistFilter = (value: string) => {
+        setPartylistId(value);
+        updateFilters({ partylist_id: value === 'all' ? undefined : value });
+    }
+
     const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (e.key === 'Enter') {
             updateFilters({});
@@ -98,6 +107,11 @@ export default function CandidateIndex({ candidates, events, yearLevels, yearSec
     const filteredSections = yearLevelId !== 'all'
         ? yearSections.filter(section => section.year_level_id.toString() === yearLevelId)
         : yearSections;
+
+    // Filter partylists based on selected event (optional but good for UX)
+    const filteredPartylists = eventId !== 'all'
+        ? partylists.filter(partylist => partylist.event_id.toString() === eventId)
+        : partylists;
 
     // Group candidates by position (preserving order)
     const groupedCandidates: { position: PositionProps | undefined, candidates: CandidateProps[] }[] = [];
@@ -168,6 +182,21 @@ export default function CandidateIndex({ candidates, events, yearLevels, yearSec
                                 ))}
                             </SelectContent>
                         </Select>
+
+                        <Select value={partylistId} onValueChange={handlePartylistFilter}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by Partylist" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Partylists</SelectItem>
+                                {filteredPartylists.map((partylist) => (
+                                    <SelectItem key={partylist.id} value={String(partylist.id)}>
+                                        {partylist.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
                         <div className="relative">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -199,8 +228,8 @@ export default function CandidateIndex({ candidates, events, yearLevels, yearSec
                                             <TableRow>
                                                 <TableHead className="w-[80px]">Photo</TableHead>
                                                 <TableHead className="text-primary font-bold">Name</TableHead>
-
-                                                <TableHead className="text-primary font-bold w-[120px]">Year/Section</TableHead>
+                                                {/* Position column removed as it's now a section header */}
+                                                <TableHead className="text-primary font-bold">Year/Section</TableHead>
                                                 <TableHead className="text-primary font-bold text-center w-25">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -223,7 +252,7 @@ export default function CandidateIndex({ candidates, events, yearLevels, yearSec
                                                         <span className="font-medium">{candidate.name}</span>
                                                         <span className="text-xs text-muted-foreground">{candidate.partylist?.name || '-'}</span>
                                                     </TableCell>
-
+                                                    {/* Position cell removed */}
                                                     <TableCell>
                                                         <div className="flex flex-col">
                                                             <span>{candidate.year_level?.name}</span>
@@ -276,7 +305,6 @@ export default function CandidateIndex({ candidates, events, yearLevels, yearSec
                                     <TableRow>
                                         <TableHead className="w-[80px]">Photo</TableHead>
                                         <TableHead className="text-primary font-bold">Name</TableHead>
-                                        <TableHead className="text-primary font-bold">Event</TableHead>
                                         <TableHead className="text-primary font-bold">Partylist</TableHead>
                                         <TableHead className="text-primary font-bold">Year/Section</TableHead>
                                         <TableHead className="text-primary font-bold text-center w-25">Actions</TableHead>

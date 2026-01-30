@@ -21,6 +21,7 @@ class CandidateController extends Controller
         $eventId = $request->input('event_id');
         $yearLevelId = $request->input('year_level_id');
         $yearSectionId = $request->input('year_section_id');
+        $partylistId = $request->input('partylist_id');
 
         $candidates = Candidate::query()
             ->with(['event', 'position', 'partylist', 'yearLevel', 'yearSection', 'candidatePhotos'])
@@ -36,6 +37,9 @@ class CandidateController extends Controller
             ->when($yearSectionId, function ($query) use ($yearSectionId) {
                 $query->where('year_section_id', $yearSectionId);
             })
+            ->when($partylistId, function ($query) use ($partylistId) {
+                $query->where('partylist_id', $partylistId);
+            })
             ->orderBy('event_id')
             ->orderBy('position_id')
             ->paginate(100)
@@ -43,19 +47,22 @@ class CandidateController extends Controller
 
         $events = Event::query()->where('is_active', true)->get();
 
+        $partylists = Partylist::all();
+
         $yearLevels = YearLevel::query()
             ->with('section')
             ->orderBy('name', 'asc')
             ->get();
-
+        
         $yearSections = YearSection::all();
 
         return Inertia::render('Candidate/index', [
             'candidates' => $candidates,
             'events' => $events,
+            'partylists' => $partylists,
             'yearLevels' => $yearLevels,
             'yearSections' => $yearSections,
-            'filters' => $request->only(['search', 'event_id', 'year_level_id', 'year_section_id']),
+            'filters' => $request->only(['search', 'event_id', 'year_level_id', 'year_section_id', 'partylist_id']),
         ]);
     }
 
