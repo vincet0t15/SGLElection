@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, UserCheck, Vote, Award, Activity, Calendar, AlertCircle, Trophy } from 'lucide-react';
+import { Users, UserCheck, Vote, Award, Activity, Calendar, AlertCircle, Trophy, Flag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -38,6 +38,7 @@ interface Event {
 interface Stats {
     total_voters: number;
     total_candidates: number;
+    total_partylists: number;
     total_positions: number;
     active_event: Event | null;
     votes_cast: number;
@@ -172,7 +173,7 @@ export default function Dashboard({ stats, winners = [] }: Props) {
                 {/* Stats Grid */}
                 <div>
                     <h2 className="text-lg font-semibold mb-4">System Overview</h2>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                         <Card className="hover:shadow-md transition-shadow bg-blue-50/50 dark:bg-blue-950/10 border-blue-200 dark:border-blue-800">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium text-blue-800 dark:text-blue-300">Total Voters</CardTitle>
@@ -196,6 +197,19 @@ export default function Dashboard({ stats, winners = [] }: Props) {
                             <CardContent>
                                 <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">{stats.total_candidates}</div>
                                 <p className="text-xs text-purple-600/80 dark:text-purple-400/80">Across all positions</p>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="hover:shadow-md transition-shadow bg-indigo-50/50 dark:bg-indigo-950/10 border-indigo-200 dark:border-indigo-800">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium text-indigo-800 dark:text-indigo-300">Total Partylists</CardTitle>
+                                <div className="h-8 w-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                                    <Flag className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-indigo-900 dark:text-indigo-100">{stats.total_partylists}</div>
+                                <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80">Registered partylists</p>
                             </CardContent>
                         </Card>
 

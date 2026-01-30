@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Candidate;
 use App\Models\Event;
+use App\Models\Partylist;
+use App\Models\Position;
 use App\Models\Vote;
 use App\Models\Voter;
 use Illuminate\Http\Request;
@@ -18,7 +20,8 @@ class DashboardController extends Controller
         $stats = [
             'total_voters' => Voter::count(),
             'total_candidates' => Candidate::count(),
-            'total_positions' => \App\Models\Position::count(),
+            'total_partylists' => Partylist::count(),
+            'total_positions' => Position::count(),
             'active_event' => $activeEvent,
             'votes_cast' => 0,
             'turnout_percentage' => 0,
