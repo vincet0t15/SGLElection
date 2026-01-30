@@ -24,15 +24,30 @@ const breadcrumbs: BreadcrumbItem[] = [
 import type { VoterProps } from '@/types/voter';
 import voter from '@/routes/voter';
 
+interface YearLevel {
+    id: number;
+    name: string;
+}
+
+interface YearSection {
+    id: number;
+    name: string;
+    year_level_id: number;
+}
+
 interface Props {
     voters: PaginatedDataResponse<VoterProps>;
     filters: FilterProps,
     events: EventProps[],
+    yearLevels: YearLevel[];
+    yearSections: YearSection[];
 }
-export default function Voter({ voters, filters, events }: Props) {
-    console.log(voters)
+export default function Voter({ voters, filters, events, yearLevels, yearSections }: Props) {
+
     const [search, setSearch] = useState(filters.search || '');
     const [eventId, setEventId] = useState<string>(filters.event_id ? String(filters.event_id) : 'all');
+    const [yearLevelId, setYearLevelId] = useState<string>(filters.year_level_id ? String(filters.year_level_id) : 'all');
+    const [yearSectionId, setYearSectionId] = useState<string>(filters.year_section_id ? String(filters.year_section_id) : 'all');
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [selectedPosition, setSelectedPosition] = useState<PositionProps>();
@@ -51,32 +66,53 @@ export default function Voter({ voters, filters, events }: Props) {
         setSearch(e.target.value);
     }
 
-    const handleEventFilter = (value: string) => {
-        setEventId(value);
-        router.get(position.index().url, {
+    const updateFilters = (newFilters: any) => {
+        router.get(voter.index().url, {
             search: search,
-            event_id: value === 'all' ? undefined : value
+            event_id: eventId === 'all' ? undefined : eventId,
+            year_level_id: yearLevelId === 'all' ? undefined : yearLevelId,
+            year_section_id: yearSectionId === 'all' ? undefined : yearSectionId,
+            ...newFilters
         }, {
             preserveState: true,
             preserveScroll: true,
         });
     }
 
+    const handleEventFilter = (value: string) => {
+        setEventId(value);
+        updateFilters({ event_id: value === 'all' ? undefined : value });
+    }
+
+    const handleYearLevelFilter = (value: string) => {
+        setYearLevelId(value);
+        // Reset section filter when year level changes
+        setYearSectionId('all');
+        updateFilters({
+            year_level_id: value === 'all' ? undefined : value,
+            year_section_id: undefined
+        });
+    }
+
+    const handleYearSectionFilter = (value: string) => {
+        setYearSectionId(value);
+        updateFilters({ year_section_id: value === 'all' ? undefined : value });
+    }
+
     const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (e.key === 'Enter') {
-            router.get(voter.index().url, {
-                search: search,
-                event_id: eventId === 'all' ? undefined : eventId
-            },
-                {
-                    preserveState: true,
-                    preserveScroll: true,
-                })
+            updateFilters({});
         }
     }
+
+    // Filter sections based on selected year level
+    const filteredSections = yearLevelId !== 'all'
+        ? yearSections.filter(section => section.year_level_id.toString() === yearLevelId)
+        : yearSections;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Year Level" />
+            <Head title="Voters" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className='gap-2 flex'>
@@ -93,7 +129,35 @@ export default function Voter({ voters, filters, events }: Props) {
                         </Button>
 
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap justify-end">
+                        <Select value={yearLevelId} onValueChange={handleYearLevelFilter}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by Year" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Year Levels</SelectItem>
+                                {yearLevels.map((level) => (
+                                    <SelectItem key={level.id} value={String(level.id)}>
+                                        {level.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        <Select value={yearSectionId} onValueChange={handleYearSectionFilter}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by Section" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Sections</SelectItem>
+                                {filteredSections.map((section) => (
+                                    <SelectItem key={section.id} value={String(section.id)}>
+                                        {section.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
                         <Select value={eventId} onValueChange={handleEventFilter}>
                             <SelectTrigger className="w-[180px]">
                                 <SelectValue placeholder="Filter by Event" />
@@ -107,7 +171,7 @@ export default function Voter({ voters, filters, events }: Props) {
                                 ))}
                             </SelectContent>
                         </Select>
-                        <Input placeholder="Search..." value={search} onChange={handleSearch} onKeyDown={handleKeyDown} />
+                        <Input placeholder="Search..." value={search} onChange={handleSearch} onKeyDown={handleKeyDown} className="w-[200px]" />
                     </div>
                 </div>
 

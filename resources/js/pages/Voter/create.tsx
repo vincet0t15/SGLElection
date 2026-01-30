@@ -27,6 +27,7 @@ interface YearLevel {
 interface YearSection {
     id: number;
     name: string;
+    year_level_id: number;
 }
 
 interface Event {
@@ -50,6 +51,11 @@ export default function CreateVoter({ yearLevels, yearSections, events }: Props)
         year_section_id: '',
         event_id: '',
     });
+
+    // Filter sections based on selected year level
+    const filteredSections = data.year_level_id
+        ? yearSections.filter(section => section.year_level_id.toString() === data.year_level_id)
+        : yearSections;
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -161,12 +167,13 @@ export default function CreateVoter({ yearLevels, yearSections, events }: Props)
                                         <Select
                                             value={data.year_section_id}
                                             onValueChange={(value) => setData('year_section_id', value)}
+                                            disabled={!data.year_level_id}
                                         >
                                             <SelectTrigger id="year_section">
-                                                <SelectValue placeholder="Select Section" />
+                                                <SelectValue placeholder={data.year_level_id ? "Select Section" : "Select Year Level First"} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {yearSections.map((section) => (
+                                                {filteredSections.map((section) => (
                                                     <SelectItem key={section.id} value={section.id.toString()}>
                                                         {section.name}
                                                     </SelectItem>

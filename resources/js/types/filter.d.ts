@@ -12,6 +12,7 @@ export interface FilterProps {
     date_from: string;
     date_to: string;
     year_level_id: number;
+    year_section_id: number;
 }
 
 interface MyPageProps extends InertiaPageProps {

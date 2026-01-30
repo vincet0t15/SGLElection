@@ -15,8 +15,13 @@ class VoterController extends Controller
     {
         $search = $request->query('search');
         $eventId = request()->input('event_id');
+        $yearLevelId = request()->input('year_level_id');
+        $yearSectionId = request()->input('year_section_id');
 
         $events = Event::all();
+        $yearLevels = \App\Models\YearLevel::all();
+        $yearSections = \App\Models\YearSection::all();
+
         $voters = Voter::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
@@ -26,14 +31,22 @@ class VoterController extends Controller
             ->when($eventId, function ($query, $eventId) {
                 $query->where('event_id', $eventId);
             })
+            ->when($yearLevelId, function ($query, $yearLevelId) {
+                $query->where('year_level_id', $yearLevelId);
+            })
+            ->when($yearSectionId, function ($query, $yearSectionId) {
+                $query->where('year_section_id', $yearSectionId);
+            })
             ->with(['yearLevel', 'yearSection', 'event'])
             ->paginate(25)
             ->withQueryString();
 
         return Inertia::render('Voter/index', [
             'events' => $events,
+            'yearLevels' => $yearLevels,
+            'yearSections' => $yearSections,
             'voters' => $voters,
-            'filters' => $request->only(['search', 'event_id']),
+            'filters' => $request->only(['search', 'event_id', 'year_level_id', 'year_section_id']),
         ]);
     }
 
