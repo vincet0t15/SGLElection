@@ -131,18 +131,18 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Candidates" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div className='gap-2 flex'>
-                        <Button className="cursor-pointer" asChild>
+                <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className='flex w-full sm:w-auto'>
+                        <Button className="cursor-pointer w-full sm:w-auto" asChild>
                             <Link href={candidateRoutes.create().url}>
                                 <PlusIcon className=" h-4 w-4" />
-                                <span className="rounded-sm lg:inline">Candidate</span>
+                                <span className="ml-2">Candidate</span>
                             </Link>
                         </Button>
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap justify-end">
+                    <div className="flex flex-col gap-2 w-full sm:flex-row sm:w-auto sm:items-center sm:justify-end sm:flex-wrap">
                         <Select value={yearLevelId} onValueChange={handleYearLevelFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-full sm:w-[160px]">
                                 <SelectValue placeholder="Filter by Year" />
                             </SelectTrigger>
                             <SelectContent>
@@ -156,7 +156,7 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                         </Select>
 
                         <Select value={yearSectionId} onValueChange={handleYearSectionFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-full sm:w-[160px]">
                                 <SelectValue placeholder="Filter by Section" />
                             </SelectTrigger>
                             <SelectContent>
@@ -170,7 +170,7 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                         </Select>
 
                         <Select value={eventId} onValueChange={handleEventFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-full sm:w-[160px]">
                                 <SelectValue placeholder="Filter by Event" />
                             </SelectTrigger>
                             <SelectContent>
@@ -184,7 +184,7 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                         </Select>
 
                         <Select value={partylistId} onValueChange={handlePartylistFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-full sm:w-[160px]">
                                 <SelectValue placeholder="Filter by Partylist" />
                             </SelectTrigger>
                             <SelectContent>
@@ -197,14 +197,14 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                             </SelectContent>
                         </Select>
 
-                        <div className="relative">
+                        <div className="relative w-full sm:w-auto">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search candidates..."
                                 value={search}
                                 onChange={handleSearch}
                                 onKeyDown={handleKeyDown}
-                                className="pl-9 w-[200px]"
+                                className="pl-9 w-full sm:w-[200px]"
                             />
                         </div>
                     </div>
@@ -302,14 +302,12 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                                     <TableRow>
                                         <TableHead className="w-[80px]">Photo</TableHead>
                                         <TableHead className="text-primary font-bold">Name</TableHead>
-                                        <TableHead className="text-primary font-bold">Partylist</TableHead>
-                                        <TableHead className="text-primary font-bold">Year/Section</TableHead>
                                         <TableHead className="text-primary font-bold text-center w-25">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-24 text-center">
+                                        <TableCell colSpan={3} className="h-24 text-center">
                                             No results.
                                         </TableCell>
                                     </TableRow>
