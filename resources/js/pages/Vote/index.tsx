@@ -290,6 +290,12 @@ export default function VoteIndex({ events }: Props) {
                                                             <span className="w-1 h-1 rounded-full bg-slate-300" />
                                                             <span>{candidate.year_section?.name}</span>
                                                         </div>
+
+                                                        {candidate.platform && (
+                                                            <div className="mt-3 text-xs text-slate-600 line-clamp-2 border-t border-slate-100 pt-2">
+                                                                {candidate.platform}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             );

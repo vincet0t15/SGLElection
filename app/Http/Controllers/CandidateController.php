@@ -12,6 +12,9 @@ use App\Models\YearSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use App\Imports\CandidatesImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CandidateController extends Controller
 {
@@ -53,7 +56,7 @@ class CandidateController extends Controller
             ->with('section')
             ->orderBy('name', 'asc')
             ->get();
-        
+
         $yearSections = YearSection::all();
 
         return Inertia::render('Candidate/index', [
@@ -75,6 +78,7 @@ class CandidateController extends Controller
             'event_id' => 'required|exists:events,id',
             'position_id' => 'required|exists:positions,id',
             'partylist_id' => 'nullable|exists:partylists,id',
+            'platform' => 'nullable|string',
             'photo' => 'nullable|image|max:5120',
         ]);
 
@@ -85,6 +89,7 @@ class CandidateController extends Controller
             'event_id' => $validated['event_id'],
             'position_id' => $validated['position_id'],
             'partylist_id' => $validated['partylist_id'] ?? null,
+            'platform' => $validated['platform'] ?? null,
         ]);
 
         if ($request->hasFile('photo')) {
@@ -152,6 +157,7 @@ class CandidateController extends Controller
             'event_id' => 'required|exists:events,id',
             'position_id' => 'required|exists:positions,id',
             'partylist_id' => 'nullable|exists:partylists,id',
+            'platform' => 'nullable|string',
             'photo' => 'nullable|image|max:5120',
         ]);
 
@@ -162,6 +168,7 @@ class CandidateController extends Controller
             'event_id' => $validated['event_id'],
             'position_id' => $validated['position_id'],
             'partylist_id' => $validated['partylist_id'] ?? null,
+            'platform' => $validated['platform'] ?? null,
         ]);
 
         if ($request->hasFile('photo')) {
@@ -201,5 +208,48 @@ class CandidateController extends Controller
         $candidate->delete();
 
         return redirect()->back()->with('success', 'Candidate deleted successfully.');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            Excel::import(new CandidatesImport, $request->file('file'));
+            return redirect()->back()->with('success', 'Candidates imported successfully.');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $messages = [];
+            foreach ($failures as $failure) {
+                $messages[] = 'Row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->withErrors(['file' => implode(' | ', $messages)]);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['file' => 'Error importing file: ' . $e->getMessage()]);
+        }
+    }
+
+    public function template()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="candidates_template.csv"',
+        ];
+
+        $columns = ['name', 'event', 'position', 'year_level', 'section', 'partylist', 'platform'];
+
+        $callback = function () use ($columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            // Add an example row
+            fputcsv($file, ['John Doe', 'SSG Election 2024', 'President', 'Grade 7', 'Section A', 'Blue Party', 'My platform...']);
+
+            fclose($file);
+        };
+
+        return new StreamedResponse($callback, 200, $headers);
     }
 }

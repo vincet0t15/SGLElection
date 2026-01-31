@@ -14,6 +14,7 @@ class Candidate extends Model
         'event_id',
         'position_id',
         'partylist_id',
+        'platform',
         'is_tie_breaker_winner',
     ];
 

@@ -17,6 +17,7 @@ export interface CandidateProps {
     event_id: number;
     position_id: number;
     partylist_id?: number | null;
+    platform?: string | null;
     photo?: File[]
     event?: EventProps;
     position?: PositionProps;

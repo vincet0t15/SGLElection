@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useForm, Head, router, Link } from '@inertiajs/react';
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import CustomSelect from "@/components/custom-select";
 import InputError from "@/components/input-error";
@@ -38,6 +39,7 @@ type CandidateForm = {
     event_id: number;
     position_id: number;
     partylist_id: number | null;
+    platform?: string | null;
     photo?: File | null;
 }
 
@@ -56,6 +58,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
         event_id: event_id ? Number(event_id) : 0,
         position_id: 0,
         partylist_id: null,
+        platform: '',
         photo: null,
     });
 
@@ -89,7 +92,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
         label: pl.name,
     })), [partylists]);
 
-    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
         const { name, value } = e.target;
         setData(name as keyof CandidateForm, value);
     }
@@ -266,6 +269,19 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                                                     placeholder="e.g. Juan Dela Cruz"
                                                 />
                                                 <InputError message={errors.name} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="platform">Platform / Description (Optional)</Label>
+                                                <Textarea
+                                                    id="platform"
+                                                    name="platform"
+                                                    value={data.platform || ''}
+                                                    onChange={handleChange}
+                                                    placeholder="Enter candidate platform or description..."
+                                                    className="min-h-[100px]"
+                                                />
+                                                <InputError message={errors.platform} />
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

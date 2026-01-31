@@ -83,6 +83,8 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     // CANDIDATE
     Route::get('candidate', [CandidateController::class, 'index'])->name('candidate.index');
     Route::get('candidate/create', [CandidateController::class, 'create'])->name('candidate.create');
+    Route::post('candidate/import', [CandidateController::class, 'import'])->name('candidate.import');
+    Route::get('candidate/template', [CandidateController::class, 'template'])->name('candidate.template');
     Route::post('candidate', [CandidateController::class, 'store'])->name('candidate.store');
     Route::get('candidate/{candidate}/edit', [CandidateController::class, 'edit'])->name('candidate.edit');
     Route::post('candidate/{candidate}', [CandidateController::class, 'update'])->name('candidate.update');

@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { PlusIcon, Search, Pencil, Trash, MoreVertical, Upload, Download, Printer } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
@@ -6,6 +6,7 @@ import candidateRoutes from '@/routes/candidate';
 import type { BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from "@/components/ui/label";
 import { PaginatedDataResponse } from '@/types/pagination';
 import { FilterProps } from '@/types/filter';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -23,6 +24,15 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from 'sonner';
 import { PositionProps } from '@/types/position';
 import { PartylistProps } from '@/types/partylist';
@@ -55,6 +65,25 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
     const [yearLevelId, setYearLevelId] = useState<string>(filters.year_level_id ? String(filters.year_level_id) : 'all');
     const [yearSectionId, setYearSectionId] = useState<string>(filters.year_section_id ? String(filters.year_section_id) : 'all');
     const [partylistId, setPartylistId] = useState<string>(filters.partylist_id ? String(filters.partylist_id) : 'all');
+
+    const [isImportOpen, setIsImportOpen] = useState(false);
+    const { data: importData, setData: setImportData, post: postImport, processing: importProcessing, errors: importErrors, reset: resetImport } = useForm({
+        file: null as File | null,
+    });
+
+    const handleImportSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        postImport('/candidate/import', {
+            onSuccess: () => {
+                setIsImportOpen(false);
+                resetImport();
+                toast.success('Candidates imported successfully');
+            },
+            onError: () => {
+                toast.error('Failed to import candidates');
+            }
+        });
+    };
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
@@ -139,13 +168,56 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                 />
 
                 <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className='flex w-full sm:w-auto'>
+                    <div className='flex w-full sm:w-auto gap-2'>
                         <Button className="cursor-pointer w-full sm:w-auto" asChild variant="outline">
                             <Link href={candidateRoutes.create().url}>
                                 <PlusIcon className=" h-4 w-4" />
                                 <span className="">Candidate</span>
                             </Link>
                         </Button>
+
+                        <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
+                            <DialogTrigger asChild>
+                                <Button variant="secondary" className="w-full sm:w-auto">
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    Import
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Import Candidates</DialogTitle>
+                                    <DialogDescription>
+                                        Upload a CSV or Excel file to bulk import candidates.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="flex items-center gap-4">
+                                        <Button variant="outline" asChild className="w-full">
+                                            <a href="/candidate/template">
+                                                <Download className="mr-2 h-4 w-4" />
+                                                Download Template
+                                            </a>
+                                        </Button>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="file">Upload File</Label>
+                                        <Input
+                                            id="file"
+                                            type="file"
+                                            onChange={(e) => setImportData('file', e.target.files ? e.target.files[0] : null)}
+                                            accept=".csv,.xlsx,.xls"
+                                        />
+                                        {importErrors.file && <span className="text-red-500 text-sm">{importErrors.file}</span>}
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button variant="outline" onClick={() => setIsImportOpen(false)}>Cancel</Button>
+                                    <Button onClick={handleImportSubmit} disabled={importProcessing}>
+                                        {importProcessing ? 'Importing...' : 'Import'}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                     <div className="flex flex-col gap-2 w-full sm:flex-row sm:w-auto sm:items-center sm:justify-end sm:flex-wrap">
                         <Select value={yearLevelId} onValueChange={handleYearLevelFilter}>
