@@ -180,6 +180,31 @@ class ReportController extends Controller
             })
             ->values();
 
+        // 1.5 Turnout by Year Level
+        $yearLevels = \App\Models\YearLevel::withCount(['voters' => function ($query) use ($event) {
+            $query->where('event_id', $event->id);
+        }])
+            ->get()
+            ->map(function ($level) use ($event) {
+                $votedCount = \App\Models\Vote::where('event_id', $event->id)
+                    ->whereHas('voter', function ($q) use ($level) {
+                        $q->where('year_level_id', $level->id);
+                    })
+                    ->distinct('voter_id')
+                    ->count();
+
+                return [
+                    'name' => $level->name,
+                    'total_voters' => $level->voters_count,
+                    'voted_count' => $votedCount,
+                    'turnout_percentage' => $level->voters_count > 0 ? round(($votedCount / $level->voters_count) * 100, 2) : 0,
+                ];
+            })
+            ->filter(function ($l) {
+                return $l['total_voters'] > 0;
+            })
+            ->values();
+
         // 2. Candidate Performance by Section
         $candidates = \App\Models\Candidate::where('event_id', $event->id)
             ->with(['position', 'partylist'])
@@ -243,6 +268,7 @@ class ReportController extends Controller
         return Inertia::render('Reports/Analytics', [
             'event' => $event,
             'sections' => $sections,
+            'yearLevels' => $yearLevels,
             'candidates' => $candidates,
             'hourly_trends' => $hourlyVotes,
             'abstentions' => $abstentions

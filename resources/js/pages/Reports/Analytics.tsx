@@ -17,6 +17,13 @@ interface SectionTurnout {
     turnout_percentage: number;
 }
 
+interface YearLevelTurnout {
+    name: string;
+    total_voters: number;
+    voted_count: number;
+    turnout_percentage: number;
+}
+
 interface CandidatePerformance {
     id: number;
     name: string;
@@ -42,12 +49,13 @@ interface Abstention {
 interface Props {
     event: EventProps;
     sections: SectionTurnout[];
+    yearLevels: YearLevelTurnout[];
     candidates: CandidatePerformance[];
     hourly_trends: HourlyTrend[];
     abstentions: Abstention[];
 }
 
-export default function Analytics({ event, sections, candidates, hourly_trends, abstentions }: Props) {
+export default function Analytics({ event, sections, yearLevels, candidates, hourly_trends, abstentions }: Props) {
     // Group candidates by position
     const candidatesByPosition = candidates.reduce((acc, candidate) => {
         if (!acc[candidate.position]) {
@@ -91,6 +99,10 @@ export default function Analytics({ event, sections, candidates, hourly_trends, 
                             <BarChart3 className="mr-2 h-4 w-4" />
                             Section Turnout
                         </TabsTrigger>
+                        <TabsTrigger value="yearLevel">
+                            <Users className="mr-2 h-4 w-4" />
+                            Year Level Turnout
+                        </TabsTrigger>
                         <TabsTrigger value="candidates">
                             <PieChart className="mr-2 h-4 w-4" />
                             Candidate Performance
@@ -133,6 +145,44 @@ export default function Analytics({ event, sections, candidates, hourly_trends, 
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
                                                         <Progress value={section.turnout_percentage} className="h-2" />
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Turnout by Year Level */}
+                    <TabsContent value="yearLevel" className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Voter Turnout by Year Level</CardTitle>
+                                <CardDescription>Percentage of registered voters who voted in each grade level.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Year Level</TableHead>
+                                            <TableHead>Registered</TableHead>
+                                            <TableHead>Voted</TableHead>
+                                            <TableHead>Turnout</TableHead>
+                                            <TableHead className="w-[40%]">Visual</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {yearLevels.map((level) => (
+                                            <TableRow key={level.name}>
+                                                <TableCell className="font-medium">{level.name}</TableCell>
+                                                <TableCell>{level.total_voters}</TableCell>
+                                                <TableCell>{level.voted_count}</TableCell>
+                                                <TableCell>{level.turnout_percentage}%</TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <Progress value={level.turnout_percentage} className="h-2" />
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
