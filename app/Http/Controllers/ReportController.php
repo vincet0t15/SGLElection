@@ -57,14 +57,11 @@ class ReportController extends Controller
             });
         }
 
-        $voters = $votersQuery->paginate(10)
-            ->withQueryString()
-            ->through(function ($voter) use ($event) {
-                $voter->has_voted = \App\Models\Vote::where('voter_id', $voter->id)
-                    ->where('event_id', $event->id)
-                    ->exists();
-                return $voter;
-            });
+        $voters = $votersQuery->withExists(['votes as has_voted' => function ($q) use ($event) {
+            $q->where('event_id', $event->id);
+        }])
+            ->paginate(10)
+            ->withQueryString();
 
 
         $totalAssignedVoters = \App\Models\Voter::where('event_id', $event->id)->count();

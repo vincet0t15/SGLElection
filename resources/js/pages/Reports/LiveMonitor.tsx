@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,30 +24,60 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
     const [lastUpdated, setLastUpdated] = useState(new Date());
     const [isConnected, setIsConnected] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Auto-refresh every 10 seconds
+    // Smart polling with visibility check
     useEffect(() => {
-        const interval = setInterval(() => {
-            refreshData();
-        }, 10000);
+        // Initial load
+        refreshData();
 
-        return () => clearInterval(interval);
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                // Pause polling when tab is hidden
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                    timeoutRef.current = null;
+                }
+            } else {
+                // Resume polling when tab becomes visible
+                if (!isRefreshing && !timeoutRef.current) {
+                    refreshData();
+                }
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, []);
 
     const refreshData = () => {
+        // Clear any pending scheduled refresh to prevent collisions
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+
         setIsRefreshing(true);
         router.reload({
             only: ['positions', 'stats'],
             onSuccess: () => {
                 setLastUpdated(new Date());
                 setIsConnected(true);
-                setIsRefreshing(false);
             },
             onError: () => {
                 setIsConnected(false);
-                setIsRefreshing(false);
             },
-            onFinish: () => setIsRefreshing(false),
+            onFinish: () => {
+                setIsRefreshing(false);
+                // Only schedule next refresh if page is still visible
+                if (!document.hidden) {
+                    timeoutRef.current = setTimeout(refreshData, 10000);
+                }
+            },
             preserveUrl: true,
         });
     };
