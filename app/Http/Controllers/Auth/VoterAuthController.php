@@ -62,6 +62,15 @@ class VoterAuthController extends Controller
                 ]);
             }
 
+            // Check if event has started
+            if ($event->dateTime_start && now()->lt($event->dateTime_start)) {
+                Auth::guard('voter')->logout();
+                $request->session()->invalidate();
+                throw ValidationException::withMessages([
+                    'username' => 'The election event has not started yet.',
+                ]);
+            }
+
             // Check if event has ended
             if ($event->dateTime_end && now()->gt($event->dateTime_end)) {
                 Auth::guard('voter')->logout();
