@@ -204,8 +204,20 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                         lastWinnerVotes === firstLoserVotes;
 
                                     // Determine status
-                                    const isTied = isTieForLastSpot && votes === lastWinnerVotes;
-                                    const isWinner = !isTied && index < position.max_votes && votes > 0;
+                                    let isTied = isTieForLastSpot && votes === lastWinnerVotes;
+                                    let isWinner = !isTied && index < position.max_votes && votes > 0;
+
+                                    // Check for manual tie breaker
+                                    if (candidate.is_tie_breaker_winner) {
+                                        isWinner = true;
+                                        isTied = false;
+                                    } else if (isTieForLastSpot && votes === lastWinnerVotes) {
+                                        const hasTieBreakerWinner = position.candidates.some((c: any) => c.votes_count === lastWinnerVotes && c.is_tie_breaker_winner);
+                                        if (hasTieBreakerWinner) {
+                                            isTied = false;
+                                            isWinner = false;
+                                        }
+                                    }
 
                                     // Calculate rank (handle ties)
                                     const rank = position.candidates.findIndex(c => c.votes_count === votes) + 1;
@@ -250,6 +262,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                                     </h3>
                                                     <p className="text-xs text-slate-500 truncate uppercase tracking-wider">
                                                         {candidate.partylist?.name || 'Independent'}
+                                                        {candidate.is_tie_breaker_winner && <span className="ml-2 text-blue-400 font-bold">(TIE BREAK WIN)</span>}
                                                         {isTied && <span className="ml-2 text-orange-500 font-bold">(TIE)</span>}
                                                     </p>
                                                 </div>

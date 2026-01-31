@@ -316,4 +316,23 @@ class ReportController extends Controller
             'signatories' => $signatories
         ]);
     }
+
+    public function resolveTie(Request $request, Event $event)
+    {
+        $request->validate([
+            'candidate_id' => 'required|exists:candidates,id',
+            'position_id' => 'required|exists:positions,id',
+        ]);
+
+        // Reset previous tie breaker winner for this position in this event (if any)
+        \App\Models\Candidate::where('event_id', $event->id)
+            ->where('position_id', $request->position_id)
+            ->update(['is_tie_breaker_winner' => false]);
+
+        // Set the new tie breaker winner
+        $candidate = \App\Models\Candidate::findOrFail($request->candidate_id);
+        $candidate->update(['is_tie_breaker_winner' => true]);
+
+        return back()->with('success', 'Tie resolved successfully. Winner updated.');
+    }
 }

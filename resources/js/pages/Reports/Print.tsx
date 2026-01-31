@@ -149,7 +149,18 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                                 const isTieForLastSpot = position.candidates.length > position.max_votes &&
                                                                     lastWinnerVotes > 0 &&
                                                                     lastWinnerVotes === firstLoserVotes;
-                                                                const isTied = isTieForLastSpot && votes === lastWinnerVotes;
+
+                                                                let isTied = isTieForLastSpot && votes === lastWinnerVotes;
+
+                                                                // Handle manual tie breaker display
+                                                                if (candidate.is_tie_breaker_winner) {
+                                                                    isTied = false;
+                                                                } else if (isTieForLastSpot && votes === lastWinnerVotes) {
+                                                                    const hasTieBreakerWinner = position.candidates.some((c: any) => c.votes_count === lastWinnerVotes && c.is_tie_breaker_winner);
+                                                                    if (hasTieBreakerWinner) {
+                                                                        isTied = false;
+                                                                    }
+                                                                }
 
                                                                 const rank = position.candidates.findIndex(c => c.votes_count === votes) + 1;
                                                                 const partylistName = candidate.partylist?.name ? `(${candidate.partylist.name})` : '(INDEPENDENT)';
@@ -158,6 +169,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                                     <tr key={candidate.id} className="border-b border-black last:border-b-0">
                                                                         <td className="py-1 px-4 border border-black uppercase font-medium">
                                                                             {rank}. {candidate.name} <span className="text-gray-600 font-normal">{partylistName}</span>
+                                                                            {candidate.is_tie_breaker_winner && <span className="font-bold text-blue-600 ml-1">(TIE WINNER)</span>}
                                                                             {isTied && <span className="font-bold text-red-600 ml-1">(TIE)</span>}
                                                                         </td>
                                                                         <td className="py-1 px-4 border border-black w-32 text-center">

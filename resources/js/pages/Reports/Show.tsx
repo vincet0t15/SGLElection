@@ -95,6 +95,31 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
     const [isLoadingVotes, setIsLoadingVotes] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    const [resolveTieDialogOpen, setResolveTieDialogOpen] = useState(false);
+    const [selectedTiePosition, setSelectedTiePosition] = useState<{ id: number; name: string; candidates: any[] } | null>(null);
+    const [selectedWinnerId, setSelectedWinnerId] = useState<string>("");
+
+    const handleResolveTie = (position: any, tiedCandidates: any[]) => {
+        setSelectedTiePosition({ ...position, candidates: tiedCandidates });
+        setSelectedWinnerId("");
+        setResolveTieDialogOpen(true);
+    };
+
+    const submitResolveTie = () => {
+        if (!selectedTiePosition || !selectedWinnerId) return;
+
+        router.post(`/reports/${event.id}/resolve-tie`, {
+            position_id: selectedTiePosition.id,
+            candidate_id: selectedWinnerId
+        }, {
+            onSuccess: () => {
+                setResolveTieDialogOpen(false);
+                setSelectedTiePosition(null);
+                setSelectedWinnerId("");
+            }
+        });
+    };
+
     const handleViewVotes = async (voter: Voter) => {
         setSelectedVoter(voter);
         setIsLoadingVotes(true);
@@ -278,15 +303,34 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                 const votes = candidate.votes_count || 0;
                                                 const lastWinnerVotes = position.candidates[position.max_votes - 1]?.votes_count || 0;
                                                 const firstLoserVotes = position.candidates[position.max_votes]?.votes_count || 0;
-                                                
+
                                                 // Check for a tie at the cutoff boundary
                                                 const isTieForLastSpot = position.candidates.length > position.max_votes &&
-                                                                         lastWinnerVotes > 0 &&
-                                                                         lastWinnerVotes === firstLoserVotes;
+                                                    lastWinnerVotes > 0 &&
+                                                    lastWinnerVotes === firstLoserVotes;
 
                                                 // Determine status
-                                                const isTied = isTieForLastSpot && votes === lastWinnerVotes;
-                                                const isWinner = !isTied && index < position.max_votes && votes > 0;
+                                                let isTied = isTieForLastSpot && votes === lastWinnerVotes;
+                                                let isWinner = !isTied && index < position.max_votes && votes > 0;
+
+                                                // Check for manual tie breaker
+                                                if (candidate.is_tie_breaker_winner) {
+                                                    isWinner = true;
+                                                    isTied = false;
+                                                } else if (isTieForLastSpot && votes === lastWinnerVotes) {
+                                                    // If someone else is the declared tie winner, then I am not tied anymore, I am a loser (unless I am also a winner? No, single winner).
+                                                    // Wait, if there is a tie breaker winner, that person takes the spot.
+                                                    // The others who have the same votes but are NOT the tie breaker winner are effectively losers for that spot.
+                                                    // BUT, we might have multiple spots.
+                                                    // Example: Top 2. Rank 1 (100 votes), Rank 2 (50 votes), Rank 2 (50 votes). Tie for 2nd spot.
+                                                    // If one is marked winner, they get rank 2. The other gets rank 3? Or just "not winner".
+
+                                                    const hasTieBreakerWinner = position.candidates.some((c: any) => c.votes_count === lastWinnerVotes && c.is_tie_breaker_winner);
+                                                    if (hasTieBreakerWinner) {
+                                                        isTied = false; // No longer a tie situation visually, as it's resolved.
+                                                        isWinner = false; // Default to false, already set true above if this specific candidate is the one.
+                                                    }
+                                                }
 
                                                 // Calculate rank (handle ties)
                                                 const rank = position.candidates.findIndex(c => c.votes_count === votes) + 1;
@@ -314,6 +358,9 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                                         {isWinner && (
                                                                             <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Winner</Badge>
                                                                         )}
+                                                                        {candidate.is_tie_breaker_winner && (
+                                                                            <Badge variant="secondary" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Tie Break Win</Badge>
+                                                                        )}
                                                                         {isTied && (
                                                                             <Badge variant="secondary" className="bg-orange-100 text-orange-800 hover:bg-orange-100">Tie</Badge>
                                                                         )}
@@ -336,6 +383,32 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                     </div>
                                                 );
                                             })}
+                                            {/* Show Resolve Tie Button if there is an active tie */}
+                                            {(() => {
+                                                const lastWinnerVotes = position.candidates[position.max_votes - 1]?.votes_count || 0;
+                                                const firstLoserVotes = position.candidates[position.max_votes]?.votes_count || 0;
+                                                const isTieForLastSpot = position.candidates.length > position.max_votes &&
+                                                    lastWinnerVotes > 0 &&
+                                                    lastWinnerVotes === firstLoserVotes;
+                                                const hasTieBreakerWinner = position.candidates.some((c: any) => c.votes_count === lastWinnerVotes && c.is_tie_breaker_winner);
+
+                                                if (isTieForLastSpot && !hasTieBreakerWinner) {
+                                                    const tiedCandidates = position.candidates.filter((c: any) => c.votes_count === lastWinnerVotes);
+                                                    return (
+                                                        <div className="flex justify-end mt-4 pt-4 border-t">
+                                                            <Button
+                                                                variant="outline"
+                                                                className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                                                                onClick={() => handleResolveTie(position, tiedCandidates)}
+                                                            >
+                                                                <ShieldCheck className="w-4 h-4 mr-2" />
+                                                                Resolve Tie
+                                                            </Button>
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
+                                            })()}
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -534,6 +607,51 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                     </TabsContent>
                 </Tabs>
             </div>
+
+            {/* Resolve Tie Dialog */}
+            <Dialog open={resolveTieDialogOpen} onOpenChange={setResolveTieDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Resolve Tie - {selectedTiePosition?.name}</DialogTitle>
+                        <DialogDescription>
+                            There is a tie for the final winning spot. Please select the official winner as determined by the Election Committee (e.g., via coin toss).
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {selectedTiePosition && (
+                        <div className="py-4 space-y-4">
+                            <Select onValueChange={setSelectedWinnerId} value={selectedWinnerId}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Winner" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {selectedTiePosition.candidates.map((c) => (
+                                        <SelectItem key={c.id} value={String(c.id)}>
+                                            {c.name} ({c.votes_count} votes)
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            <div className="bg-amber-50 p-4 rounded-md border border-amber-200 text-sm text-amber-800">
+                                <p className="font-bold mb-1">Warning:</p>
+                                <p>This action will manually designate the selected candidate as the winner of the tie-breaker. This will be recorded in the system.</p>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setResolveTieDialogOpen(false)}>Cancel</Button>
+                        <Button
+                            onClick={submitResolveTie}
+                            disabled={!selectedWinnerId}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                        >
+                            Confirm Winner
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">

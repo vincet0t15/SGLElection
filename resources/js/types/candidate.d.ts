@@ -25,6 +25,7 @@ export interface CandidateProps {
     year_level?: YearLevelProps;
     year_section?: YearSectionProps;
     votes_count?: number;
+    is_tie_breaker_winner?: boolean;
 }
 
 export type CandidateCreateProps = Omit<CandidateProps, 'id'>

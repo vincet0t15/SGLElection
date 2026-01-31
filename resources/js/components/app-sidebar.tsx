@@ -11,7 +11,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, voteLogs } from '@/routes';
+
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 import results from '@/routes/results';
@@ -23,6 +23,7 @@ import reports from '@/routes/reports';
 import voter from '@/routes/voter';
 import partylist from '@/routes/partylist';
 import signatories from '@/routes/signatories';
+import { dashboard, voteLogs } from '@/routes';
 
 const mainNavItems: NavItem[] = [
     {
