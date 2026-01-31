@@ -16,7 +16,7 @@ export default function AppLogo() {
                     </div>
                 )}
             </div>
-            <div className="ml-2 grid flex-1 text-center">
+            <div className="grid flex-1 text-left">
                 <span className="truncate text-base font-bold leading-none tracking-tight">
                     <img src="/smartvote.png" alt="System Logo" className="size-full object-contain" />
                 </span>
