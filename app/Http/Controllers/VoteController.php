@@ -189,11 +189,42 @@ class VoteController extends Controller
             $voter->save();
         });
 
-        // Logout the voter
-        Auth::guard('voter')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Redirect to receipt page instead of logging out immediately
+        return redirect()->route('vote.receipt');
+    }
 
-        return redirect()->route('voter.login')->with('success', 'Votes submitted successfully! You have been logged out.');
+    public function receipt()
+    {
+        $voter = Auth::guard('voter')->user();
+
+        // If no voter logged in, redirect to login
+        if (!$voter) {
+            return redirect()->route('voter.login');
+        }
+
+        // Fetch votes for this voter
+        $votes = Vote::where('voter_id', $voter->id)
+            ->where('event_id', $voter->event_id)
+            ->with(['candidate.position', 'candidate.partylist', 'candidate.candidatePhotos'])
+            ->get();
+
+        if ($votes->isEmpty()) {
+            // If they haven't voted and are inactive, kick them out
+            if (!$voter->is_active) {
+                Auth::guard('voter')->logout();
+                return redirect()->route('voter.login')->withErrors(['username' => 'Your account is inactive.']);
+            }
+            // If they are active but haven't voted, redirect to voting page
+            return redirect()->route('vote.index');
+        }
+
+        // We also need the event details
+        $event = Event::find($voter->event_id);
+
+        return Inertia::render('Vote/Receipt', [
+            'votes' => $votes,
+            'event' => $event,
+            'voter' => $voter
+        ]);
     }
 }

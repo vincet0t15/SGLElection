@@ -126,6 +126,7 @@ Route::prefix('voter')->group(function () {
         // VOTE
         Route::get('vote', [VoteController::class, 'index'])->name('vote.index');
         Route::post('vote', [VoteController::class, 'store'])->name('vote.store');
+        Route::get('vote/receipt', [VoteController::class, 'receipt'])->name('vote.receipt');
     });
 });
 
