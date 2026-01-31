@@ -67,6 +67,48 @@ class BackupController extends Controller
         }
     }
 
+    public function restore(Request $request)
+    {
+        $request->validate([
+            'backup_file' => 'required|file|mimes:sql,txt'
+        ]);
+
+        $file = $request->file('backup_file');
+        $path = $file->getRealPath();
+
+        // Database configuration
+        $dbName = env('DB_DATABASE');
+        $username = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
+        $host = env('DB_HOST');
+
+        // Common paths for mysql in XAMPP/Windows
+        $mysqlBinaryPath = 'mysql'; // Default if in PATH
+        if (file_exists('C:\xampp\mysql\bin\mysql.exe')) {
+            $mysqlBinaryPath = 'C:\xampp\mysql\bin\mysql.exe';
+        }
+
+        // Build command
+        $command = "\"{$mysqlBinaryPath}\" --user=\"{$username}\" --password=\"{$password}\" --host=\"{$host}\" {$dbName} < \"{$path}\"";
+
+        if (empty($password)) {
+            $command = "\"{$mysqlBinaryPath}\" --user=\"{$username}\" --host=\"{$host}\" {$dbName} < \"{$path}\"";
+        }
+
+        try {
+            exec($command, $output, $returnVar);
+
+            if ($returnVar !== 0) {
+                Log::error("Restore failed with code $returnVar", ['output' => $output]);
+                return back()->withErrors(['error' => 'Database restore failed. Please check the file and try again.']);
+            }
+
+            return back()->with('success', 'Database restored successfully.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Restore failed: ' . $e->getMessage()]);
+        }
+    }
+
     public function reset(Request $request)
     {
         $request->validate([

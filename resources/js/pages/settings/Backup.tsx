@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, Upload, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
+import { download, restore, reset } from '@/routes/settings/backup';
+import { useRef } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,21 +22,48 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Backup() {
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleDownload = () => {
-        router.get(('settings.backup.download'), {}, {
-            preserveScroll: true,
-            onSuccess: () => toast.success('Backup download started'),
-        });
+        window.location.href = download().url;
     };
 
     const handleReset = (action: string, confirmationMessage: string) => {
         if (confirm(confirmationMessage)) {
-            router.post(('settings.backup.reset'), { action }, {
+            router.post(reset().url, { action }, {
                 onSuccess: () => toast.success('System reset successfully'),
                 onError: () => toast.error('Failed to reset system'),
             });
         }
+    };
+
+    const handleRestoreClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!confirm('WARNING: This will overwrite the current database with the selected backup file. All current data will be lost. Are you sure you want to proceed?')) {
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('backup_file', file);
+
+        router.post(restore().url, formData, {
+            onSuccess: () => {
+                toast.success('Database restored successfully');
+                if (fileInputRef.current) fileInputRef.current.value = '';
+            },
+            onError: () => {
+                toast.error('Failed to restore database');
+                if (fileInputRef.current) fileInputRef.current.value = '';
+            },
+            forceFormData: true,
+        });
     };
 
     return (
@@ -69,9 +98,7 @@ export default function Backup() {
                                 </CardContent>
                             </Card>
 
-                            {/* Placeholder for future Restore functionality if needed, 
-                                currently relying on manual SQL import for safety */}
-                            <Card className="opacity-75 bg-gray-50">
+                            <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
                                         <Upload className="h-5 w-5 text-blue-600" />
@@ -83,10 +110,17 @@ export default function Backup() {
                                 </CardHeader>
                                 <CardContent>
                                     <p className="text-sm text-muted-foreground mb-4">
-                                        To restore a backup, please use a database management tool (like phpMyAdmin) to import the SQL file manually for maximum safety.
+                                        Select a SQL backup file to restore. This will replace the current database.
                                     </p>
-                                    <Button disabled variant="outline" className="w-full sm:w-auto">
-                                        Import SQL (Manual)
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                        accept=".sql,.txt"
+                                    />
+                                    <Button onClick={handleRestoreClick} variant="outline" className="w-full sm:w-auto">
+                                        Import SQL (Restore)
                                     </Button>
                                 </CardContent>
                             </Card>
