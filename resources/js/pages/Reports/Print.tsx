@@ -128,10 +128,10 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                 </h3>
 
                                                 <div className="">
-                                                    <table className="w-full text-sm border-collapse border border-black">
+                                                    <table className="w-full text-sm border-collapse border border-black table-fixed">
                                                         <thead>
                                                             <tr className="bg-gray-50 border-b border-black">
-                                                                <th className="border border-black py-1 px-4 text-left w-full">Candidate</th>
+                                                                <th className="border border-black py-1 px-4 text-left">Candidate</th>
                                                                 <th className="border border-black py-1 px-4 text-center w-32">Votes</th>
                                                                 <th className="border border-black py-1 px-4 text-center w-32">%</th>
                                                             </tr>
