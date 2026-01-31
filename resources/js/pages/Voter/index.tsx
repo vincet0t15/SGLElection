@@ -238,7 +238,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             onClick={handlePrintCards}
                         >
                             <CreditCard className="h-4 w-4" />
-                            <span className="rounded-sm lg:inline">Cards</span>
+                            <span className="rounded-sm lg:inline">Credential Slips</span>
                         </Button>
 
                         <Button
