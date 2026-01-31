@@ -1,5 +1,6 @@
 import { Head, router } from '@inertiajs/react';
-import { Toaster, toast } from 'sonner';
+import { toast } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 import { EventProps } from '@/types/event';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -381,6 +382,7 @@ export default function VoteIndex({ events }: Props) {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            <Toaster />
         </div>
     );
 }
