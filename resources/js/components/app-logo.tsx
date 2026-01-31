@@ -16,13 +16,13 @@ export default function AppLogo() {
                     </div>
                 )}
             </div>
-            <div className="ml-2 grid flex-1 text-left">
+            <div className="ml-2 grid flex-1 text-center">
                 <span className="truncate text-base font-bold leading-none tracking-tight">
+                    <img src="/smartvote.png" alt="System Logo" className="size-full object-contain" />
+                </span>
+                {/* <span className="truncate text-xs text-muted-foreground font-medium">
                     {system_settings.name}
-                </span>
-                <span className="truncate text-xs text-muted-foreground font-medium">
-                    Election Panel
-                </span>
+                </span> */}
             </div>
         </>
     );
