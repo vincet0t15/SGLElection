@@ -307,15 +307,15 @@ export default function VoteIndex({ events }: Props) {
                 )}
             </main>
 
-            {/* Floating Mobile Action Button */}
-            <div className="fixed bottom-6 left-4 right-4 md:hidden z-50">
+            {/* Mobile Sticky Action Bar */}
+            <div className="fixed bottom-0 left-0 right-0 md:hidden z-[100] bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
                 <Button
                     size="lg"
                     className={cn(
-                        "w-full shadow-xl text-lg font-bold h-14",
+                        "w-full shadow-none text-lg font-bold h-12",
                         votedPositions === totalPositions
-                            ? "bg-green-600 hover:bg-green-700 shadow-green-900/20"
-                            : "bg-blue-600 hover:bg-blue-700 shadow-blue-900/20"
+                            ? "bg-green-600 hover:bg-green-700"
+                            : "bg-blue-600 hover:bg-blue-700"
                     )}
                     onClick={handleSubmit}
                     disabled={votedPositions === 0}
@@ -323,7 +323,7 @@ export default function VoteIndex({ events }: Props) {
                     {votedPositions === totalPositions ? (
                         <>Submit Vote <Check className="ml-2 h-5 w-5" /></>
                     ) : (
-                        <>Review ({votedPositions}) <ChevronRight className="ml-2 h-5 w-5" /></>
+                        <>Review & Submit ({votedPositions}) <ChevronRight className="ml-2 h-5 w-5" /></>
                     )}
                 </Button>
             </div>
