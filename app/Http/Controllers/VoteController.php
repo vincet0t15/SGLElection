@@ -76,7 +76,7 @@ class VoteController extends Controller
             abort(401, 'You must be logged in as a voter to vote.');
         }
 
-        DB::transaction(function () use ($validated, $voter) {
+        DB::transaction(function () use ($validated, $voter, $request) {
             foreach ($validated['votes'] as $positionId => $candidateIds) {
                 // Skip if no candidates selected for this position
                 if (empty($candidateIds)) {
@@ -125,6 +125,14 @@ class VoteController extends Controller
                     ]);
                 }
             }
+
+            // Create Audit Log Entry
+            \App\Models\VoteActivityLog::create([
+                'voter_id' => $voter->id,
+                'event_id' => $voter->event_id,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->header('User-Agent'),
+            ]);
 
             // Deactivate the voter account
             DB::table('voters')

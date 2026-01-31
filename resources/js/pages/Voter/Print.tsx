@@ -33,10 +33,10 @@ export default function Print({ voters, filters }: Props) {
                         <tr className="bg-gray-200">
                             <th className="p-2 border border-gray-400 font-bold uppercase w-[30%]">Name</th>
                             <th className="p-2 border border-gray-400 font-bold uppercase w-[15%]">LRN</th>
-                            <th className="p-2 border border-gray-400 font-bold uppercase w-[10%]">Username</th>
+                            <th className="p-2 border border-gray-400 font-bold uppercase w-[15%]">Username</th>
                             <th className="p-2 border border-gray-400 font-bold uppercase w-[15%]">Year Level</th>
                             <th className="p-2 border border-gray-400 font-bold uppercase w-[15%]">Section</th>
-                            <th className="p-2 border border-gray-400 font-bold uppercase w-[10%] print:hidden">Status</th>
+                            <th className="p-2 border border-gray-400 font-bold uppercase w-[10%]">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,7 +48,7 @@ export default function Print({ voters, filters }: Props) {
                                     <td className="p-1 px-2 border border-gray-300 font-mono">{voter.username}</td>
                                     <td className="p-1 px-2 border border-gray-300">{voter.year_level.name}</td>
                                     <td className="p-1 px-2 border border-gray-300">{voter.year_section.name}</td>
-                                    <td className="p-1 px-2 border border-gray-300 text-center print:hidden">
+                                    <td className="p-1 px-2 border border-gray-300 text-center">
                                         {voter.is_active ? 'Active' : 'Inactive'}
                                     </td>
                                 </tr>

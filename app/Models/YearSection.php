@@ -12,4 +12,9 @@ class YearSection extends Model
     {
         return $this->belongsTo(YearLevel::class);
     }
+
+    public function voters()
+    {
+        return $this->hasMany(Voter::class);
+    }
 }

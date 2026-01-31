@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Printer, Users, User, Trophy, Calendar, MapPin, ArrowLeft, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { Printer, Users, User, Trophy, Calendar, MapPin, ArrowLeft, ChevronLeft, ChevronRight, Search, BarChart3, Monitor } from 'lucide-react';
 import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { cn } from "@/lib/utils";
@@ -176,6 +176,18 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                         </div>
                     </div>
                     <div className="flex gap-2">
+                        <Button asChild variant="outline" className="gap-2">
+                            <Link href={`/reports/live/${event.id}`}>
+                                <Monitor className="h-4 w-4" />
+                                Live Monitor
+                            </Link>
+                        </Button>
+                        <Button asChild variant="outline" className="gap-2">
+                            <Link href={`/reports/analytics/${event.id}`}>
+                                <BarChart3 className="h-4 w-4" />
+                                Analytics
+                            </Link>
+                        </Button>
                         <Button asChild variant="outline" className="gap-2 bg-emerald-600 text-white hover:bg-emerald-700 hover:text-white border-emerald-600">
                             <a href={`/reports/print/${event.id}`} target="_blank" rel="noopener noreferrer">
                                 <Printer className="h-4 w-4" />
