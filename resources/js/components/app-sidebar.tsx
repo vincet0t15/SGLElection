@@ -1,6 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BarChart3Icon, BookOpen, Calendar1Icon, CheckIcon, File, FingerprintIcon, FlagIcon, Folder, Gamepad2, Layers3Icon, LayoutGrid, Lock, User, UserCheck2, Users, Vote } from 'lucide-react';
-import { NavFooter } from '@/components/nav-footer';
+import { BarChart3Icon, BookOpen, Calendar1Icon, CheckIcon, File, FileText, FingerprintIcon, FlagIcon, Layers3Icon, LayoutGrid, UserCheck2, Users, Vote } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -27,7 +26,7 @@ import signatories from '@/routes/signatories';
 
 const mainNavItems: NavItem[] = [
     {
-        name: 'General',
+        name: 'Overview',
         items: [
             {
                 title: 'Dashboard',
@@ -40,27 +39,35 @@ const mainNavItems: NavItem[] = [
                 icon: BookOpen,
             },
             {
-                title: 'Vote Logs',
-                href: voteLogs(),
-                icon: FingerprintIcon,
+                title: 'Reports',
+                href: reports.index().url,
+                icon: BarChart3Icon,
             },
-
         ]
     },
     {
-        name: 'Settings',
+        name: 'Election Management',
         items: [
-            { title: 'Year Level', href: yearLevel.index().url, icon: Layers3Icon },
             { title: 'Events', href: event.index().url, icon: Calendar1Icon },
             { title: 'Positions', href: position.index().url, icon: Vote },
             { title: 'Partylists', href: partylist.index().url, icon: FlagIcon },
             { title: 'Candidates', href: candidate.index().url, icon: UserCheck2 },
-            { title: 'Reports', href: reports.index().url, icon: BarChart3Icon },
+        ]
+    },
+    {
+        name: 'Voter Management',
+        items: [
             { title: 'Voters', href: voter.index().url, icon: Users },
-            { title: 'Signatories', href: signatories.index().url, icon: CheckIcon },
+            { title: 'Year Levels', href: yearLevel.index().url, icon: Layers3Icon },
+            { title: 'Vote Logs', href: voteLogs(), icon: FingerprintIcon },
+        ]
+    },
+    {
+        name: 'Configuration',
+        items: [
+            { title: 'Signatories', href: signatories.index().url, icon: FileText },
         ]
     }
-
 ];
 
 
