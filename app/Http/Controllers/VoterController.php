@@ -144,6 +144,21 @@ class VoterController extends Controller
 
         $voters = $query->get();
 
+        // Fetch signatories
+        $signatoriesQuery = \App\Models\Signatory::where('is_active', true)
+            ->orderBy('order');
+
+        if ($eventId && $eventId !== 'all') {
+            $signatoriesQuery->where(function ($q) use ($eventId) {
+                $q->where('event_id', $eventId)
+                    ->orWhereNull('event_id');
+            });
+        } else {
+            $signatoriesQuery->whereNull('event_id');
+        }
+
+        $signatories = $signatoriesQuery->get();
+
         // Prepare filter labels for the view
         $filters = $request->all();
         if ($eventId && $eventId !== 'all') {
@@ -159,6 +174,7 @@ class VoterController extends Controller
         return Inertia::render('Voter/Print', [
             'voters' => $voters,
             'filters' => $filters,
+            'signatories' => $signatories,
         ]);
     }
 

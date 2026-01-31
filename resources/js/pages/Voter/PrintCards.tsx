@@ -77,7 +77,7 @@ export default function PrintCards({ voters, filters }: Props) {
                                 </div>
                                 <div>
                                     <div className="text-[9px] text-gray-500 uppercase tracking-wider">Password</div>
-                                    <div className="border-b border-gray-300 h-4 w-full"></div>
+                                    <div className="font-mono font-bold bg-gray-50 px-1 rounded inline-block">{voter.username}</div>
                                 </div>
                             </div>
                         </div>

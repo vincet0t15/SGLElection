@@ -4,12 +4,20 @@ import { VoterProps } from '@/types/voter';
 import { SharedData } from '@/types';
 import AppLogoIcon from '@/components/app-logo-icon';
 
+interface Signatory {
+    id: number;
+    name: string;
+    position: string;
+    description: string | null;
+}
+
 interface Props {
     voters: VoterProps[];
     filters: any;
+    signatories: Signatory[];
 }
 
-export default function Print({ voters, filters }: Props) {
+export default function Print({ voters, filters, signatories }: Props) {
     const { system_settings } = usePage<SharedData>().props;
 
     useEffect(() => {
@@ -111,6 +119,32 @@ export default function Print({ voters, filters }: Props) {
                                             )}
                                         </tbody>
                                     </table>
+                                </div>
+
+                                {/* Signatories Section */}
+                                <div className="mt-8 break-inside-avoid print:mt-8 px-8">
+                                    <p className="text-xs font-bold uppercase mb-8">Certified Correct:</p>
+
+                                    <div className="grid grid-cols-3 gap-8 gap-y-12">
+                                        {signatories && signatories.length > 0 ? (
+                                            signatories.map((signatory) => (
+                                                <div key={signatory.id} className="text-center break-inside-avoid px-4">
+                                                    <p className="uppercase font-bold mb-1 text-sm">{signatory.name}</p>
+                                                    <div className="border-b border-black w-full mb-2"></div>
+                                                    <p className="text-xs uppercase font-bold">{signatory.position}</p>
+                                                    {signatory.description && (
+                                                        <p className="text-[10px] text-gray-500 mt-0.5">{signatory.description}</p>
+                                                    )}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            /* Fallback for when no signatories are defined yet */
+                                            <div className="text-center break-inside-avoid px-4">
+                                                <div className="border-b border-black w-full mb-2 mt-6"></div>
+                                                <p className="text-xs uppercase font-bold">Election Committee Head</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Footer Section */}
