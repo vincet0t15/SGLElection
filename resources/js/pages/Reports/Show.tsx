@@ -176,9 +176,9 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <Button asChild variant="outline" className="gap-2">
+                        <Button asChild variant="outline" className="gap-2 bg-rose-600 text-white hover:bg-rose-700 hover:text-white border-rose-600">
                             <Link href={`/reports/live/${event.id}`}>
-                                <Monitor className="h-4 w-4" />
+                                <Monitor className="h-4 w-4 animate-pulse" />
                                 Live Monitor
                             </Link>
                         </Button>

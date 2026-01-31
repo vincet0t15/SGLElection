@@ -4,7 +4,7 @@ import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Maximize2, Minimize2, RefreshCw } from 'lucide-react';
+import { Maximize2, Minimize2, RefreshCw, Wifi, WifiOff, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -22,19 +22,35 @@ interface Props {
 export default function LiveMonitor({ event, positions, stats }: Props) {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(new Date());
+    const [isConnected, setIsConnected] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     // Auto-refresh every 10 seconds
     useEffect(() => {
         const interval = setInterval(() => {
-            router.reload({
-                only: ['positions', 'stats'],
-                onSuccess: () => setLastUpdated(new Date()),
-                preserveUrl: true,
-            });
+            refreshData();
         }, 10000);
 
         return () => clearInterval(interval);
     }, []);
+
+    const refreshData = () => {
+        setIsRefreshing(true);
+        router.reload({
+            only: ['positions', 'stats'],
+            onSuccess: () => {
+                setLastUpdated(new Date());
+                setIsConnected(true);
+                setIsRefreshing(false);
+            },
+            onError: () => {
+                setIsConnected(false);
+                setIsRefreshing(false);
+            },
+            onFinish: () => setIsRefreshing(false),
+            preserveUrl: true,
+        });
+    };
 
 
     const toggleFullscreen = () => {
@@ -85,14 +101,33 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                     <div className="h-8 w-px bg-slate-800 hidden md:block" />
 
                     <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="font-mono text-xs border-slate-700 text-slate-500 hidden sm:flex">
+                        <Badge variant="outline" className={cn(
+                            "font-mono text-xs border-slate-700 hidden sm:flex gap-2",
+                            isConnected ? "text-slate-500" : "text-red-500 border-red-900 bg-red-950/30"
+                        )}>
+                            {isConnected ? (
+                                <>
+                                    <Wifi className="h-3 w-3" />
+                                    <span>Live</span>
+                                </>
+                            ) : (
+                                <>
+                                    <WifiOff className="h-3 w-3" />
+                                    <span>Offline</span>
+                                </>
+                            )}
+                            <span className="w-px h-3 bg-slate-800 mx-1" />
                             Updated: {lastUpdated.toLocaleTimeString()}
                         </Badge>
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => router.reload({ only: ['positions', 'stats'], onSuccess: () => setLastUpdated(new Date()) })}
-                            className="text-slate-400 hover:text-white hover:bg-slate-800"
+                            onClick={refreshData}
+                            disabled={isRefreshing}
+                            className={cn(
+                                "text-slate-400 hover:text-white hover:bg-slate-800",
+                                isRefreshing && "animate-spin"
+                            )}
                         >
                             <RefreshCw className="h-4 w-4" />
                         </Button>
