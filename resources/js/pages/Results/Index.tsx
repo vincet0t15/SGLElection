@@ -1,11 +1,11 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trophy, Medal, User, AlertCircle, HelpCircle, Clock } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 
 
@@ -87,6 +87,58 @@ export default function ResultsIndex({ event, positions }: Props) {
         return null;
     });
 
+    // --- Smart Polling Logic ---
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    const refreshData = () => {
+        // Clear any pending scheduled refresh
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+
+        setIsRefreshing(true);
+        router.reload({
+            only: ['event', 'positions'],
+            onFinish: () => {
+                setIsRefreshing(false);
+                // Schedule next refresh only if page is visible
+                if (!document.hidden) {
+                    timeoutRef.current = setTimeout(refreshData, 10000);
+                }
+            }
+        });
+    };
+
+    useEffect(() => {
+        // Start polling
+        refreshData();
+
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                // Pause polling
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                    timeoutRef.current = null;
+                }
+            } else {
+                // Resume polling
+                if (!isRefreshing && !timeoutRef.current) {
+                    refreshData();
+                }
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
+    // ---------------------------
+
     useEffect(() => {
         if (event?.is_active && event?.dateTime_end) {
             const timer = setInterval(() => {
@@ -149,8 +201,8 @@ export default function ResultsIndex({ event, positions }: Props) {
                             <div className="mt-6">
                                 <Badge variant="outline" className="border-emerald-500/50 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-1 animate-pulse shadow-sm">
                                     <span className="relative flex h-2 w-2 mr-2">
-                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                     </span>
                                     Live Updates Enabled
                                 </Badge>
@@ -185,7 +237,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                     <div className="grid gap-8 max-w-5xl mx-auto w-full">
                         {positions.map((position) => {
                             const totalVotes = getTotalVotes(position.candidates);
-                            
+
                             // Sort candidates by votes just to be safe, though controller likely does it
                             const sortedCandidates = [...position.candidates].sort((a, b) => b.votes_count - a.votes_count);
 
@@ -230,11 +282,11 @@ export default function ResultsIndex({ event, positions }: Props) {
 
                                                             const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0;
                                                             const rank = index + 1;
-                                                            
+
                                                             // Distinct styles for Top 3
                                                             let rowClass = "transition-all duration-300";
                                                             let rankBadgeClass = "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
-                                                            
+
                                                             if (isWinner) {
                                                                 if (rank === 1) {
                                                                     rowClass = "bg-yellow-50/60 dark:bg-yellow-900/10 hover:bg-yellow-50 dark:hover:bg-yellow-900/20";
@@ -329,13 +381,12 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                                             <Progress
                                                                                 value={percentage}
                                                                                 className={`h-3 rounded-full bg-slate-100 dark:bg-slate-800 ${isWinner ? 'bg-emerald-100/50 dark:bg-emerald-900/20' : ''}`}
-                                                                                indicatorClassName={`transition-all duration-1000 ease-out rounded-full ${
-                                                                                    rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' :
+                                                                                indicatorClassName={`transition-all duration-1000 ease-out rounded-full ${rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' :
                                                                                     rank === 2 ? 'bg-gradient-to-r from-slate-400 to-slate-500' :
-                                                                                    rank === 3 ? 'bg-gradient-to-r from-orange-400 to-orange-500' :
-                                                                                    isWinner ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
-                                                                                    'bg-slate-300 dark:bg-slate-600'
-                                                                                }`}
+                                                                                        rank === 3 ? 'bg-gradient-to-r from-orange-400 to-orange-500' :
+                                                                                            isWinner ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+                                                                                                'bg-slate-300 dark:bg-slate-600'
+                                                                                    }`}
                                                                             />
                                                                         </div>
                                                                     </TableCell>

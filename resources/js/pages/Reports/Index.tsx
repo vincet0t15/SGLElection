@@ -54,7 +54,7 @@ export default function ReportsIndex({ events }: Props) {
 
                 <div className="border rounded-lg overflow-hidden">
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
                                 <TableHead className="w-[300px]">Event Name</TableHead>
                                 <TableHead>Date</TableHead>
