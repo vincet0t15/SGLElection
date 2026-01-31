@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
+use App\Models\Voter; // Add this import
+
 class VoteController extends Controller
 {
     public function index()
@@ -70,13 +72,23 @@ class VoteController extends Controller
             'votes.*.*' => 'exists:candidates,id',
         ]);
 
-        $voter = Auth::guard('voter')->user();
+        $currentVoterId = Auth::guard('voter')->id();
 
-        if (!$voter) {
+        if (!$currentVoterId) {
             abort(401, 'You must be logged in as a voter to vote.');
         }
 
-        DB::transaction(function () use ($validated, $voter, $request) {
+        DB::transaction(function () use ($validated, $currentVoterId, $request) {
+            // LOCKING: Lock the voter row for update to prevent race conditions
+            $voter = Voter::where('id', $currentVoterId)->lockForUpdate()->first();
+
+            // RE-CHECK: Ensure voter is still active after acquiring lock
+            if (!$voter || !$voter->is_active) {
+                // If we get here, it means another request just finished voting for this user
+                // or the user was deactivated in the meantime.
+                abort(403, 'You have already voted or your account is inactive.');
+            }
+
             foreach ($validated['votes'] as $positionId => $candidateIds) {
                 // Skip if no candidates selected for this position
                 if (empty($candidateIds)) {
@@ -102,6 +114,9 @@ class VoteController extends Controller
                 }
 
                 // Check if already voted for this position
+                // Note: Since we locked the voter and verified is_active is true, 
+                // and we set is_active=false at the end, this check is technically redundant 
+                // for preventing double voting, but good for data integrity sanity check.
                 $existingVotes = Vote::where('voter_id', $voter->id)
                     ->where('position_id', $positionId)
                     ->exists();
@@ -110,6 +125,7 @@ class VoteController extends Controller
                     abort(403, "You have already voted for position: {$position->name}");
                 }
 
+                $voteData = [];
                 foreach ($candidateIds as $candidateId) {
                     // Verify candidate belongs to position
                     $candidate = Candidate::findOrFail($candidateId);
@@ -117,12 +133,19 @@ class VoteController extends Controller
                         abort(422, "Candidate {$candidate->name} does not belong to position {$position->name}");
                     }
 
-                    Vote::create([
+                    $voteData[] = [
                         'voter_id' => $voter->id,
                         'candidate_id' => $candidateId,
                         'position_id' => $positionId,
                         'event_id' => $position->event_id,
-                    ]);
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+
+                // Bulk insert for performance
+                if (!empty($voteData)) {
+                    Vote::insert($voteData);
                 }
             }
 
@@ -135,9 +158,9 @@ class VoteController extends Controller
             ]);
 
             // Deactivate the voter account
-            DB::table('voters')
-                ->where('id', $voter->id)
-                ->update(['is_active' => false]);
+            // We use the model instance since we already have it locked
+            $voter->is_active = false;
+            $voter->save();
         });
 
         // Logout the voter
