@@ -280,4 +280,18 @@ class ReportController extends Controller
             ]
         ]);
     }
+
+    public function audit(Event $event)
+    {
+        $logs = \App\Models\VoteActivityLog::where('event_id', $event->id)
+            ->with(['voter.yearLevel', 'voter.yearSection'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20)
+            ->withQueryString();
+
+        return Inertia::render('Reports/Audit', [
+            'event' => $event,
+            'logs' => $logs
+        ]);
+    }
 }
