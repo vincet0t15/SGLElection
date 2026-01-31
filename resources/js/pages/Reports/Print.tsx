@@ -122,13 +122,20 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                         const totalVotes = position.candidates.reduce((sum, c) => sum + (c.votes_count || 0), 0);
 
                                         return (
-                                            <div key={position.id} className="break-inside-avoid print:mb-2">
-                                                <h3 className="font-bold uppercase mb-2 print:mb-1 text-sm">
+                                            <div key={position.id} className="break-inside-avoid print:mb-4">
+                                                <h3 className="font-bold uppercase mb-2 print:mb-1 text-sm bg-gray-100 p-1 border border-black border-b-0 mb-[-2px]">
                                                     {position.name} (TOP {position.max_votes})
                                                 </h3>
 
-                                                <div className={type === 'winners' ? '' : "border border-black"}>
-                                                    <table className="w-full text-sm">
+                                                <div className="">
+                                                    <table className="w-full text-sm border-collapse border border-black">
+                                                        <thead>
+                                                            <tr className="bg-gray-50 border-b border-black">
+                                                                <th className="border border-black py-1 px-4 text-left w-full">Candidate</th>
+                                                                <th className="border border-black py-1 px-4 text-center w-32">Votes</th>
+                                                                <th className="border border-black py-1 px-4 text-center w-32">%</th>
+                                                            </tr>
+                                                        </thead>
                                                         <tbody>
                                                             {position.candidates.map((candidate, index) => {
                                                                 const percentage = stats.actual_voters > 0
@@ -139,14 +146,14 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                                 const partylistName = candidate.partylist?.name ? `(${candidate.partylist.name})` : '(INDEPENDENT)';
 
                                                                 return (
-                                                                    <tr key={candidate.id} className={type === 'winners' ? "border-none" : "border-b border-black last:border-b-0"}>
-                                                                        <td className={`py-2 px-4 uppercase font-medium ${type === 'winners' ? '' : 'border-r border-black'}`}>
+                                                                    <tr key={candidate.id} className="border-b border-black last:border-b-0">
+                                                                        <td className="py-1 px-4 border border-black uppercase font-medium">
                                                                             {rank}. {candidate.name} <span className="text-gray-600 font-normal">{partylistName}</span>
                                                                         </td>
-                                                                        <td className={`py-2 px-4 w-32 text-center ${type === 'winners' ? '' : 'border-r border-black'}`}>
+                                                                        <td className="py-1 px-4 border border-black w-32 text-center">
                                                                             {candidate.votes_count?.toLocaleString()}
                                                                         </td>
-                                                                        <td className="py-2 px-4 w-32 text-center ">
+                                                                        <td className="py-1 px-4 border border-black w-32 text-center">
                                                                             {percentage}%
                                                                         </td>
                                                                     </tr>
@@ -154,7 +161,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                             })}
                                                             {position.candidates.length === 0 && (
                                                                 <tr>
-                                                                    <td colSpan={3} className="py-4 text-center italic text-gray-500">
+                                                                    <td colSpan={3} className="py-4 text-center italic text-gray-500 border border-black">
                                                                         No candidates for this position.
                                                                     </td>
                                                                 </tr>
