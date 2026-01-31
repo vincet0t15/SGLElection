@@ -119,28 +119,40 @@ class VoterController extends Controller
         $eventId = request()->input('event_id');
         $yearLevelId = request()->input('year_level_id');
         $yearSectionId = request()->input('year_section_id');
+        $selectedIds = request()->input('selected_ids');
 
         $query = Voter::query()->with(['yearLevel', 'yearSection', 'event']);
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('lrn_number', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%");
-            });
+        if ($selectedIds) {
+            $ids = explode(',', $selectedIds);
+            $query->whereIn('id', $ids);
+        } else {
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('lrn_number', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%");
+                });
+            }
+
+            if ($eventId && $eventId !== 'all') {
+                $query->where('event_id', $eventId);
+            }
+
+            if ($yearLevelId && $yearLevelId !== 'all') {
+                $query->where('year_level_id', $yearLevelId);
+            }
+
+            if ($yearSectionId && $yearSectionId !== 'all') {
+                $query->where('year_section_id', $yearSectionId);
+            }
         }
 
-        if ($eventId && $eventId !== 'all') {
-            $query->where('event_id', $eventId);
-        }
-
-        if ($yearLevelId && $yearLevelId !== 'all') {
-            $query->where('year_level_id', $yearLevelId);
-        }
-
-        if ($yearSectionId && $yearSectionId !== 'all') {
-            $query->where('year_section_id', $yearSectionId);
-        }
+        // Sort by hierarchy: Event > Year Level > Section > Name
+        $query->orderBy('event_id')
+            ->orderBy('year_level_id')
+            ->orderBy('year_section_id')
+            ->orderBy('name');
 
         $voters = $query->get();
 
@@ -184,28 +196,40 @@ class VoterController extends Controller
         $eventId = request()->input('event_id');
         $yearLevelId = request()->input('year_level_id');
         $yearSectionId = request()->input('year_section_id');
+        $selectedIds = request()->input('selected_ids');
 
         $query = Voter::query()->with(['yearLevel', 'yearSection', 'event']);
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('lrn_number', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%");
-            });
+        if ($selectedIds) {
+            $ids = explode(',', $selectedIds);
+            $query->whereIn('id', $ids);
+        } else {
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('lrn_number', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%");
+                });
+            }
+
+            if ($eventId && $eventId !== 'all') {
+                $query->where('event_id', $eventId);
+            }
+
+            if ($yearLevelId && $yearLevelId !== 'all') {
+                $query->where('year_level_id', $yearLevelId);
+            }
+
+            if ($yearSectionId && $yearSectionId !== 'all') {
+                $query->where('year_section_id', $yearSectionId);
+            }
         }
 
-        if ($eventId && $eventId !== 'all') {
-            $query->where('event_id', $eventId);
-        }
-
-        if ($yearLevelId && $yearLevelId !== 'all') {
-            $query->where('year_level_id', $yearLevelId);
-        }
-
-        if ($yearSectionId && $yearSectionId !== 'all') {
-            $query->where('year_section_id', $yearSectionId);
-        }
+        // Sort by hierarchy: Event > Year Level > Section > Name
+        $query->orderBy('event_id')
+            ->orderBy('year_level_id')
+            ->orderBy('year_section_id')
+            ->orderBy('name');
 
         $voters = $query->get();
 

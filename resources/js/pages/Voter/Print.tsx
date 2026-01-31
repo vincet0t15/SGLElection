@@ -74,6 +74,7 @@ export default function Print({ voters, filters, signatories }: Props) {
                                             {filters.event_name && <span>Event: {filters.event_name}</span>}
                                             <div className="flex gap-4">
                                                 {filters.year_level_name && <span>Level: {filters.year_level_name}</span>}
+                                                {filters.year_level_name && !filters.section_name && <span>Section: All Sections</span>}
                                                 {filters.section_name && <span>Section: {filters.section_name}</span>}
                                             </div>
                                         </div>

@@ -129,6 +129,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         if (eventId !== 'all') params.append('event_id', eventId);
         if (yearLevelId !== 'all') params.append('year_level_id', yearLevelId);
         if (yearSectionId !== 'all') params.append('year_section_id', yearSectionId);
+        if (selectedIds.length > 0) params.append('selected_ids', selectedIds.join(','));
 
         window.open(`/voter/print?${params.toString()}`, '_blank');
     };
@@ -139,6 +140,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         if (eventId !== 'all') params.append('event_id', eventId);
         if (yearLevelId !== 'all') params.append('year_level_id', yearLevelId);
         if (yearSectionId !== 'all') params.append('year_section_id', yearSectionId);
+        if (selectedIds.length > 0) params.append('selected_ids', selectedIds.join(','));
 
         window.open(`/voter/print-cards?${params.toString()}`, '_blank');
     };
