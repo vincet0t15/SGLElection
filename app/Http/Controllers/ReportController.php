@@ -24,7 +24,7 @@ class ReportController extends Controller
         $positions = $event->positions()
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->with(['candidatePhotos', 'yearLevel', 'yearSection'])
+                $query->with(['candidatePhotos', 'yearLevel', 'yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
                     }])

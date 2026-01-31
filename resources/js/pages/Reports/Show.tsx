@@ -324,6 +324,7 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead>Name</TableHead>
+                                            <TableHead>Party List</TableHead>
                                             <TableHead>Position</TableHead>
                                             <TableHead>Year & Section</TableHead>
                                             <TableHead className="text-right">Votes</TableHead>
@@ -341,6 +342,11 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                         <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                     {candidate.name}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline" className="font-normal">
+                                                        {candidate.partylist?.name || 'Independent'}
+                                                    </Badge>
                                                 </TableCell>
                                                 <TableCell>{candidate.position_name}</TableCell>
                                                 <TableCell>
