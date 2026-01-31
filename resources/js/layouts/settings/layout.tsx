@@ -6,15 +6,22 @@ import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
+import { backup } from '@/routes/settings';
 
 import type { NavItem } from '@/types';
-import { Settings2 } from 'lucide-react';
+import { Settings2, Database } from 'lucide-react';
 
 const sidebarNavItems: NavItem[] = [
     {
         name: 'Appearance',
         href: editAppearance().url,
         icon: Settings2,
+        items: [],
+    },
+    {
+        name: 'Backup & Restore',
+        href: backup().url,
+        icon: Database,
         items: [],
     },
 ];

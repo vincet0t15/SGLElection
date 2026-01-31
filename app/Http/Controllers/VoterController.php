@@ -162,6 +162,55 @@ class VoterController extends Controller
         ]);
     }
 
+    public function printCards(Request $request)
+    {
+        $search = $request->query('search');
+        $eventId = request()->input('event_id');
+        $yearLevelId = request()->input('year_level_id');
+        $yearSectionId = request()->input('year_section_id');
+
+        $query = Voter::query()->with(['yearLevel', 'yearSection', 'event']);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('lrn_number', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%");
+            });
+        }
+
+        if ($eventId && $eventId !== 'all') {
+            $query->where('event_id', $eventId);
+        }
+
+        if ($yearLevelId && $yearLevelId !== 'all') {
+            $query->where('year_level_id', $yearLevelId);
+        }
+
+        if ($yearSectionId && $yearSectionId !== 'all') {
+            $query->where('year_section_id', $yearSectionId);
+        }
+
+        $voters = $query->get();
+
+        // Prepare filter labels for the view
+        $filters = $request->all();
+        if ($eventId && $eventId !== 'all') {
+            $filters['event_name'] = Event::find($eventId)->name ?? null;
+        }
+        if ($yearLevelId && $yearLevelId !== 'all') {
+            $filters['year_level_name'] = \App\Models\YearLevel::find($yearLevelId)->name ?? null;
+        }
+        if ($yearSectionId && $yearSectionId !== 'all') {
+            $filters['section_name'] = \App\Models\YearSection::find($yearSectionId)->name ?? null;
+        }
+
+        return Inertia::render('Voter/PrintCards', [
+            'voters' => $voters,
+            'filters' => $filters,
+        ]);
+    }
+
     public function bulkStatus(Request $request)
     {
         $request->validate([

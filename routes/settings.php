@@ -14,4 +14,9 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('settings/appearance', [App\Http\Controllers\Settings\SystemSettingController::class, 'edit'])->name('appearance.edit');
     Route::post('settings/appearance', [App\Http\Controllers\Settings\SystemSettingController::class, 'update'])->name('appearance.update');
+
+    // Backup
+    Route::get('settings/backup', [App\Http\Controllers\Settings\BackupController::class, 'index'])->name('settings.backup');
+    Route::get('settings/backup/download', [App\Http\Controllers\Settings\BackupController::class, 'download'])->name('settings.backup.download');
+    Route::post('settings/backup/reset', [App\Http\Controllers\Settings\BackupController::class, 'reset'])->name('settings.backup.reset');
 });

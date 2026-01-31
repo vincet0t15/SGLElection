@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Delete, PlusIcon, Upload, Download, Printer, ShieldBan } from 'lucide-react';
+import { Delete, PlusIcon, Upload, Download, Printer, ShieldBan, CreditCard } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -133,6 +133,16 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         window.open(`/voter/print?${params.toString()}`, '_blank');
     };
 
+    const handlePrintCards = () => {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (eventId !== 'all') params.append('event_id', eventId);
+        if (yearLevelId !== 'all') params.append('year_level_id', yearLevelId);
+        if (yearSectionId !== 'all') params.append('year_section_id', yearSectionId);
+
+        window.open(`/voter/print-cards?${params.toString()}`, '_blank');
+    };
+
     const handleToggleStatus = (voter: VoterProps) => {
         router.patch(`/voter/${voter.id}/toggle-status`, {}, {
             preserveScroll: true,
@@ -220,7 +230,15 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             onClick={handlePrint}
                         >
                             <Printer className="h-4 w-4" />
-                            <span className="rounded-sm lg:inline">Print</span>
+                            <span className="rounded-sm lg:inline">Print List</span>
+                        </Button>
+
+                        <Button
+                            className="cursor-pointer bg-slate-700 text-white"
+                            onClick={handlePrintCards}
+                        >
+                            <CreditCard className="h-4 w-4" />
+                            <span className="rounded-sm lg:inline">Cards</span>
                         </Button>
 
                         <Button
