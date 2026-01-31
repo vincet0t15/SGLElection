@@ -7,16 +7,21 @@ export default function AppLogo() {
 
     return (
         <>
-            <div className="flex aspect-square size-8 items-center justify-center rounded-md text-sidebar-primary-foreground overflow-hidden">
+            <div className="flex aspect-square size-10 items-center justify-center rounded-lg text-sidebar-primary-foreground overflow-hidden">
                 {system_settings.logo ? (
-                    <img src={system_settings.logo} alt="System Logo" className="size-full object-cover" />
+                    <img src={system_settings.logo} alt="System Logo" className="size-full object-contain" />
                 ) : (
-                    <AppLogoIcon className="size-5 fill-current text-white dark:text-black" />
+                    <div className="bg-primary text-primary-foreground flex size-full items-center justify-center rounded-lg">
+                        <AppLogoIcon className="size-5 fill-current" />
+                    </div>
                 )}
             </div>
-            <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">
+            <div className="ml-2 grid flex-1 text-left">
+                <span className="truncate text-base font-bold leading-none tracking-tight">
                     {system_settings.name}
+                </span>
+                <span className="truncate text-xs text-muted-foreground font-medium">
+                    Election Panel
                 </span>
             </div>
         </>
