@@ -17,7 +17,7 @@ export default function Print({ voters, filters }: Props) {
     return (
         <div className="bg-white p-4 md:p-8 min-h-screen text-black font-sans">
             <Head title="Print Voters" />
-            
+
             <div className="mb-6 text-center">
                 <h1 className="text-xl font-bold uppercase tracking-wider mb-2">List of Voters</h1>
                 <div className="text-xs text-gray-600 space-y-1 flex flex-wrap justify-center gap-4">
@@ -27,35 +27,35 @@ export default function Print({ voters, filters }: Props) {
                 </div>
             </div>
 
-            <div className="w-full border border-gray-400">
+            <div className="w-full">
                 <table className="w-full text-xs text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-200 border-b border-gray-400">
-                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[30%]">Name</th>
-                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[15%]">LRN</th>
-                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[10%]">Username</th>
-                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[15%]">Year Level</th>
-                            <th className="p-2 border-r border-gray-400 font-bold uppercase w-[15%]">Section</th>
-                            <th className="p-2 font-bold uppercase w-[10%]">Status</th>
+                        <tr className="bg-gray-200">
+                            <th className="p-2 border border-gray-400 font-bold uppercase w-[30%]">Name</th>
+                            <th className="p-2 border border-gray-400 font-bold uppercase w-[15%]">LRN</th>
+                            <th className="p-2 border border-gray-400 font-bold uppercase w-[10%]">Username</th>
+                            <th className="p-2 border border-gray-400 font-bold uppercase w-[15%]">Year Level</th>
+                            <th className="p-2 border border-gray-400 font-bold uppercase w-[15%]">Section</th>
+                            <th className="p-2 border border-gray-400 font-bold uppercase w-[10%] print:hidden">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {voters.length > 0 ? (
                             voters.map((voter, index) => (
-                                <tr key={index} className="border-b border-gray-300 even:bg-gray-50">
-                                    <td className="p-1 px-2 border-r border-gray-300 font-medium">{voter.name}</td>
-                                    <td className="p-1 px-2 border-r border-gray-300">{voter.lrn_number}</td>
-                                    <td className="p-1 px-2 border-r border-gray-300 font-mono">{voter.username}</td>
-                                    <td className="p-1 px-2 border-r border-gray-300">{voter.year_level.name}</td>
-                                    <td className="p-1 px-2 border-r border-gray-300">{voter.year_section.name}</td>
-                                    <td className="p-1 px-2 text-center">
+                                <tr key={index} className="even:bg-gray-50">
+                                    <td className="p-1 px-2 border border-gray-300 font-medium">{voter.name}</td>
+                                    <td className="p-1 px-2 border border-gray-300">{voter.lrn_number}</td>
+                                    <td className="p-1 px-2 border border-gray-300 font-mono">{voter.username}</td>
+                                    <td className="p-1 px-2 border border-gray-300">{voter.year_level.name}</td>
+                                    <td className="p-1 px-2 border border-gray-300">{voter.year_section.name}</td>
+                                    <td className="p-1 px-2 border border-gray-300 text-center print:hidden">
                                         {voter.is_active ? 'Active' : 'Inactive'}
                                     </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={6} className="py-4 text-center text-gray-500">
+                                <td colSpan={6} className="py-4 text-center border border-gray-300 text-gray-500">
                                     No voters found.
                                 </td>
                             </tr>
@@ -65,7 +65,7 @@ export default function Print({ voters, filters }: Props) {
             </div>
 
             <div className="mt-8 flex justify-center print:hidden">
-                <button 
+                <button
                     onClick={() => window.print()}
                     className="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition flex items-center gap-2"
                 >
