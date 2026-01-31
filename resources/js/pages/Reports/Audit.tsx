@@ -7,15 +7,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShieldCheck, MapPin, Monitor } from 'lucide-react';
 import { EventProps } from '@/types/event';
 import Heading from '@/components/heading';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination"
+import Pagination from '@/components/paginationData';
+import { PaginatedDataResponse } from '@/types/pagination';
 
 interface VoteActivityLog {
     id: number;
@@ -48,7 +41,7 @@ interface PaginatedLogs {
 
 interface Props {
     event: EventProps;
-    logs: PaginatedLogs;
+    logs: PaginatedDataResponse<VoteActivityLog>;
 }
 
 export default function ReportsAudit({ event, logs }: Props) {
@@ -144,38 +137,7 @@ export default function ReportsAudit({ event, logs }: Props) {
                         </Table>
 
                         {/* Pagination */}
-                        <div className="mt-4">
-                            <Pagination>
-                                <PaginationContent>
-                                    {logs.links.map((link, index) => {
-                                        // Skip "Previous" and "Next" labels for better UI handling if desired, 
-                                        // or just render them as is. Laravel pagination links usually include HTML entities.
-                                        const label = link.label.replace('&laquo; Previous', 'Prev').replace('Next &raquo;', 'Next');
-                                        
-                                        if (link.url === null) {
-                                            return (
-                                                <PaginationItem key={index}>
-                                                    <span className="flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium opacity-50 ring-offset-background">
-                                                        {label}
-                                                    </span>
-                                                </PaginationItem>
-                                            );
-                                        }
-
-                                        return (
-                                            <PaginationItem key={index}>
-                                                <PaginationLink 
-                                                    href={link.url} 
-                                                    isActive={link.active}
-                                                >
-                                                    {label}
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                        );
-                                    })}
-                                </PaginationContent>
-                            </Pagination>
-                        </div>
+                        <Pagination data={logs} />
                     </CardContent>
                 </Card>
             </div>
