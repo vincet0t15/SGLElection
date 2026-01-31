@@ -270,13 +270,26 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                     <CardContent>
                                         <div className="space-y-6">
                                             {position.candidates.map((candidate, index) => {
+                                                const totalVotes = position.candidates.reduce((sum, c) => sum + (c.votes_count || 0), 0);
                                                 const percentage = totalVotes > 0
                                                     ? Math.round(((candidate.votes_count || 0) / totalVotes) * 100)
                                                     : 0;
-                                                // Consider as winner if the candidate is within the top N candidates (where N is max_votes)
-                                                // and has at least one vote.
-                                                const isWinner = index < position.max_votes && (candidate.votes_count || 0) > 0;
-                                                const rank = index + 1;
+
+                                                const votes = candidate.votes_count || 0;
+                                                const lastWinnerVotes = position.candidates[position.max_votes - 1]?.votes_count || 0;
+                                                const firstLoserVotes = position.candidates[position.max_votes]?.votes_count || 0;
+                                                
+                                                // Check for a tie at the cutoff boundary
+                                                const isTieForLastSpot = position.candidates.length > position.max_votes &&
+                                                                         lastWinnerVotes > 0 &&
+                                                                         lastWinnerVotes === firstLoserVotes;
+
+                                                // Determine status
+                                                const isTied = isTieForLastSpot && votes === lastWinnerVotes;
+                                                const isWinner = !isTied && index < position.max_votes && votes > 0;
+
+                                                // Calculate rank (handle ties)
+                                                const rank = position.candidates.findIndex(c => c.votes_count === votes) + 1;
 
                                                 return (
                                                     <div key={candidate.id} className="space-y-2">
@@ -285,7 +298,10 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                                 <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium text-muted-foreground">
                                                                     #{rank}
                                                                 </div>
-                                                                <Avatar className={`h-10 w-10 border-2 ${isWinner ? 'border-yellow-500' : 'border-transparent'}`}>
+                                                                <Avatar className={cn(
+                                                                    "h-10 w-10 border-2",
+                                                                    isWinner ? "border-yellow-500" : (isTied ? "border-orange-500" : "border-transparent")
+                                                                )}>
                                                                     <AvatarImage
                                                                         src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
                                                                         alt={candidate.name}
@@ -297,6 +313,9 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                                         {candidate.name}
                                                                         {isWinner && (
                                                                             <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Winner</Badge>
+                                                                        )}
+                                                                        {isTied && (
+                                                                            <Badge variant="secondary" className="bg-orange-100 text-orange-800 hover:bg-orange-100">Tie</Badge>
                                                                         )}
                                                                     </div>
                                                                     <div className="text-xs text-muted-foreground">
@@ -312,7 +331,7 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                         <Progress
                                                             value={percentage}
                                                             className="h-2"
-                                                            indicatorClassName={isWinner ? "bg-emerald-600" : ""}
+                                                            indicatorClassName={isWinner ? "bg-emerald-600" : (isTied ? "bg-orange-500" : "")}
                                                         />
                                                     </div>
                                                 );

@@ -142,13 +142,23 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                                     ? ((candidate.votes_count || 0) / stats.actual_voters * 100).toFixed(2)
                                                                     : "0.00";
 
-                                                                const rank = index + 1;
+                                                                const votes = candidate.votes_count || 0;
+                                                                const lastWinnerVotes = position.candidates[position.max_votes - 1]?.votes_count || 0;
+                                                                const firstLoserVotes = position.candidates[position.max_votes]?.votes_count || 0;
+
+                                                                const isTieForLastSpot = position.candidates.length > position.max_votes &&
+                                                                    lastWinnerVotes > 0 &&
+                                                                    lastWinnerVotes === firstLoserVotes;
+                                                                const isTied = isTieForLastSpot && votes === lastWinnerVotes;
+
+                                                                const rank = position.candidates.findIndex(c => c.votes_count === votes) + 1;
                                                                 const partylistName = candidate.partylist?.name ? `(${candidate.partylist.name})` : '(INDEPENDENT)';
 
                                                                 return (
                                                                     <tr key={candidate.id} className="border-b border-black last:border-b-0">
                                                                         <td className="py-1 px-4 border border-black uppercase font-medium">
                                                                             {rank}. {candidate.name} <span className="text-gray-600 font-normal">{partylistName}</span>
+                                                                            {isTied && <span className="font-bold text-red-600 ml-1">(TIE)</span>}
                                                                         </td>
                                                                         <td className="py-1 px-4 border border-black w-32 text-center">
                                                                             {candidate.votes_count?.toLocaleString()}

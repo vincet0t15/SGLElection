@@ -189,28 +189,37 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                             {/* Candidates List */}
                             <div className="divide-y divide-slate-800/50 flex-1">
                                 {position.candidates.map((candidate, index) => {
-                                    // Calculate percentage relative to total votes cast (approx) or max possible
-                                    // For visuals, let's use percentage of total votes for this position if available, 
-                                    // OR just raw count relative to leader.
-
                                     const votes = candidate.votes_count || 0;
 
                                     // Let's find the leader's votes to scale the bars relative to the winner
                                     const leaderVotes = position.candidates[0]?.votes_count || 0;
                                     const percentage = leaderVotes > 0 ? (votes / leaderVotes) * 100 : 0;
-                                    const isLeader = index === 0 && votes > 0;
-                                    const isWinner = index < position.max_votes && votes > 0;
+
+                                    const lastWinnerVotes = position.candidates[position.max_votes - 1]?.votes_count || 0;
+                                    const firstLoserVotes = position.candidates[position.max_votes]?.votes_count || 0;
+
+                                    // Check for a tie at the cutoff boundary
+                                    const isTieForLastSpot = position.candidates.length > position.max_votes &&
+                                        lastWinnerVotes > 0 &&
+                                        lastWinnerVotes === firstLoserVotes;
+
+                                    // Determine status
+                                    const isTied = isTieForLastSpot && votes === lastWinnerVotes;
+                                    const isWinner = !isTied && index < position.max_votes && votes > 0;
+
+                                    // Calculate rank (handle ties)
+                                    const rank = position.candidates.findIndex(c => c.votes_count === votes) + 1;
 
                                     return (
                                         <div key={candidate.id} className={cn(
                                             "relative p-4 transition-colors",
-                                            isWinner ? "bg-emerald-950/10" : ""
+                                            isWinner ? "bg-emerald-950/10" : (isTied ? "bg-orange-950/10" : "")
                                         )}>
                                             {/* Progress Bar Background */}
                                             <div
                                                 className={cn(
                                                     "absolute left-0 top-0 bottom-0 bg-emerald-500/5 transition-all duration-1000 ease-out",
-                                                    isWinner ? "bg-emerald-500/10" : ""
+                                                    isWinner ? "bg-emerald-500/10" : (isTied ? "bg-orange-500/10" : "")
                                                 )}
                                                 style={{ width: `${percentage}%` }}
                                             />
@@ -220,10 +229,14 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                                 <div className="flex-shrink-0 w-10 text-center">
                                                     {isWinner ? (
                                                         <div className="w-8 h-8 rounded-full bg-emerald-500 text-slate-950 font-bold flex items-center justify-center mx-auto text-sm shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-                                                            {index + 1}
+                                                            {rank}
+                                                        </div>
+                                                    ) : isTied ? (
+                                                        <div className="w-8 h-8 rounded-full bg-orange-500 text-slate-950 font-bold flex items-center justify-center mx-auto text-sm shadow-[0_0_15px_rgba(249,115,22,0.4)]">
+                                                            {rank}
                                                         </div>
                                                     ) : (
-                                                        <span className="text-slate-600 font-mono text-sm">#{index + 1}</span>
+                                                        <span className="text-slate-600 font-mono text-sm">#{rank}</span>
                                                     )}
                                                 </div>
 
@@ -231,12 +244,13 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                                 <div className="flex-1 min-w-0">
                                                     <h3 className={cn(
                                                         "font-bold truncate text-lg leading-none mb-1",
-                                                        isWinner ? "text-white" : "text-slate-400"
+                                                        isWinner ? "text-white" : (isTied ? "text-orange-200" : "text-slate-400")
                                                     )}>
                                                         {candidate.name}
                                                     </h3>
                                                     <p className="text-xs text-slate-500 truncate uppercase tracking-wider">
                                                         {candidate.partylist?.name || 'Independent'}
+                                                        {isTied && <span className="ml-2 text-orange-500 font-bold">(TIE)</span>}
                                                     </p>
                                                 </div>
 
@@ -244,7 +258,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                                 <div className="text-right">
                                                     <div className={cn(
                                                         "text-2xl font-black font-mono tracking-tighter",
-                                                        isWinner ? "text-emerald-400" : "text-slate-500"
+                                                        isWinner ? "text-emerald-400" : (isTied ? "text-orange-400" : "text-slate-500")
                                                     )}>
                                                         {votes.toLocaleString()}
                                                     </div>
