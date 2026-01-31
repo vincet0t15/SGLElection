@@ -90,6 +90,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::post('voter/import', [VoterController::class, 'import'])->name('voter.import');
     Route::get('voter/export', [VoterController::class, 'export'])->name('voter.export');
     Route::get('voter/print', [VoterController::class, 'print'])->name('voter.print');
+    Route::post('voter/activate-all', [VoterController::class, 'activateAll'])->name('voter.activate-all');
     Route::post('voter/bulk-status', [VoterController::class, 'bulkStatus'])->name('voter.bulk-status');
     Route::get('voter/create', [VoterController::class, 'create'])->name('voter.create');
     Route::post('voter', [VoterController::class, 'store'])->name('voter.store');

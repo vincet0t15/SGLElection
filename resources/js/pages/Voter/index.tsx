@@ -151,8 +151,21 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                 year_section_id: yearSectionId,
             }, {
                 preserveScroll: true,
-                onSuccess: () => {
-                    // Toast or alert is handled by flash message usually
+                onSuccess: (response: { props: FlashProps }) => {
+                    toast.success(response.props.flash?.success);
+                }
+            });
+        }
+    };
+
+    const handleActivateAll = () => {
+        if (confirm('Are you sure you want to activate all voters matching the current event filter? This will enable them to vote.')) {
+            router.post(voter.activateAll().url, {
+                event_id: eventId,
+            }, {
+                preserveScroll: true,
+                onSuccess: (response: { props: FlashProps }) => {
+                    toast.success(response.props.flash?.success);
                 }
             });
         }
@@ -170,7 +183,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className='gap-2 flex'>
                         <Link href={voter.create().url}>
-                            <Button className="cursor-pointer" >
+                            <Button className="cursor-pointer" variant="outline">
                                 <PlusIcon className=" h-4 w-4" />
                                 <span className="rounded-sm lg:inline">Voter</span>
                             </Button>
@@ -200,12 +213,20 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         </Button>
 
                         <Button
-                            className="cursor-pointer bg-red-600 text-white"
+                            variant="destructive"
+                            className="cursor-pointer"
                             onClick={handleBulkInactive}
-                            title="Deactivate All Matching Voters"
                         >
                             <ShieldBan className="h-4 w-4" />
-                            <span className="rounded-sm lg:inline">Inactive All</span>
+                            <span className="rounded-sm lg:inline">Deactivate All</span>
+                        </Button>
+
+                        <Button
+                            className="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white"
+                            onClick={handleActivateAll}
+                        >
+                            <ShieldBan className="h-4 w-4 rotate-180" />
+                            <span className="rounded-sm lg:inline">Activate All</span>
                         </Button>
 
                     </div>

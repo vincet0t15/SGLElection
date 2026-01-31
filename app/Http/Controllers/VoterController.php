@@ -98,6 +98,21 @@ class VoterController extends Controller
         return Excel::download(new VotersExport($request->all()), 'voters.xlsx');
     }
 
+    public function activateAll(Request $request)
+    {
+        $eventId = $request->input('event_id');
+
+        $query = Voter::query();
+
+        if ($eventId && $eventId !== 'all') {
+            $query->where('event_id', $eventId);
+        }
+
+        $query->update(['is_active' => true]);
+
+        return back()->with('success', 'All voters have been activated successfully.');
+    }
+
     public function print(Request $request)
     {
         $search = $request->query('search');
