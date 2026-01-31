@@ -82,7 +82,7 @@ class ReportController extends Controller
         ]);
     }
 
-    public function print(Event $event)
+    public function print(Request $request, Event $event)
     {
         $positions = $event->positions()
             ->orderBy('id')
@@ -94,6 +94,13 @@ class ReportController extends Controller
                     ->orderBy('votes_count', 'desc');
             }])
             ->get();
+
+        if ($request->input('type') === 'winners') {
+            $positions->transform(function ($position) {
+                $position->setRelation('candidates', $position->candidates->take($position->max_votes));
+                return $position;
+            });
+        }
 
         // Calculate actual voters (turnout)
         $actualVoters = \App\Models\Vote::where('event_id', $event->id)
@@ -120,6 +127,7 @@ class ReportController extends Controller
             'event' => $event,
             'positions' => $positions,
             'signatories' => $signatories,
+            'type' => $request->input('type'),
             'stats' => [
                 'actual_voters' => $actualVoters,
                 'registered_voters' => $registeredVoters,

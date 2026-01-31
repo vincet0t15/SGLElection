@@ -22,9 +22,10 @@ interface Props {
         total_sections: number;
         turnout: number;
     };
+    type?: string;
 }
 
-export default function ReportsPrint({ event, positions, signatories, stats }: Props) {
+export default function ReportsPrint({ event, positions, signatories, stats, type }: Props) {
     const { system_settings } = usePage<SharedData>().props;
 
     useEffect(() => {
@@ -84,7 +85,7 @@ export default function ReportsPrint({ event, positions, signatories, stats }: P
                                             {system_settings.name || 'Voting System'}
                                         </h1>
                                         <h2 className="text-lg font-serif uppercase tracking-wide text-gray-800">
-                                            OFFICIAL ELECTION RESULTS
+                                            {type === 'winners' ? 'OFFICIAL LIST OF WINNERS' : 'OFFICIAL ELECTION RESULTS'}
                                         </h2>
                                         <p className="text-sm font-bold uppercase mt-1 text-gray-600">
                                             {event.name}

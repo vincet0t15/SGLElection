@@ -165,12 +165,20 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                             </Badge>
                         </div>
                     </div>
-                    <Button asChild variant="outline" className="gap-2 bg-emerald-600 text-white">
-                        <a href={`/reports/print/${event.id}`} target="_blank" rel="noopener noreferrer">
-                            <Printer className="h-4 w-4" />
-                            Print Official Report
-                        </a>
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button asChild variant="outline" className="gap-2 bg-emerald-600 text-white hover:bg-emerald-700 hover:text-white border-emerald-600">
+                            <a href={`/reports/print/${event.id}`} target="_blank" rel="noopener noreferrer">
+                                <Printer className="h-4 w-4" />
+                                Official Report
+                            </a>
+                        </Button>
+                        <Button asChild variant="outline" className="gap-2 bg-blue-600 text-white hover:bg-blue-700 hover:text-white border-blue-600">
+                            <a href={`/reports/print/${event.id}?type=winners`} target="_blank" rel="noopener noreferrer">
+                                <Trophy className="h-4 w-4" />
+                                Winners Only
+                            </a>
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
