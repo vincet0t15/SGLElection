@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ShieldCheck, MapPin, Monitor } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, MapPin, Monitor, Printer } from 'lucide-react';
 import { EventProps } from '@/types/event';
 import Heading from '@/components/heading';
 import Pagination from '@/components/paginationData';
@@ -72,6 +72,12 @@ export default function ReportsAudit({ event, logs }: Props) {
                             Total Records: {logs.total}
                         </p>
                     </div>
+                    <Button asChild variant="outline" className="gap-2">
+                        <a href={`/reports/audit/print/${event.id}`} target="_blank" rel="noopener noreferrer">
+                            <Printer className="h-4 w-4" />
+                            Print Log
+                        </a>
+                    </Button>
                 </div>
 
                 <Card>

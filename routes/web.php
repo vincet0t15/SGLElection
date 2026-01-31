@@ -44,6 +44,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('reports/{event}', [ReportController::class, 'show'])->name('reports.show');
     Route::get('reports/analytics/{event}', [ReportController::class, 'analytics'])->name('reports.analytics');
     Route::get('reports/audit/{event}', [ReportController::class, 'audit'])->name('reports.audit');
+    Route::get('reports/audit/print/{event}', [ReportController::class, 'printAudit'])->name('reports.audit.print');
     Route::get('reports/live/{event}', [ReportController::class, 'live'])->name('reports.live');
     Route::get('reports/print/{event}', [ReportController::class, 'print'])->name('reports.print');
     Route::get('reports/{event}/voters/{voter}/votes', [ReportController::class, 'getVoterVotes'])->name('reports.voter-votes');

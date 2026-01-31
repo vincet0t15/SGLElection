@@ -294,4 +294,26 @@ class ReportController extends Controller
             'logs' => $logs
         ]);
     }
+
+    public function printAudit(Event $event)
+    {
+        $logs = \App\Models\VoteActivityLog::where('event_id', $event->id)
+            ->with(['voter.yearLevel', 'voter.yearSection'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $signatories = \App\Models\Signatory::where('is_active', true)
+            ->where(function ($query) use ($event) {
+                $query->where('event_id', $event->id)
+                    ->orWhereNull('event_id');
+            })
+            ->orderBy('order')
+            ->get();
+
+        return Inertia::render('Reports/PrintAudit', [
+            'event' => $event,
+            'logs' => $logs,
+            'signatories' => $signatories
+        ]);
+    }
 }
