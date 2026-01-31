@@ -91,7 +91,7 @@ export default function Position({ positions, filters, events, yearLevels }: Pro
 
 
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)}>
+                    <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)} variant="outline">
                         <PlusIcon className=" h-4 w-4" />
                         <span className="rounded-sm lg:inline">Position</span>
                     </Button>

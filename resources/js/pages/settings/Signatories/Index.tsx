@@ -146,8 +146,8 @@ export default function Signatories({ signatories, events }: Props) {
                         title="Signatories"
                         description="Manage the signatories that appear on reports."
                     />
-                    <Button onClick={handleCreate}>
-                        <Plus className="mr-2 h-4 w-4" />
+                    <Button onClick={handleCreate} variant="outline">
+                        <Plus className="h-4 w-4" />
                         Add Signatory
                     </Button>
                 </div>

@@ -127,7 +127,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                     {position.name} (TOP {position.max_votes})
                                                 </h3>
 
-                                                <div className="border border-black">
+                                                <div className={type === 'winners' ? '' : "border border-black"}>
                                                     <table className="w-full text-sm">
                                                         <tbody>
                                                             {position.candidates.map((candidate, index) => {
@@ -139,11 +139,11 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                                 const partylistName = candidate.partylist?.name ? `(${candidate.partylist.name})` : '(INDEPENDENT)';
 
                                                                 return (
-                                                                    <tr key={candidate.id} className="border-b border-black last:border-b-0">
-                                                                        <td className="py-2 px-4 border-r border-black uppercase font-medium">
+                                                                    <tr key={candidate.id} className={type === 'winners' ? "border-none" : "border-b border-black last:border-b-0"}>
+                                                                        <td className={`py-2 px-4 uppercase font-medium ${type === 'winners' ? '' : 'border-r border-black'}`}>
                                                                             {rank}. {candidate.name} <span className="text-gray-600 font-normal">{partylistName}</span>
                                                                         </td>
-                                                                        <td className="py-2 px-4 w-32 text-center border-r border-black ">
+                                                                        <td className={`py-2 px-4 w-32 text-center ${type === 'winners' ? '' : 'border-r border-black'}`}>
                                                                             {candidate.votes_count?.toLocaleString()}
                                                                         </td>
                                                                         <td className="py-2 px-4 w-32 text-center ">

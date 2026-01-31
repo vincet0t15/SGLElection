@@ -13,6 +13,7 @@ import {
 import { Printer, Calendar, MapPin, Search, Eye } from 'lucide-react';
 import { EventProps } from '@/types/event';
 import { useState } from 'react';
+import Heading from '@/components/heading';
 
 interface Props {
     events: EventProps[];
@@ -30,14 +31,15 @@ export default function ReportsIndex({ events }: Props) {
     return (
         <AppLayout breadcrumbs={[{ title: 'Reports', href: '/reports' }]}>
             <Head title="Reports" />
-            <div className="flex flex-col gap-6 p-6">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <Heading
+                    variant="small"
+                    title="Reports"
+                    description="View voting results, summaries, and analytics."
+                />
+
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
-                        <p className="text-muted-foreground">
-                            Select an event to generate and print reports.
-                        </p>
-                    </div>
+
                     <div className="relative w-full md:w-72">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -99,12 +101,13 @@ export default function ReportsIndex({ events }: Props) {
                                         </span>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <Button asChild size="sm" className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white" variant="default">
-                                            <Link href={`/reports/${event.id}`}>
-                                                <Eye className="h-4 w-4" />
-                                                View
-                                            </Link>
-                                        </Button>
+
+
+                                        <Link href={`/reports/${event.id}`}>
+
+                                            <span className='hover:underline hover:font-bold text-teal-800 hover:text-teal-900'>View</span>
+                                        </Link>
+
                                     </TableCell>
                                 </TableRow>
                             ))}
