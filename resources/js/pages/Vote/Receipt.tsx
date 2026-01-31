@@ -1,8 +1,8 @@
 import { Head, router } from '@inertiajs/react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, LogOut, Printer } from 'lucide-react';
+import { LogOut, Printer, CheckCircle2, QrCode, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 interface Vote {
     id: number;
@@ -46,91 +46,158 @@ export default function Receipt({ votes, event, voter }: Props) {
     }, {} as Record<string, Vote[]>);
 
     const handleLogout = () => {
-        router.post(('voter.logout'));
+        router.post('/voter/logout');
     };
 
     const handlePrint = () => {
         window.print();
     };
 
+    // Get current date formatted
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const formattedTime = date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
     return (
-        <div className="min-h-screen bg-slate-50 p-4 md:p-8 flex items-center justify-center">
+        <div className="min-h-screen bg-slate-100 py-8 px-4 flex flex-col items-center justify-center print:bg-white print:p-0">
             <Head title="Vote Receipt" />
 
-            <Card className="w-full max-w-2xl shadow-xl border-t-8 border-t-emerald-500">
-                <CardHeader className="text-center pb-2">
-                    <div className="mx-auto bg-emerald-100 p-3 rounded-full w-fit mb-4">
-                        <CheckCircle2 className="w-12 h-12 text-emerald-600" />
-                    </div>
-                    <CardTitle className="text-2xl md:text-3xl font-bold text-slate-800">Vote Submitted Successfully!</CardTitle>
-                    <CardDescription className="text-lg text-slate-600 mt-2">
-                        Thank you for voting in the <span className="font-semibold text-slate-900">{event.name}</span>.
-                    </CardDescription>
-                </CardHeader>
+            {/* Receipt Container */}
+            <div className="w-full max-w-md bg-white shadow-2xl overflow-hidden print:shadow-none print:max-w-none print:w-full relative">
+                {/* Decorative Top Edge */}
+                <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 w-full print:hidden"></div>
 
-                <CardContent className="space-y-6 pt-6">
-                    <div className="bg-slate-100 p-4 rounded-lg text-center">
-                        <p className="text-sm text-slate-500 uppercase tracking-wider font-semibold">Voter</p>
-                        <p className="text-xl font-bold text-slate-800">{voter.name}</p>
-                        <p className="text-sm text-slate-500">{voter.username}</p>
+                <div className="p-8 print:p-0">
+                    {/* Header */}
+                    <div className="text-center space-y-4 mb-8">
+                        <div className="flex justify-center">
+                            <img src="/smartvote.png" alt="Logo" className="h-16 w-auto mix-blend-multiply" />
+                        </div>
+                        <div className="space-y-1">
+                            <h1 className="text-xl font-black uppercase tracking-widest text-slate-900 leading-none">Official Ballot Receipt</h1>
+                            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">{event.name}</p>
+                        </div>
                     </div>
 
+                    <div className="relative flex py-5 items-center">
+                        <div className="flex-grow border-t border-dashed border-slate-300"></div>
+                        <span className="flex-shrink-0 mx-4 text-slate-400">
+                            <ShieldCheck className="w-5 h-5" />
+                        </span>
+                        <div className="flex-grow border-t border-dashed border-slate-300"></div>
+                    </div>
+
+                    {/* Voter Info */}
+                    <div className="space-y-4 mb-8">
+                        <div className="flex justify-between items-end">
+                            <div>
+                                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">Voter Name</p>
+                                <p className="text-sm font-bold text-slate-900 uppercase">{voter.name}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">Voter ID</p>
+                                <p className="text-sm font-mono font-bold text-slate-900">{voter.username}</p>
+                            </div>
+                        </div>
+                        <div className="flex justify-between items-end">
+                            <div>
+                                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">Date</p>
+                                <p className="text-sm font-mono text-slate-700">{formattedDate}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">Time</p>
+                                <p className="text-sm font-mono text-slate-700">{formattedTime}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="border-t-2 border-slate-900 mb-6"></div>
+
+                    {/* Votes List */}
                     <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">Your Ballot Summary</h3>
-
                         {Object.entries(votesByPosition).map(([position, positionVotes]) => (
                             <div key={position} className="space-y-2 break-inside-avoid">
-                                <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">{position}</h4>
-                                <div className="grid gap-3">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">{position}</h4>
+                                <div className="space-y-2">
                                     {positionVotes.map((vote) => (
-                                        <div key={vote.id} className="flex items-center gap-4 bg-white border rounded-lg p-3 shadow-sm">
-                                            {/* Avatar/Photo Placeholder */}
-                                            <div className="h-10 w-10 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
-                                                {vote.candidate.candidate_photos && vote.candidate.candidate_photos.length > 0 ? (
-                                                    <img
-                                                        src={`/storage/${vote.candidate.candidate_photos[0].path}`}
-                                                        alt={vote.candidate.name}
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="h-full w-full flex items-center justify-center text-slate-400 font-bold">
-                                                        {vote.candidate.name.charAt(0)}
-                                                    </div>
-                                                )}
+                                        <div key={vote.id} className="flex justify-between items-center group">
+                                            <div className="flex items-center gap-3">
+                                                {/* Small Avatar */}
+                                                <div className="h-8 w-8 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 print:hidden">
+                                                    {vote.candidate.candidate_photos && vote.candidate.candidate_photos.length > 0 ? (
+                                                        <img
+                                                            src={`/storage/${vote.candidate.candidate_photos[0].path}`}
+                                                            alt={vote.candidate.name}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-full w-full flex items-center justify-center text-slate-400 font-bold text-xs">
+                                                            {vote.candidate.name.charAt(0)}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-slate-900">{vote.candidate.name}</p>
+                                                    <p className="text-[10px] text-slate-500 uppercase">{vote.candidate.partylist?.name || 'Independent'}</p>
+                                                </div>
                                             </div>
-
-                                            <div>
-                                                <p className="font-bold text-slate-800">{vote.candidate.name}</p>
-                                                <p className="text-xs text-slate-500">
-                                                    {vote.candidate.partylist?.name || 'Independent'}
-                                                </p>
+                                            <div className="print:hidden">
+                                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                                             </div>
                                         </div>
                                     ))}
                                 </div>
+                                <div className="border-b border-dashed border-slate-200 mt-2"></div>
                             </div>
                         ))}
                     </div>
-                </CardContent>
 
-                <CardFooter className="flex flex-col sm:flex-row gap-3 pt-6 border-t bg-slate-50/50">
-                    <Button
-                        variant="outline"
-                        className="w-full sm:w-auto"
-                        onClick={handlePrint}
-                    >
-                        <Printer className="mr-2 h-4 w-4" />
-                        Print Receipt
-                    </Button>
-                    <Button
-                        className="w-full sm:w-auto sm:ml-auto bg-slate-900 hover:bg-slate-800"
-                        onClick={handleLogout}
-                    >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Secure Logout
-                    </Button>
-                </CardFooter>
-            </Card>
+                    {/* Footer / Auth Code */}
+                    <div className="mt-8 pt-8 text-center space-y-4">
+                        <div className="flex justify-center text-slate-900">
+                            <QrCode className="w-20 h-20 opacity-90" />
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Digital Signature</p>
+                            <p className="font-mono text-[10px] text-slate-400 break-all px-8">
+                                {btoa(`${voter.username}-${event.name}-${formattedDate}`).substring(0, 32)}...
+                            </p>
+                        </div>
+                        <div className="pt-4">
+                            <p className="text-sm font-black text-slate-900 tracking-widest uppercase">Vote Recorded</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Decorative Bottom Pattern */}
+                <div className="h-2 bg-slate-900 w-full print:hidden"></div>
+            </div>
+
+            {/* Actions (Hidden on Print) */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-md print:hidden">
+                <Button
+                    variant="outline"
+                    className="flex-1 bg-white hover:bg-slate-50 border-slate-200 shadow-sm h-12"
+                    onClick={handlePrint}
+                >
+                    <Printer className="mr-2 h-4 w-4" />
+                    Print Receipt
+                </Button>
+                <Button
+                    className="flex-1 bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 h-12"
+                    onClick={handleLogout}
+                >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Secure Logout
+                </Button>
+            </div>
         </div>
     );
 }
