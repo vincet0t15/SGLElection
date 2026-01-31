@@ -15,6 +15,7 @@ import { PositionProps } from '@/types/position';
 import position from '@/routes/position';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -141,10 +142,32 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         });
     };
 
-    const handleBulkInactive = () => {
-        if (confirm('Are you sure you want to deactivate all voters matching the current filters? This action cannot be undone.')) {
+    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedIds(voters.data.map(v => v.id));
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const handleSelectOne = (checked: boolean, id: number) => {
+        if (checked) {
+            setSelectedIds(prev => [...prev, id]);
+        } else {
+            setSelectedIds(prev => prev.filter(i => i !== id));
+        }
+    };
+
+    const handleBulkAction = (status: boolean) => {
+        const action = status ? 'activate' : 'deactivate';
+        const target = selectedIds.length > 0 ? `${selectedIds.length} selected voters` : 'ALL matching voters';
+
+        if (confirm(`Are you sure you want to ${action} ${target}?`)) {
             router.post(voter.bulkStatus().url, {
-                status: false,
+                status: status,
+                ids: selectedIds.length > 0 ? selectedIds : undefined,
                 search: search,
                 event_id: eventId,
                 year_level_id: yearLevelId,
@@ -152,19 +175,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
             }, {
                 preserveScroll: true,
                 onSuccess: (response: { props: FlashProps }) => {
-                    toast.success(response.props.flash?.success);
-                }
-            });
-        }
-    };
-
-    const handleActivateAll = () => {
-        if (confirm('Are you sure you want to activate all voters matching the current event filter? This will enable them to vote.')) {
-            router.post(voter.activateAll().url, {
-                event_id: eventId,
-            }, {
-                preserveScroll: true,
-                onSuccess: (response: { props: FlashProps }) => {
+                    setSelectedIds([]);
                     toast.success(response.props.flash?.success);
                 }
             });
@@ -215,18 +226,22 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         <Button
                             variant="destructive"
                             className="cursor-pointer"
-                            onClick={handleBulkInactive}
+                            onClick={() => handleBulkAction(false)}
                         >
                             <ShieldBan className="h-4 w-4" />
-                            <span className="rounded-sm lg:inline">Deactivate All</span>
+                            <span className="rounded-sm lg:inline">
+                                {selectedIds.length > 0 ? 'Deactivate Selected' : 'Deactivate All'}
+                            </span>
                         </Button>
 
                         <Button
                             className="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white"
-                            onClick={handleActivateAll}
+                            onClick={() => handleBulkAction(true)}
                         >
                             <ShieldBan className="h-4 w-4 rotate-180" />
-                            <span className="rounded-sm lg:inline">Activate All</span>
+                            <span className="rounded-sm lg:inline">
+                                {selectedIds.length > 0 ? 'Activate Selected' : 'Activate All'}
+                            </span>
                         </Button>
 
                     </div>
@@ -281,6 +296,13 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                     <Table>
                         <TableHeader className="bg-muted/50">
                             <TableRow>
+                                <TableHead className="w-[40px] pl-4">
+                                    <Checkbox
+                                        checked={voters.data.length > 0 && selectedIds.length === voters.data.length}
+                                        onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
+                                        aria-label="Select all"
+                                    />
+                                </TableHead>
                                 <TableHead className="text-primary font-bold">Name</TableHead>
                                 <TableHead className="text-primary font-bold">Username</TableHead>
                                 <TableHead className="text-primary font-bold">LRN</TableHead>
@@ -295,6 +317,13 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             {voters.data.length > 0 ? (
                                 voters.data.map((voter, index) => (
                                     <TableRow key={index} className="text-sm">
+                                        <TableCell className="pl-4">
+                                            <Checkbox
+                                                checked={selectedIds.includes(voter.id)}
+                                                onCheckedChange={(checked) => handleSelectOne(checked as boolean, voter.id)}
+                                                aria-label="Select row"
+                                            />
+                                        </TableCell>
                                         <TableCell>
                                             <span >{voter.name}</span>
                                         </TableCell>
