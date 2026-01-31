@@ -78,7 +78,21 @@ class VoteController extends Controller
             abort(401, 'You must be logged in as a voter to vote.');
         }
 
-        DB::transaction(function () use ($validated, $currentVoterId, $request) {
+        // PRE-FETCHING: Get all IDs to minimize database queries inside the loop
+        $positionIds = array_keys($validated['votes']);
+        $candidateIds = \Illuminate\Support\Arr::flatten($validated['votes']);
+
+        // Eager load yearLevels to avoid N+1 queries during grade level check
+        $positions = Position::whereIn('id', $positionIds)
+            ->with('yearLevels')
+            ->get()
+            ->keyBy('id');
+
+        $candidates = Candidate::whereIn('id', $candidateIds)
+            ->get()
+            ->keyBy('id');
+
+        DB::transaction(function () use ($validated, $currentVoterId, $request, $positions, $candidates) {
             // LOCKING: Lock the voter row for update to prevent race conditions
             $voter = Voter::where('id', $currentVoterId)->lockForUpdate()->first();
 
@@ -89,13 +103,26 @@ class VoteController extends Controller
                 abort(403, 'You have already voted or your account is inactive.');
             }
 
+            // Pre-fetch existing votes for this voter to avoid queries inside loop
+            // We only need to check if they voted for any of the submitted position IDs
+            $existingVotesPositionIds = Vote::where('voter_id', $voter->id)
+                ->whereIn('position_id', array_keys($validated['votes']))
+                ->pluck('position_id')
+                ->toArray();
+
+            $voteData = [];
+
             foreach ($validated['votes'] as $positionId => $candidateIds) {
                 // Skip if no candidates selected for this position
                 if (empty($candidateIds)) {
                     continue;
                 }
 
-                $position = Position::findOrFail($positionId);
+                // Use pre-fetched position
+                $position = $positions->get($positionId);
+                if (!$position) {
+                    abort(404, "Position ID {$positionId} not found.");
+                }
 
                 // SECURITY CHECK: Ensure the position belongs to the voter's assigned event
                 if ($voter->event_id != $position->event_id) {
@@ -103,7 +130,8 @@ class VoteController extends Controller
                 }
 
                 // SECURITY CHECK: Grade Level Restriction
-                $allowedYearLevels = $position->yearLevels()->pluck('year_levels.id')->toArray();
+                // Use the loaded collection instead of query builder to avoid DB hit
+                $allowedYearLevels = $position->yearLevels->pluck('id')->toArray();
                 if (!empty($allowedYearLevels) && !in_array($voter->year_level_id, $allowedYearLevels)) {
                     abort(403, "You are not authorized to vote for position: {$position->name} due to grade level restrictions.");
                 }
@@ -113,22 +141,20 @@ class VoteController extends Controller
                     abort(422, "You selected too many candidates for position: {$position->name}");
                 }
 
-                // Check if already voted for this position
-                // Note: Since we locked the voter and verified is_active is true, 
-                // and we set is_active=false at the end, this check is technically redundant 
-                // for preventing double voting, but good for data integrity sanity check.
-                $existingVotes = Vote::where('voter_id', $voter->id)
-                    ->where('position_id', $positionId)
-                    ->exists();
-
-                if ($existingVotes) {
+                // Check if already voted for this position using pre-fetched data
+                if (in_array($positionId, $existingVotesPositionIds)) {
                     abort(403, "You have already voted for position: {$position->name}");
                 }
 
-                $voteData = [];
                 foreach ($candidateIds as $candidateId) {
+                    // Use pre-fetched candidate
+                    $candidate = $candidates->get($candidateId);
+
+                    if (!$candidate) {
+                        abort(404, "Candidate ID {$candidateId} not found.");
+                    }
+
                     // Verify candidate belongs to position
-                    $candidate = Candidate::findOrFail($candidateId);
                     if ($candidate->position_id != $positionId) {
                         abort(422, "Candidate {$candidate->name} does not belong to position {$position->name}");
                     }
@@ -142,11 +168,11 @@ class VoteController extends Controller
                         'updated_at' => now(),
                     ];
                 }
+            }
 
-                // Bulk insert for performance
-                if (!empty($voteData)) {
-                    Vote::insert($voteData);
-                }
+            // Bulk insert for performance
+            if (!empty($voteData)) {
+                Vote::insert($voteData);
             }
 
             // Create Audit Log Entry
