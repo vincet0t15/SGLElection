@@ -16,6 +16,7 @@ import { dashboard } from "@/routes";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CandidateProps } from "@/types/candidate";
+import Heading from "@/components/heading";
 
 interface Position {
     id: number;
@@ -178,7 +179,12 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                             <ChevronLeft className="h-4 w-4" />
                         </Link>
                     </Button>
-                    <h1 className="text-xl font-semibold">Edit Candidate</h1>
+                    <Heading
+                        variant="small"
+                        title="Edit Candidate"
+                        description="Enter candidate details and assign a position and partylist."
+
+                    />
                 </div>
 
                 <Card className="mx-auto w-full">

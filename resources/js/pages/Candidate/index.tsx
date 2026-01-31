@@ -26,6 +26,7 @@ import {
 import { toast } from 'sonner';
 import { PositionProps } from '@/types/position';
 import { PartylistProps } from '@/types/partylist';
+import Heading from '@/components/heading';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -131,12 +132,18 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Candidates" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <Heading
+                    variant="small"
+                    title="Candidates"
+                    description="Create and manage candidate profiles, positions, and partylists."
+                />
+
                 <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className='flex w-full sm:w-auto'>
-                        <Button className="cursor-pointer w-full sm:w-auto" asChild>
+                        <Button className="cursor-pointer w-full sm:w-auto" asChild variant="outline">
                             <Link href={candidateRoutes.create().url}>
                                 <PlusIcon className=" h-4 w-4" />
-                                <span className="ml-2">Candidate</span>
+                                <span className="">Candidate</span>
                             </Link>
                         </Button>
                     </div>

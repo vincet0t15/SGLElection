@@ -25,6 +25,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 import type { VoterProps } from '@/types/voter';
 import voter from '@/routes/voter';
 import { toast } from 'sonner';
+import Heading from '@/components/heading';
 
 interface YearLevel {
     id: number;
@@ -161,6 +162,11 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Voters" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <Heading
+                    variant="small"
+                    title="Voters"
+                    description="Manage registered voters eligible to participate in events."
+                />
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className='gap-2 flex'>
                         <Link href={voter.create().url}>

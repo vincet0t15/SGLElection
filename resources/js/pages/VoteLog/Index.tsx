@@ -1,5 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Table,
@@ -11,9 +11,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Pagination from '@/components/paginationData';
-import { PaginatedDataResponse } from '@/types/pagination';
 import {
     Dialog,
     DialogContent,
@@ -21,29 +18,15 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Eye, Search, User } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { voteLogs } from '@/routes';
+import { Eye, User } from 'lucide-react';
+import { useState } from 'react';
+import Heading from '@/components/heading';
+import { PaginatedDataResponse } from '@/types/pagination';
+import { VoterProps } from '@/types/voter';
 
-interface Vote {
-    id: number;
-    position: {
-        name: string;
-    };
-    candidate: {
-        name: string;
-        candidate_photos: {
-            path: string;
-        }[];
-    };
-}
 
-interface Voter {
-    id: number;
-    name: string;
-    username: string;
-    votes: Vote[];
-}
+
+
 
 interface Position {
     id: number;
@@ -51,30 +34,13 @@ interface Position {
 }
 
 interface Props {
-    voters: PaginatedDataResponse<Voter>;
+    voters: PaginatedDataResponse<VoterProps>;
     positions: Position[];
-    filters: {
-        search?: string;
-    };
 }
 
-export default function VoteLog({ voters, positions, filters }: Props) {
-    const [selectedVoter, setSelectedVoter] = useState<Voter | null>(null);
-    const [search, setSearch] = useState(filters.search || '');
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (search !== (filters.search || '')) {
-                router.get(
-                    voteLogs().url,
-                    { search },
-                    { preserveState: true, replace: true, preserveScroll: true }
-                );
-            }
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [search]);
+export default function VoteLog({ voters, positions }: Props) {
+    console.log(voters);
+    const [selectedVoter, setSelectedVoter] = useState<VoterProps | null>(null);
 
     return (
         <AppLayout breadcrumbs={[
@@ -82,33 +48,23 @@ export default function VoteLog({ voters, positions, filters }: Props) {
         ]}>
             <Head title="Vote Logs" />
 
-            <div className="flex flex-col gap-6 p-6">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold tracking-tight">Vote Logs</h1>
-                </div>
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <Heading
+                    variant="small"
+                    title="Vote Logs"
+                    description="View and manage voting logs for each voter."
+                />
 
-                <Card>
+                <Card className='rounded-sm'>
                     <CardHeader>
                         <CardTitle>Voter List</CardTitle>
                         <CardDescription>
                             List of voters and their voting activity.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex items-center gap-2">
-                            <div className="relative flex-1 max-w-sm">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search voters..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className="pl-8"
-                                />
-                            </div>
-                        </div>
-
+                    <CardContent>
                         <Table>
-                            <TableHeader>
+                            <TableHeader className="bg-muted/50">
                                 <TableRow>
                                     <TableHead className="w-[300px]">Voter Name</TableHead>
                                     <TableHead>Total Votes</TableHead>
@@ -123,34 +79,30 @@ export default function VoteLog({ voters, positions, filters }: Props) {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    voters.data.map((voter) => (
-                                        <TableRow key={voter.id}>
+                                    voters.data.map((voter, index) => (
+                                        <TableRow key={voter.id} className='text-sm hover:bg-muted/50'>
                                             <TableCell className="font-medium">
                                                 <div>{voter.name}</div>
                                                 <div className="text-xs text-muted-foreground">{voter.username}</div>
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="secondary">
-                                                    {voter.votes.length} Votes
+                                                    {voter.votes?.length || 0} Votes
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
+                                                <span
+                                                    className='text-teal-700 hover:text-teal900 hover:font-bold cursor-pointer hover:underline'
                                                     onClick={() => setSelectedVoter(voter)}
                                                 >
-                                                    <Eye className="mr-2 h-4 w-4" />
                                                     View Votes
-                                                </Button>
+                                                </span>
                                             </TableCell>
                                         </TableRow>
                                     ))
                                 )}
                             </TableBody>
                         </Table>
-
-                        <Pagination data={voters} />
                     </CardContent>
                 </Card>
 

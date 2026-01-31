@@ -19,6 +19,7 @@ import { EventCreateDialog } from './create';
 import event from '@/routes/event';
 import { EventEditDialog } from './edit';
 import DeleteEvent from './delete';
+import Heading from '@/components/heading';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -81,7 +82,14 @@ export default function Event({ events, filters }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Events" />
+
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <Heading
+                    variant="small"
+                    title="Events"
+                    description="Create, update, or remove events and manage their availability in reports."
+                />
+
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)}>
                         <PlusIcon className=" h-4 w-4" />

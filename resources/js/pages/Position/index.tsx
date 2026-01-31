@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PositionEditDialog } from './edit';
 import DeletePosition from './delete';
 import { YearLevelProps } from '@/types/yearlevel';
+import Heading from '@/components/heading';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -82,6 +83,13 @@ export default function Position({ positions, filters, events, yearLevels }: Pro
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Position" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <Heading
+                    variant="small"
+                    title="Positions"
+                    description="Add, edit, or delete positions used in events."
+                />
+
+
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)}>
                         <PlusIcon className=" h-4 w-4" />

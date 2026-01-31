@@ -1,5 +1,6 @@
 import { EventProps } from "./event";
 import { YearSectionProps } from "./section";
+import { VoteProps } from "./vote";
 import { YearLevelProps } from "./yearlevel";
 
 export interface VoterProps {
@@ -14,6 +15,8 @@ export interface VoterProps {
     year_level: YearLevelProps;
     year_section: YearSectionProps;
     event: EventProps;
+    votes: VoteProps[];
+
 }
 
 export type VoterCreateProps = Omit<VoterProps, 'id' | 'is_active'>;

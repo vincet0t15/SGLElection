@@ -19,6 +19,7 @@ import { YearSectionCreate } from '../YearSection/create';
 import { YearSectionProps } from '@/types/section';
 import { YearSectionEdit } from '../YearSection/edit';
 import DeleteYearSection from '../YearSection/delete';
+import Heading from '@/components/heading';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -86,9 +87,15 @@ export default function YearLevel({ yearLevels, filters }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Year Level" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <Heading
+                    variant="small"
+                    title="Year Level"
+                    description="Create and manage year level records for student classification."
+                />
+
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)}>
-                        <PlusIcon className="mr-2 h-4 w-4" />
+                    <Button className="cursor-pointer" onClick={() => setOpenCreateDialog(true)} variant="outline">
+                        <PlusIcon className="h-4 w-4" />
                         <span className="rounded-sm lg:inline">Year Level</span>
                     </Button>
 

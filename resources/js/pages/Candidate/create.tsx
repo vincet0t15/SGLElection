@@ -15,6 +15,7 @@ import { BreadcrumbItem } from "@/types";
 import { dashboard } from "@/routes";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import Heading from "@/components/heading";
 
 interface Position {
     id: number;
@@ -130,17 +131,6 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
         setData('partylist_id', Number(partylistId));
     }
 
-    // const handlePhotoChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    //     const file = e.target.files?.[0];
-    //     if (file) {
-    //         setData('photo', file);
-    //         const reader = new FileReader();
-    //         reader.onloadend = () => {
-    //             setPreviewUrl(reader.result as string);
-    //         };
-    //         reader.readAsDataURL(file);
-    //     }
-    // }
 
     const handlePhotoChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         const file = e.target.files?.[0];
@@ -194,8 +184,14 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                             <ChevronLeft className="h-4 w-4" />
                         </Link>
                     </Button>
-                    <h1 className="text-xl font-semibold">Create Candidate</h1>
+                    <Heading
+                        variant="small"
+                        title="Create Candidate"
+                        description="Enter candidate details and assign a position and partylist."
+
+                    />
                 </div>
+
 
                 <Card className="mx-auto w-full">
                     <CardHeader>
