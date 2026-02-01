@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Printer, Users, User, Trophy, Calendar, MapPin, ArrowLeft, ChevronLeft, ChevronRight, Search, BarChart3, Monitor, ShieldCheck } from 'lucide-react';
+import { Users, User, Trophy, Calendar, MapPin, ArrowLeft, ChevronLeft, ChevronRight, Search, BarChart3, Monitor, ShieldCheck, Printer, FileSpreadsheet, FileText } from 'lucide-react';
 import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { cn } from "@/lib/utils";
@@ -653,10 +653,34 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Votes for {selectedVoter?.name}</DialogTitle>
-                        <DialogDescription>
-                            List of candidates voted by {selectedVoter?.name}
-                        </DialogDescription>
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <DialogTitle>Votes for {selectedVoter?.name}</DialogTitle>
+                                <DialogDescription>
+                                    List of candidates voted by {selectedVoter?.name}
+                                </DialogDescription>
+                            </div>
+                            <div className="flex gap-2">
+                                <a
+                                    href={`/reports/${event.id}/voters/${selectedVoter?.id}/receipt?type=pdf`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-2")}
+                                >
+                                    <FileText className="h-4 w-4" />
+                                    PDF
+                                </a>
+                                <a
+                                    href={`/reports/${event.id}/voters/${selectedVoter?.id}/receipt?type=excel`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-2")}
+                                >
+                                    <FileSpreadsheet className="h-4 w-4" />
+                                    Excel
+                                </a>
+                            </div>
+                        </div>
                     </DialogHeader>
                     {isLoadingVotes ? (
                         <div className="flex justify-center p-4">Loading...</div>

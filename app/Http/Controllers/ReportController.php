@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Signatory;
 use App\Models\Voter;
+use App\Models\Vote;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\VoterReceiptExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
@@ -344,6 +348,28 @@ class ReportController extends Controller
             'logs' => $logs,
             'signatories' => $signatories
         ]);
+    }
+
+    public function exportVoterReceipt(Event $event, Voter $voter, Request $request)
+    {
+        $type = $request->query('type', 'pdf');
+
+        if ($type === 'excel') {
+            return Excel::download(new VoterReceiptExport($event, $voter), "receipt_{$voter->username}.xlsx");
+        }
+
+        $votes = Vote::where('event_id', $event->id)
+            ->where('voter_id', $voter->id)
+            ->with(['candidate.position', 'candidate.partylist'])
+            ->get();
+
+        $pdf = Pdf::loadView('reports.receipt', [
+            'event' => $event,
+            'voter' => $voter,
+            'votes' => $votes
+        ]);
+
+        return $pdf->download("receipt_{$voter->username}.pdf");
     }
 
     public function resolveTie(Request $request, Event $event)

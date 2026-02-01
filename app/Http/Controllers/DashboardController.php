@@ -7,8 +7,10 @@ use App\Models\Event;
 use App\Models\Partylist;
 use App\Models\Position;
 use App\Models\Vote;
+use App\Models\VoteActivityLog;
 use App\Models\Voter;
 use App\Models\YearLevel;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -101,10 +103,42 @@ class DashboardController extends Controller
             ];
         });
 
+        $recentActivity = [];
+        if ($activeEvent) {
+            $recentActivity = VoteActivityLog::where('event_id', $activeEvent->id)
+                ->with('voter')
+                ->latest()
+                ->take(5)
+                ->get();
+        }
+
+        // System Health Check
+        $systemHealth = [
+            'database' => false,
+            'database_latency' => 0,
+            'php_version' => phpversion(),
+            'server_os' => php_uname('s') . ' ' . php_uname('r'),
+            'disk_free' => disk_free_space(base_path()),
+            'disk_total' => disk_total_space(base_path()),
+            'memory_usage' => memory_get_usage(true),
+        ];
+
+        try {
+            $start = microtime(true);
+            DB::connection()->getPdo();
+            $end = microtime(true);
+            $systemHealth['database'] = true;
+            $systemHealth['database_latency'] = round(($end - $start) * 1000, 2); // ms
+        } catch (\Exception $e) {
+            $systemHealth['database'] = false;
+        }
+
         return Inertia::render('dashboard', [
             'stats' => $stats,
             'winners' => $winners,
-            'turnoutByYearLevel' => $turnoutByYearLevel
+            'turnoutByYearLevel' => $turnoutByYearLevel,
+            'recentActivity' => $recentActivity,
+            'systemHealth' => $systemHealth,
         ]);
     }
 }

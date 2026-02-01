@@ -49,6 +49,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('reports/print/{event}', [ReportController::class, 'print'])->name('reports.print');
     Route::post('reports/{event}/resolve-tie', [ReportController::class, 'resolveTie'])->name('reports.resolve-tie');
     Route::get('reports/{event}/voters/{voter}/votes', [ReportController::class, 'getVoterVotes'])->name('reports.voter-votes');
+    Route::get('reports/{event}/voters/{voter}/receipt', [ReportController::class, 'exportVoterReceipt'])->name('reports.voter-receipt');
 
     // YearLevel
     Route::get('year-level', [YearLevelController::class, 'index'])->name('year-level.index');

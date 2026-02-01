@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, UserCheck, Vote, Award, Activity, Calendar, AlertCircle, Trophy, Flag } from 'lucide-react';
+import { Users, UserCheck, Vote, Award, Activity, Calendar, AlertCircle, Trophy, Flag, Database, Server, HardDrive, Cpu } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -97,13 +97,35 @@ interface TurnoutData {
     not_voted: number;
 }
 
+interface VoteActivityLog {
+    id: number;
+    voter: {
+        id: number;
+        name: string;
+        username: string;
+    };
+    created_at: string;
+}
+
+interface SystemHealth {
+    database: boolean;
+    database_latency: number;
+    php_version: string;
+    server_os: string;
+    disk_free: number;
+    disk_total: number;
+    memory_usage: number;
+}
+
 interface Props {
     stats: Stats;
     winners: Position[];
     turnoutByYearLevel: TurnoutData[];
+    recentActivity: VoteActivityLog[];
+    systemHealth?: SystemHealth;
 }
 
-export default function Dashboard({ stats, winners = [], turnoutByYearLevel = [] }: Props) {
+export default function Dashboard({ stats, winners = [], turnoutByYearLevel = [], recentActivity = [], systemHealth }: Props) {
     // Pie Chart Data
     const totalVoted = turnoutByYearLevel.reduce((acc, curr) => acc + curr.voted, 0);
     const totalNotVoted = turnoutByYearLevel.reduce((acc, curr) => acc + curr.not_voted, 0);
@@ -114,6 +136,15 @@ export default function Dashboard({ stats, winners = [], turnoutByYearLevel = []
     ];
 
     const COLORS = ['#2563eb', '#e2e8f0']; // blue-600, slate-200
+
+    const formatBytes = (bytes: number, decimals = 2) => {
+        if (!+bytes) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -360,6 +391,138 @@ export default function Dashboard({ stats, winners = [], turnoutByYearLevel = []
                                 <Progress value={stats.turnout_percentage} className="h-2 bg-emerald-100 dark:bg-emerald-900/30" indicatorClassName="bg-emerald-600 dark:bg-emerald-400" />
                             </CardContent>
                         </Card>
+                    </div>
+                </div>
+
+                {/* Recent Activity & Quick Actions */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {/* Recent Activity */}
+                    <Card className="col-span-2">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Activity className="h-5 w-5 text-emerald-600" />
+                                Recent Activity
+                            </CardTitle>
+                            <CardDescription>Latest votes cast in the active election</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {recentActivity.length > 0 ? (
+                                    recentActivity.map((log) => (
+                                        <div key={log.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs">
+                                                    {log.voter.name.substring(0, 2).toUpperCase()}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium">{log.voter.name}</p>
+                                                    <p className="text-xs text-muted-foreground">ID: {log.voter.username}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <Badge variant="secondary" className="text-xs font-normal">
+                                                    Voted
+                                                </Badge>
+                                                <p className="text-[10px] text-muted-foreground mt-0.5">
+                                                    {new Date(log.created_at).toLocaleTimeString()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-center text-muted-foreground text-sm py-4">No recent activity found.</p>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Quick Actions */}
+                    <div className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Flag className="h-5 w-5 text-blue-600" />
+                                    Quick Actions
+                                </CardTitle>
+                                <CardDescription>Common tasks and shortcuts</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                                <Link href="/events/create" className="block">
+                                    <Button variant="outline" className="w-full justify-start">
+                                        <Calendar className="mr-2 h-4 w-4" />
+                                        Create New Event
+                                    </Button>
+                                </Link>
+                                <Link href="/voters/import" className="block">
+                                    <Button variant="outline" className="w-full justify-start">
+                                        <Users className="mr-2 h-4 w-4" />
+                                        Import Voters
+                                    </Button>
+                                </Link>
+                                <Link href="/candidates" className="block">
+                                    <Button variant="outline" className="w-full justify-start">
+                                        <UserCheck className="mr-2 h-4 w-4" />
+                                        Manage Candidates
+                                    </Button>
+                                </Link>
+                                <Link href="/reports" className="block">
+                                    <Button variant="outline" className="w-full justify-start">
+                                        <Activity className="mr-2 h-4 w-4" />
+                                        View Reports
+                                    </Button>
+                                </Link>
+                            </CardContent>
+                        </Card>
+
+                        {/* System Health */}
+                        {systemHealth && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Server className="h-5 w-5 text-emerald-600" />
+                                        System Health
+                                    </CardTitle>
+                                    <CardDescription>Server status overview</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                    <div className="flex items-center justify-between text-sm">
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                            <Database className="h-4 w-4" />
+                                            <span>Database</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant={systemHealth.database ? "outline" : "destructive"} className={systemHealth.database ? "text-emerald-600 border-emerald-200 bg-emerald-50" : ""}>
+                                                {systemHealth.database ? "Connected" : "Error"}
+                                            </Badge>
+                                            <span className="text-xs text-muted-foreground">{systemHealth.database_latency}ms</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                            <Cpu className="h-4 w-4" />
+                                            <span>Memory Usage</span>
+                                        </div>
+                                        <span className="font-medium">{formatBytes(systemHealth.memory_usage)}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                            <HardDrive className="h-4 w-4" />
+                                            <span>Disk Space</span>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="font-medium">{formatBytes(systemHealth.disk_free)} free</span>
+                                            <p className="text-[10px] text-muted-foreground">of {formatBytes(systemHealth.disk_total)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="pt-2 border-t mt-2">
+                                        <p className="text-xs text-muted-foreground flex justify-between">
+                                            <span>PHP Version:</span>
+                                            <span className="font-mono">{systemHealth.php_version}</span>
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
                 </div>
 
