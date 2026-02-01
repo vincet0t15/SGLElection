@@ -1,5 +1,16 @@
 import { Head, Link } from '@inertiajs/react';
-import { CheckCircle, ShieldCheck, Users, Vote } from 'lucide-react';
+import { 
+    CheckCircle, 
+    ShieldCheck, 
+    Users, 
+    Vote, 
+    ClipboardCheck, 
+    Lock, 
+    Smartphone, 
+    ChevronRight, 
+    BarChart3,
+    FileCheck
+} from 'lucide-react';
 import { login } from '@/routes';
 import { login as voterLogin } from '@/routes/voter';
 
@@ -8,18 +19,25 @@ export default function Welcome() {
         <>
             <Head title="Welcome - SGLL Voting System" />
 
-            <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-sans selection:bg-emerald-500 selection:text-white">
+            <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans selection:bg-emerald-500 selection:text-white">
                 {/* Header/Nav */}
-                <header className="w-full py-6 px-6 lg:px-8 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-                    <div className="max-w-7xl mx-auto flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-emerald-600 p-2 rounded-lg text-white">
+                <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+                    <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-emerald-600 p-2.5 rounded-xl text-white shadow-lg shadow-emerald-600/20">
                                 <Vote className="h-6 w-6" />
                             </div>
-                            <span className="text-xl font-bold tracking-tight text-emerald-900 dark:text-emerald-400">SGLL Voting System</span>
+                            <div>
+                                <span className="block text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">SGLL</span>
+                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 tracking-wider uppercase">Voting System</span>
+                            </div>
                         </div>
-                        <nav className="hidden md:flex gap-6">
-                            <Link href={login().url} className="text-sm font-medium hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                        <nav className="flex gap-4">
+                            <Link 
+                                href={login().url} 
+                                className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors px-4 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
+                            >
+                                <ShieldCheck className="h-4 w-4" />
                                 Admin Portal
                             </Link>
                         </nav>
@@ -28,82 +46,182 @@ export default function Welcome() {
 
                 <main>
                     {/* Hero Section */}
-                    <div className="relative overflow-hidden pt-16 pb-24 lg:pt-32 lg:pb-40">
+                    <div className="relative overflow-hidden pt-20 pb-32 lg:pt-40 lg:pb-56">
                         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 text-center">
-                            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6">
-                                <span className="block">Modern & Secure</span>
-                                <span className="block text-emerald-600 dark:text-emerald-500">Digital Voting Platform</span>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 text-sm font-semibold mb-8 border border-emerald-100 dark:border-emerald-900/50 animate-fade-in-up">
+                                <span className="flex h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                                Secure Digital Election Platform
+                            </div>
+                            
+                            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-8 leading-tight">
+                                Democracy made <br className="hidden md:block" />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">Simple & Secure</span>
                             </h1>
-                            <p className="mt-4 text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-10">
-                                Experience a seamless election process with our secure, transparent, and user-friendly voting system.
-                                Your voice matters—make it count today.
+                            
+                            <p className="mt-6 text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-12 leading-relaxed">
+                                Empowering institutions with a transparent, tamper-proof, and efficient voting infrastructure. 
+                                Experience the future of elections today.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                            <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
                                 <Link
                                     href={voterLogin().url}
-                                    className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                    className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3"
                                 >
                                     <Users className="h-5 w-5" />
-                                    Login as Voter
+                                    <span>Voter Login</span>
+                                    <ChevronRight className="h-4 w-4 opacity-70" />
                                 </Link>
                                 <Link
                                     href={login().url}
-                                    className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 text-gray-900 dark:text-white font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-2"
+                                    className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 text-slate-900 dark:text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-3 group"
                                 >
-                                    <ShieldCheck className="h-5 w-5" />
-                                    Admin Login
+                                    <ShieldCheck className="h-5 w-5 group-hover:text-emerald-600 transition-colors" />
+                                    <span>Admin Access</span>
                                 </Link>
                             </div>
                         </div>
 
-                        {/* Background Decoration */}
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full z-0 pointer-events-none opacity-30 dark:opacity-10">
-                            <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-                            <div className="absolute top-20 right-10 w-72 h-72 bg-teal-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-                            <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+                        {/* Abstract Background */}
+                        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+                            <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-emerald-100/40 dark:bg-emerald-900/10 blur-3xl filter opacity-50"></div>
+                            <div className="absolute top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-teal-100/40 dark:bg-teal-900/10 blur-3xl filter opacity-50"></div>
+                            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
                         </div>
                     </div>
 
-                    {/* Features Section */}
-                    <div className="bg-white dark:bg-gray-950 py-24 border-t border-gray-100 dark:border-gray-900">
+                    {/* Stats/Trust Banner */}
+                    <div className="border-y border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm">
+                        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                                {[
+                                    { label: 'Security', value: 'Enterprise Grade', icon: Lock },
+                                    { label: 'Transparency', value: 'Real-time Audit', icon: FileCheck },
+                                    { label: 'Uptime', value: '99.9% Reliable', icon: CheckCircle },
+                                    { label: 'Accessibility', value: 'Any Device', icon: Smartphone },
+                                ].map((stat, i) => (
+                                    <div key={i} className="flex flex-col items-center justify-center text-center gap-2">
+                                        <stat.icon className="h-6 w-6 text-emerald-600 mb-1" />
+                                        <div className="font-bold text-slate-900 dark:text-white">{stat.value}</div>
+                                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">{stat.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Process Section (How it works) */}
+                    <div className="py-24 bg-white dark:bg-slate-950">
                         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                            <div className="grid md:grid-cols-3 gap-12">
-                                <div className="text-center">
-                                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 mb-6">
-                                        <ShieldCheck className="h-8 w-8" />
+                            <div className="text-center mb-16">
+                                <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl mb-4">
+                                    How It Works
+                                </h2>
+                                <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                                    A simple, secure, and streamlined process designed for efficiency and ease of use.
+                                </p>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-8 relative">
+                                {/* Connecting Line (Desktop) */}
+                                <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-slate-100 dark:bg-slate-800 -z-10"></div>
+
+                                {/* Steps */}
+                                {[
+                                    { 
+                                        title: "Login Securely", 
+                                        desc: "Access the platform using your unique voter credentials.",
+                                        icon: Lock,
+                                        step: "01"
+                                    },
+                                    { 
+                                        title: "Cast Your Vote", 
+                                        desc: "Select your preferred candidates for each position easily.",
+                                        icon: Vote,
+                                        step: "02"
+                                    },
+                                    { 
+                                        title: "Verify Receipt", 
+                                        desc: "Review your choices and receive a digital confirmation.",
+                                        icon: ClipboardCheck,
+                                        step: "03"
+                                    }
+                                ].map((item, idx) => (
+                                    <div key={idx} className="relative flex flex-col items-center text-center p-6 bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-900 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="w-24 h-24 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-6 border-4 border-white dark:border-slate-950 shadow-sm">
+                                            <item.icon className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
+                                        </div>
+                                        <div className="absolute top-6 right-6 text-4xl font-black text-slate-100 dark:text-slate-800 select-none opacity-50">
+                                            {item.step}
+                                        </div>
+                                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{item.title}</h3>
+                                        <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                            {item.desc}
+                                        </p>
                                     </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Secure & Private</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">
-                                        Your vote is encrypted and stored securely. We prioritize voter privacy and data integrity above all else.
-                                    </p>
-                                </div>
-                                <div className="text-center">
-                                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 mb-6">
-                                        <CheckCircle className="h-8 w-8" />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Features Grid */}
+                    <div className="bg-slate-50 dark:bg-slate-900 py-24 border-t border-slate-200 dark:border-slate-800">
+                        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {[
+                                    {
+                                        title: "Real-time Analytics",
+                                        desc: "Monitor election progress with live dashboards and instant tallying updates.",
+                                        icon: BarChart3
+                                    },
+                                    {
+                                        title: "Encrypted Security",
+                                        desc: "State-of-the-art encryption ensures that every vote is tamper-proof and anonymous.",
+                                        icon: ShieldCheck
+                                    },
+                                    {
+                                        title: "Mobile Optimized",
+                                        desc: "Fully responsive design allows voters to participate from any device, anywhere.",
+                                        icon: Smartphone
+                                    }
+                                ].map((feature, idx) => (
+                                    <div key={idx} className="flex gap-4 p-6 bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 transition-colors">
+                                        <div className="flex-shrink-0">
+                                            <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
+                                                <feature.icon className="h-6 w-6" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                                                {feature.desc}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Transparent Results</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">
-                                        Real-time vote counting ensures complete transparency. Results are verifiable and accurate.
-                                    </p>
-                                </div>
-                                <div className="text-center">
-                                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 mb-6">
-                                        <Users className="h-8 w-8" />
-                                    </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Easy Accessibility</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">
-                                        Vote from anywhere, anytime. Our platform is designed to be accessible on all devices.
-                                    </p>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </main>
 
-                <footer className="bg-gray-50 dark:bg-gray-900 py-12 border-t border-gray-200 dark:border-gray-800">
-                    <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center text-gray-500 dark:text-gray-400 text-sm">
-                        <p>&copy; {new Date().getFullYear()} SGLL Voting System. All rights reserved.</p>
+                <footer className="bg-white dark:bg-slate-950 py-12 border-t border-slate-200 dark:border-slate-800">
+                    <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-2">
+                            <div className="bg-emerald-600 p-1.5 rounded text-white">
+                                <Vote className="h-4 w-4" />
+                            </div>
+                            <span className="font-bold text-slate-900 dark:text-white">SGLL Voting System</span>
+                        </div>
+                        
+                        <div className="text-slate-500 dark:text-slate-400 text-sm">
+                            &copy; {new Date().getFullYear()} SGLL Voting System. All rights reserved.
+                        </div>
+
+                        <div className="flex gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+                            <span className="hover:text-emerald-600 cursor-pointer transition-colors">Privacy Policy</span>
+                            <span className="hover:text-emerald-600 cursor-pointer transition-colors">Terms of Service</span>
+                            <span className="hover:text-emerald-600 cursor-pointer transition-colors">Contact Support</span>
+                        </div>
                     </div>
                 </footer>
             </div>

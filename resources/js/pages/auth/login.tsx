@@ -11,6 +11,7 @@ import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import voter from '@/routes/voter';
+import { ShieldCheck, User, Lock, KeyRound } from 'lucide-react';
 
 type Props = {
     status?: string;
@@ -26,9 +27,16 @@ export default function Login({
     return (
         <AuthLayout
             title="Admin Portal"
-            description="Welcome back. Please sign in to manage the election system."
+            description="Secure access for election administrators only."
         >
             <Head title="Admin Login" />
+
+            <div className="bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/50 rounded-lg p-3 mb-2 flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-emerald-800 dark:text-emerald-200 leading-relaxed">
+                    You are accessing a restricted area. All activities are monitored and logged.
+                </p>
+            </div>
 
             <Form
                 {...store.form()}
@@ -37,35 +45,43 @@ export default function Login({
             >
                 {({ processing, errors }) => (
                     <>
-                        <div className="grid gap-6">
+                        <div className="grid gap-5">
                             <div className="grid gap-2">
                                 <Label htmlFor="username">Username</Label>
-                                <Input
-                                    id="username"
-                                    type="text"
-                                    name="username"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="username"
-                                    placeholder="Enter your admin username"
-                                    className="focus:ring-emerald-500 focus:border-emerald-500"
-                                />
+                                <div className="relative">
+                                    <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                                    <Input
+                                        id="username"
+                                        type="text"
+                                        name="username"
+                                        required
+                                        autoFocus
+                                        tabIndex={1}
+                                        autoComplete="username"
+                                        placeholder="Admin Username"
+                                        className="pl-9 focus:ring-emerald-500 focus:border-emerald-500"
+                                    />
+                                </div>
                                 <InputError message={errors.username} />
                             </div>
 
                             <div className="grid gap-2">
-
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Enter your password"
-                                    className="focus:ring-emerald-500 focus:border-emerald-500"
-                                />
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password">Password</Label>
+                                </div>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                                    <Input
+                                        id="password"
+                                        type="password"
+                                        name="password"
+                                        required
+                                        tabIndex={2}
+                                        autoComplete="current-password"
+                                        placeholder="••••••••"
+                                        className="pl-9 focus:ring-emerald-500 focus:border-emerald-500"
+                                    />
+                                </div>
                                 <InputError message={errors.password} />
                             </div>
 
@@ -76,45 +92,47 @@ export default function Login({
                                     tabIndex={3}
                                     className="data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember" className="text-sm text-slate-600 dark:text-slate-400 font-normal">Remember me for 30 days</Label>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full bg-emerald-950 hover:bg-emerald-900 text-white"
+                                className="mt-2 w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700 h-11 text-base font-medium shadow-lg hover:shadow-xl transition-all"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
                             >
-                                {processing && <Spinner className="text-white" />}
-                                Sign in as Admin
+                                {processing && <Spinner className="text-white mr-2" />}
+                                Sign In
                             </Button>
                         </div>
 
-                        <div className="text-center text-sm">
-                            <span className="text-muted-foreground">Not an admin? </span>
-                            <Link
-                                href={(voter.login().url)}
-                                className="font-medium text-emerald-600 hover:text-emerald-500 hover:underline"
-                            >
-                                Go to Voter Login
-                            </Link>
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-white dark:bg-slate-900 px-2 text-slate-500">
+                                    Or
+                                </span>
+                            </div>
                         </div>
 
-                        {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
-                                    Sign up
-                                </TextLink>
-                            </div>
-                        )}
+                        <div className="text-center">
+                            <Link
+                                href={(voter.login().url)}
+                                className="inline-flex items-center justify-center w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors gap-2"
+                            >
+                                <KeyRound className="w-4 h-4" />
+                                Login as Voter
+                            </Link>
+                        </div>
                     </>
                 )}
             </Form>
 
             {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <div className="mt-4 p-3 bg-green-50 text-green-600 rounded-lg text-sm font-medium text-center border border-green-100">
                     {status}
                 </div>
             )}
