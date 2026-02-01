@@ -4,6 +4,7 @@ import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { SharedData } from '@/types';
 import AppLogoIcon from '@/components/app-logo-icon';
+import { Printer, Download } from 'lucide-react';
 
 interface Signatory {
     id: number;
@@ -46,15 +47,24 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
             <Head title={`Official Result - ${event.name}`} />
 
             {/* Print controls - hidden when printing */}
-            <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4">
+            <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4 gap-2">
 
                 <button
                     onClick={() => window.print()}
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <Printer className="w-4 h-4" />
                     Print Now
                 </button>
+
+                <a
+                    href={`/reports/print-pdf/${event.id}?type=${type || ''}`}
+                    target="_blank"
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition-colors shadow-sm"
+                >
+                    <Download className="w-4 h-4" />
+                    Export PDF
+                </a>
             </div>
 
             <div className="print:w-full">

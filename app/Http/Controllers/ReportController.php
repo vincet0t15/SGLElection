@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Signatory;
+use App\Models\SystemSetting;
 use App\Models\Voter;
 use App\Models\Vote;
 use Illuminate\Http\Request;
@@ -138,6 +139,68 @@ class ReportController extends Controller
                 'turnout' => $registeredVoters > 0 ? round(($actualVoters / $registeredVoters) * 100, 2) : 0,
             ]
         ]);
+    }
+
+    public function exportPrintPdf(Request $request, Event $event)
+    {
+        $positions = $event->positions()
+            ->orderBy('id')
+            ->with(['candidates' => function ($query) use ($event) {
+                $query->with(['candidatePhotos', 'yearLevel', 'yearSection', 'partylist'])
+                    ->withCount(['votes' => function ($q) use ($event) {
+                        $q->where('event_id', $event->id);
+                    }])
+                    ->orderBy('votes_count', 'desc')
+                    ->orderBy('is_tie_breaker_winner', 'desc');
+            }])
+            ->get();
+
+        if ($request->input('type') === 'winners') {
+            $positions->transform(function ($position) {
+                $position->setRelation('candidates', $position->candidates->take($position->max_votes));
+                return $position;
+            });
+        }
+
+        // Calculate actual voters (turnout)
+        $actualVoters = \App\Models\Vote::where('event_id', $event->id)
+            ->distinct('voter_id')
+            ->count();
+
+        // Calculate total registered voters for this event
+        $registeredVoters = \App\Models\Voter::where('event_id', $event->id)->count();
+
+        // Calculate total sections (precincts equivalent)
+        $totalSections = \App\Models\Voter::where('event_id', $event->id)
+            ->distinct('year_section_id')
+            ->count('year_section_id');
+
+        $signatories = Signatory::where('is_active', true)
+            ->where(function ($query) use ($event) {
+                $query->where('event_id', $event->id)
+                    ->orWhereNull('event_id');
+            })
+            ->orderBy('order')
+            ->get();
+
+        $system_settings = SystemSetting::first();
+
+        $pdf = Pdf::loadView('reports.print', [
+            'event' => $event,
+            'positions' => $positions,
+            'signatories' => $signatories,
+            'type' => $request->input('type'),
+            'stats' => [
+                'actual_voters' => $actualVoters,
+                'registered_voters' => $registeredVoters,
+                'total_sections' => $totalSections,
+                'turnout' => $registeredVoters > 0 ? round(($actualVoters / $registeredVoters) * 100, 2) : 0,
+            ],
+            'system_settings' => $system_settings
+        ]);
+
+        $filename = $request->input('type') === 'winners' ? "official_winners_{$event->id}.pdf" : "election_results_{$event->id}.pdf";
+        return $pdf->download($filename);
     }
 
     public function getVoterVotes(Event $event, Voter $voter)
