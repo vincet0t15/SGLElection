@@ -133,7 +133,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
 
                                         return (
                                             <div key={position.id} className="break-inside-avoid print:mb-4">
-                                                <h3 className="font-bold uppercase mb-2 print:mb-1 text-sm bg-gray-100 p-1 border border-black border-b-0 mb-[-2px]">
+                                                <h3 className="font-bold uppercase mb-2  text-sm bg-gray-100 p-1 border border-black border-b-0 mb-[-2px]">
                                                     {position.name} (TOP {position.max_votes})
                                                 </h3>
 
