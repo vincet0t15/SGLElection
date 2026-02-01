@@ -426,10 +426,13 @@ class ReportController extends Controller
             ->with(['candidate.position', 'candidate.partylist'])
             ->get();
 
+        $system_settings = SystemSetting::first();
+
         $pdf = Pdf::loadView('reports.receipt', [
             'event' => $event,
             'voter' => $voter,
-            'votes' => $votes
+            'votes' => $votes,
+            'system_settings' => $system_settings
         ]);
 
         return $pdf->download("receipt_{$voter->username}.pdf");

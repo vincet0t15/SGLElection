@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Official Ballot Receipt</title>
     <style>
         body {
@@ -10,48 +11,65 @@
             line-height: 1.4;
             color: #333;
         }
+
         .header {
             text-align: center;
             margin-bottom: 20px;
             border-bottom: 2px solid #000;
             padding-bottom: 10px;
         }
+
+        .logo {
+            height: 60px;
+            width: auto;
+            margin-bottom: 10px;
+        }
+
         .header h1 {
             margin: 0;
             font-size: 18px;
             text-transform: uppercase;
         }
+
         .header h2 {
             margin: 5px 0 0;
             font-size: 14px;
             font-weight: normal;
         }
+
         .info-grid {
             margin-bottom: 20px;
             width: 100%;
         }
+
         .info-row {
             margin-bottom: 5px;
         }
+
         .label {
             font-weight: bold;
             display: inline-block;
             width: 100px;
         }
+
         .votes-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        .votes-table th, .votes-table td {
+
+        .votes-table th,
+        .votes-table td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         .votes-table th {
             background-color: #f5f5f5;
             font-weight: bold;
         }
+
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -60,6 +78,7 @@
             border-top: 1px solid #ddd;
             padding-top: 10px;
         }
+
         .watermark {
             position: absolute;
             top: 50%;
@@ -72,12 +91,17 @@
         }
     </style>
 </head>
+
 <body>
     <div class="watermark">OFFICIAL</div>
 
     <div class="header">
-        <h1>{{ $event->name }}</h1>
+        @if($system_settings->logo)
+        <img src="{{ public_path($system_settings->logo) }}" class="logo" alt="Logo">
+        @endif
+        <h1>{{ $system_settings->name ?? 'Voting System' }}</h1>
         <h2>Official Ballot Receipt</h2>
+        <div style="font-size: 12px; margin-top: 5px; font-weight: bold;">{{ $event->name }}</div>
     </div>
 
     <div class="info-grid">
@@ -119,4 +143,5 @@
         <p>Generated on: {{ now()->format('F j, Y h:i A') }}</p>
     </div>
 </body>
+
 </html>
