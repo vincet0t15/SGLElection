@@ -28,14 +28,10 @@ import { Printer, Users, User, Trophy, Calendar, MapPin, ArrowLeft, ChevronLeft,
 import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { cn } from "@/lib/utils";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
 
-} from "@/components/ui/pagination"
 import Heading from '@/components/heading';
+import { PaginatedDataResponse } from '@/types/pagination';
+import Pagination from '@/components/paginationData';
 
 interface Voter {
     id: number;
@@ -76,7 +72,7 @@ interface Props {
         total_assigned_voters: number;
         voted_count: number;
     };
-    voters: PaginatedVoters;
+    voters: PaginatedDataResponse<Voter>;
     filters: {
         search?: string;
         status?: string;
@@ -540,7 +536,7 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                 </Table>
 
                                 <div className="mt-4">
-                                    <Pagination>
+                                    {/* <Pagination>
                                         <PaginationContent>
                                             {voters.links.map((link, index) => {
                                                 if (link.url === null) return null;
@@ -600,7 +596,8 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                 );
                                             })}
                                         </PaginationContent>
-                                    </Pagination>
+                                    </Pagination> */}
+                                    <Pagination data={voters} />
                                 </div>
                             </CardContent>
                         </Card>
@@ -668,19 +665,40 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                             {votes.length === 0 ? (
                                 <p className="text-center text-muted-foreground">No votes found.</p>
                             ) : (
-                                votes.map((vote) => (
-                                    <div key={vote.id} className="flex items-center gap-4 p-3 border rounded-lg">
-                                        <Avatar className="h-12 w-12">
-                                            <AvatarImage src={vote.candidate_photo ? `/storage/${vote.candidate_photo}` : undefined} />
-                                            <AvatarFallback>{vote.candidate.substring(0, 2)}</AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <p className="font-medium">{vote.position}</p>
-                                            <p className="text-sm font-semibold">{vote.candidate}</p>
-                                            <p className="text-xs text-muted-foreground">{vote.partylist}</p>
+                                <div className="grid gap-4">
+                                    {Object.entries(votes.reduce((acc, vote) => {
+                                        if (!acc[vote.position]) acc[vote.position] = [];
+                                        acc[vote.position].push(vote);
+                                        return acc;
+                                    }, {} as Record<string, typeof votes>)).map(([position, positionVotes]) => (
+                                        <div key={position} className="border rounded-lg overflow-hidden shadow-sm">
+                                            <div className="bg-muted/40 px-4 py-2 border-b flex items-center justify-between">
+                                                <h3 className="font-semibold text-sm text-foreground">{position}</h3>
+                                                <Badge variant="secondary" className="text-xs font-normal">
+                                                    {positionVotes.length} {positionVotes.length === 1 ? 'Vote' : 'Votes'}
+                                                </Badge>
+                                            </div>
+                                            <div className="divide-y divide-border/50 bg-card">
+                                                {positionVotes.map((vote) => (
+                                                    <div key={vote.id} className="flex items-center gap-3 p-3 hover:bg-muted/20 transition-colors">
+                                                        <Avatar className="h-10 w-10 border ring-1 ring-background">
+                                                            <AvatarImage src={vote.candidate_photo ? `/storage/${vote.candidate_photo}` : undefined} />
+                                                            <AvatarFallback className="bg-primary/10 text-primary font-medium text-xs">
+                                                                {vote.candidate.substring(0, 2).toUpperCase()}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-medium text-sm truncate">{vote.candidate}</p>
+                                                            <div className="flex items-center gap-2">
+                                                                <p className="text-xs text-muted-foreground truncate">{vote.partylist}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
+                                    ))}
+                                </div>
                             )}
                         </div>
                     )}
