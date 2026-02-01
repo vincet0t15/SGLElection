@@ -83,7 +83,19 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                 <div className="flex items-start gap-4 mb-8">
                                     <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
                                         {system_settings.logo ? (
-                                            <img src={system_settings.logo} alt="Logo" className="w-full h-full object-contain" />
+                                            <img
+                                                src={system_settings.logo}
+                                                alt="Logo"
+                                                className="w-full h-full object-contain"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    if (target.src !== '/smartvote.png') {
+                                                        target.src = '/smartvote.png';
+                                                    } else {
+                                                        target.style.display = 'none';
+                                                    }
+                                                }}
+                                            />
                                         ) : (
                                             <div className="w-full h-full bg-emerald-600 flex items-center justify-center rounded-full text-white">
                                                 <AppLogoIcon className="w-10 h-10 fill-current" />
@@ -134,7 +146,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                         return (
                                             <div key={position.id} className="break-inside-avoid print:mb-4">
                                                 <h3 className="font-bold uppercase mb-2  text-sm bg-gray-100 p-1 border border-black border-b-0 mb-[-2px]">
-                                                    {position.name} (TOP {position.max_votes})
+                                                    {position.name} (Vote for {position.max_votes})
                                                 </h3>
 
                                                 <div className="">
@@ -142,8 +154,10 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                         <thead>
                                                             <tr className="bg-gray-50 border-b border-black">
                                                                 <th className="border border-black py-1 px-4 text-left">Candidate</th>
-                                                                <th className="border border-black py-1 px-4 text-center w-32">Votes</th>
-                                                                <th className="border border-black py-1 px-4 text-center w-32">%</th>
+                                                                <th className="border border-black py-1 px-4 text-left">Partylist</th>
+                                                                <th className="border border-black py-1 px-4 text-center w-24">Votes</th>
+                                                                <th className="border border-black py-1 px-4 text-center w-24">%</th>
+                                                                <th className="border border-black py-1 px-4 text-center w-24">Status</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -173,27 +187,33 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                                 }
 
                                                                 const rank = position.candidates.findIndex(c => c.votes_count === votes) + 1;
-                                                                const partylistName = candidate.partylist?.name ? `(${candidate.partylist.name})` : '(INDEPENDENT)';
+                                                                const isWinner = index < position.max_votes || candidate.is_tie_breaker_winner;
 
                                                                 return (
                                                                     <tr key={candidate.id} className="border-b border-black last:border-b-0">
                                                                         <td className="py-1 px-4 border border-black uppercase font-medium">
-                                                                            {rank}. {candidate.name} <span className="text-gray-600 font-normal">{partylistName}</span>
-                                                                            {candidate.is_tie_breaker_winner && <span className="font-bold text-blue-600 ml-1">(TIE WINNER)</span>}
-                                                                            {isTied && <span className="font-bold text-red-600 ml-1">(TIE)</span>}
+                                                                            {index + 1}. {candidate.name}
                                                                         </td>
-                                                                        <td className="py-1 px-4 border border-black w-32 text-center">
+                                                                        <td className="py-1 px-4 border border-black uppercase">
+                                                                            {candidate.partylist?.name || 'INDEPENDENT'}
+                                                                        </td>
+                                                                        <td className="py-1 px-4 border border-black w-24 text-center">
                                                                             {candidate.votes_count?.toLocaleString()}
                                                                         </td>
-                                                                        <td className="py-1 px-4 border border-black w-32 text-center">
+                                                                        <td className="py-1 px-4 border border-black w-24 text-center">
                                                                             {percentage}%
+                                                                        </td>
+                                                                        <td className="py-1 px-4 border border-black w-24 text-center font-bold text-xs">
+                                                                            {isWinner && <span className="text-emerald-700">WINNER</span>}
+                                                                            {candidate.is_tie_breaker_winner && <span className="text-blue-600 block text-[10px]">(TIE BREAK)</span>}
+                                                                            {isTied && <span className="text-red-600 block text-[10px]">(TIE)</span>}
                                                                         </td>
                                                                     </tr>
                                                                 );
                                                             })}
                                                             {position.candidates.length === 0 && (
                                                                 <tr>
-                                                                    <td colSpan={3} className="py-4 text-center italic text-gray-500 border border-black">
+                                                                    <td colSpan={5} className="py-4 text-center italic text-gray-500 border border-black">
                                                                         No candidates for this position.
                                                                     </td>
                                                                 </tr>
@@ -208,15 +228,15 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
 
                                 {/* Footer / Certification */}
                                 <div className="mt-16 break-inside-avoid print:mt-12">
-                                    <p className="text-xs font-bold uppercase mb-8">Certified Correct:</p>
+                                    <p className="text-xs font-bold uppercase mb-12">Certified Correct:</p>
 
-                                    <div className="grid grid-cols-2 gap-8 gap-y-12">
+                                    <div className="grid grid-cols-3 gap-8 gap-y-12">
                                         {signatories.length > 0 ? (
                                             signatories.map((signatory) => (
-                                                <div key={signatory.id} className="text-center break-inside-avoid px-4">
-                                                    <p className="uppercase font-bold mb-1 text-sm">{signatory.name}</p>
-                                                    <div className="border-b border-black w-full mb-2"></div>
-                                                    <p className="text-xs uppercase font-bold">{signatory.position}</p>
+                                                <div key={signatory.id} className="text-center break-inside-avoid px-2">
+                                                    <div className="border-b border-black w-4/5 mx-auto mb-1"></div>
+                                                    <p className="uppercase font-bold text-sm">{signatory.name}</p>
+                                                    <p className="text-[10px] text-gray-600 uppercase font-bold">{signatory.position}</p>
                                                     {signatory.description && (
                                                         <p className="text-[10px] text-gray-500 mt-0.5">{signatory.description}</p>
                                                     )}
@@ -226,12 +246,12 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                             /* Fallback for when no signatories are defined yet */
                                             <>
                                                 <div className="text-center flex-1">
-                                                    <div className="border-b border-black w-full mb-2"></div>
-                                                    <p className="text-xs uppercase font-bold">Election Committee Head</p>
+                                                    <div className="border-b border-black w-4/5 mx-auto mb-1"></div>
+                                                    <p className="text-[10px] uppercase font-bold">Election Committee Head</p>
                                                 </div>
                                                 <div className="text-center flex-1">
-                                                    <div className="border-b border-black w-full mb-2"></div>
-                                                    <p className="text-xs uppercase font-bold">School Administrator</p>
+                                                    <div className="border-b border-black w-4/5 mx-auto mb-1"></div>
+                                                    <p className="text-[10px] uppercase font-bold">School Administrator</p>
                                                 </div>
                                             </>
                                         )}
