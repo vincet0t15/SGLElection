@@ -89,8 +89,8 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                 className="w-full h-full object-contain"
                                                 onError={(e) => {
                                                     const target = e.target as HTMLImageElement;
-                                                    if (target.src !== '/smartvote.png') {
-                                                        target.src = '/smartvote.png';
+                                                    if (target.src !== system_settings.logo) {
+                                                        target.src = system_settings.logo || '';
                                                     } else {
                                                         target.style.display = 'none';
                                                     }

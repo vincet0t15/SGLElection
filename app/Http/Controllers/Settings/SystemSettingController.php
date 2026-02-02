@@ -34,7 +34,6 @@ class SystemSettingController extends Controller
         $settings->system_name = $request->system_name;
 
         if ($request->hasFile('system_logo')) {
-            // Delete old logo if exists
             if ($settings->system_logo) {
                 Storage::disk('public')->delete($settings->system_logo);
             }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Candidate;
 use App\Models\Event;
 use App\Models\Position;
+use App\Models\SystemSetting;
 use App\Models\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -191,6 +192,7 @@ class VoteController extends Controller
 
     public function receipt()
     {
+        $systemSettings = SystemSetting::first();
         $voter = Auth::guard('voter')->user();
 
 
@@ -218,6 +220,7 @@ class VoteController extends Controller
         $event = Event::find($voter->event_id);
 
         return Inertia::render('Vote/Receipt', [
+            'systemSettings' => $systemSettings,
             'votes' => $votes,
             'event' => $event,
             'voter' => $voter

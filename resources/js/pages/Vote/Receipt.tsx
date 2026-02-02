@@ -30,9 +30,15 @@ interface Props {
         name: string;
         username: string;
     };
+    systemSettings: {
+        system_name: string;
+        system_logo: string;
+    }
 }
 
-export default function Receipt({ votes, event, voter }: Props) {
+export default function Receipt({ votes, event, voter, systemSettings }: Props) {
+
+    console.log(systemSettings)
 
     const votesByPosition = votes.reduce((acc, vote) => {
         const positionName = vote.candidate.position.name;
@@ -50,7 +56,6 @@ export default function Receipt({ votes, event, voter }: Props) {
     const handlePrint = () => {
         window.print();
     };
-
 
     const date = new Date();
     const formattedDate = date.toLocaleDateString('en-US', {
@@ -76,7 +81,7 @@ export default function Receipt({ votes, event, voter }: Props) {
 
                     <div className="text-center space-y-4 mb-8">
                         <div className="flex justify-center">
-                            <img src="/smartvote.png" alt="Logo" className="h-16 w-auto mix-blend-multiply" />
+                            <img src={`/storage/${systemSettings.system_logo}`} alt="Logo" className="h-16 w-auto mix-blend-multiply" />
                         </div>
                         <div className="space-y-1">
                             <h1 className="text-xl font-black uppercase tracking-widest text-slate-900 leading-none">Official Ballot Receipt</h1>
