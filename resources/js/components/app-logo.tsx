@@ -16,8 +16,8 @@ export default function AppLogo() {
                     </div>
                 )}
             </div>
-            <div className="flex-1 flex flex-col items-left justify-center text-center ">
-                <span className="text-2xl font-bold text-primary tracking-widest mb-[-0.5rem]">
+            <div className="flex-1 flex flex-col items-center justify-center text-center ">
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 bg-clip-text text-transparent tracking-widest mb-[-0.5rem]">
                     SVNHS
                 </span>
                 <span className="text-[12px] text-primary tracking-wide mb-[-0.2rem]">
