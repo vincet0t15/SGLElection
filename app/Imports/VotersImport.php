@@ -69,18 +69,40 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
         $password = $username;
 
 
-        $yearLevel = $this->yearLevels->first(function ($level) use ($gradeLevel) {
-            return strcasecmp($level->name, $gradeLevel) === 0 || $level->id == $gradeLevel;
-        });
+        $yearLevel = null;
+
+        // Try to find by ID if numeric
+        if (is_numeric($gradeLevel)) {
+            $yearLevel = $this->yearLevels->firstWhere('id', $gradeLevel);
+        }
+
+        // If not found by ID, try by name
+        if (!$yearLevel) {
+            $yearLevel = $this->yearLevels->first(function ($level) use ($gradeLevel) {
+                return strcasecmp($level->name, $gradeLevel) === 0;
+            });
+        }
 
         if (!$yearLevel) {
             $yearLevel = YearLevel::create(['name' => $gradeLevel]);
             $this->yearLevels->push($yearLevel);
         }
 
-        $section = $this->yearSections->first(function ($sec) use ($sectionName, $yearLevel) {
-            return (strcasecmp($sec->name, $sectionName) === 0 || $sec->id == $sectionName) && $sec->year_level_id == $yearLevel->id;
-        });
+        $section = null;
+
+        // Try to find by ID if numeric (must match year level)
+        if (is_numeric($sectionName)) {
+            $section = $this->yearSections->first(function ($sec) use ($sectionName, $yearLevel) {
+                return $sec->id == $sectionName && $sec->year_level_id == $yearLevel->id;
+            });
+        }
+
+        // If not found by ID, try by name (must match year level)
+        if (!$section) {
+            $section = $this->yearSections->first(function ($sec) use ($sectionName, $yearLevel) {
+                return strcasecmp($sec->name, $sectionName) === 0 && $sec->year_level_id == $yearLevel->id;
+            });
+        }
 
         if (!$section) {
             $section = YearSection::create([

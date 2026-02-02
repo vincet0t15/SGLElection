@@ -27,7 +27,6 @@ export default function Backup() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-
     const handleDownload = () => {
         window.location.href = download().url;
     };
