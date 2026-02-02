@@ -56,7 +56,7 @@ class VoterController extends Controller
 
     public function create()
     {
-        return Inertia::render('Voter/Create', [
+        return Inertia::render('Voter/create', [
             'yearLevels' => \App\Models\YearLevel::all(),
             'yearSections' => \App\Models\YearSection::all(),
             'events' => Event::where('is_active', true)->get(),
