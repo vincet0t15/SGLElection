@@ -19,7 +19,6 @@ export default function AppLogo() {
             <div className="grid flex-1 text-center">
                 <span className="text-base font-bold leading-tight tracking-tight break-words flex items-center justify-between w-full">
                     <img src="/middle_logo.png" alt="System Logo" className="h-10 w-auto object-contain" />
-                    <img src="/right_logo.jpg" alt="System Logo" className="h-12 w-auto object-contain" />
                 </span>
             </div>
         </>
