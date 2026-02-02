@@ -432,54 +432,65 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                         })}
                     </TabsContent>
 
-                    <TabsContent value="candidates" className="mt-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Candidates List</CardTitle>
-                                <CardDescription>All candidates participating in this election</CardDescription>
-                            </CardHeader>
-                            <CardContent>
+                    <TabsContent value="candidates" className="mt-6 space-y-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 className="text-lg font-medium">Candidates List</h3>
+                                <p className="text-sm text-muted-foreground">All candidates grouped by position</p>
+                            </div>
+                        </div>
 
-
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Name</TableHead>
-                                            <TableHead>Party List</TableHead>
-                                            <TableHead>Position</TableHead>
-                                            <TableHead>Year & Section</TableHead>
-                                            <TableHead className="text-right">Votes</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {positions.flatMap(p => p.candidates.map(c => ({ ...c, position_name: p.name }))).map((candidate) => (
-                                            <TableRow key={candidate.id}>
-                                                <TableCell className="font-medium flex items-center gap-3">
-                                                    <Avatar className="h-8 w-8">
-                                                        <AvatarImage
-                                                            src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
-                                                            alt={candidate.name}
-                                                        />
-                                                        <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
-                                                    </Avatar>
-                                                    {candidate.name}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline" className="font-normal">
-                                                        {candidate.partylist?.name || 'Independent'}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell>{candidate.position_name}</TableCell>
-                                                <TableCell>
-                                                    {candidate.year_level?.name} - {candidate.year_section?.name}
-                                                </TableCell>
-                                                <TableCell className="text-right">{candidate.votes_count}</TableCell>
+                        {positions.map((position) => (
+                            <Card key={position.id}>
+                                <CardHeader>
+                                    <CardTitle>{position.name}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Name</TableHead>
+                                                <TableHead>Party List</TableHead>
+                                                <TableHead>Year & Section</TableHead>
+                                                <TableHead className="text-right">Votes</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {position.candidates.map((candidate) => (
+                                                <TableRow key={candidate.id}>
+                                                    <TableCell className="font-medium flex items-center gap-3">
+                                                        <Avatar className="h-8 w-8">
+                                                            <AvatarImage
+                                                                src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
+                                                                alt={candidate.name}
+                                                            />
+                                                            <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        {candidate.name}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge variant="outline" className="font-normal">
+                                                            {candidate.partylist?.name || 'Independent'}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {candidate.year_level?.name} - {candidate.year_section?.name}
+                                                    </TableCell>
+                                                    <TableCell className="text-right">{candidate.votes_count}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                            {position.candidates.length === 0 && (
+                                                <TableRow>
+                                                    <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                                                        No candidates for this position.
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </TabsContent>
 
                     <TabsContent value="voters" className="mt-6">
