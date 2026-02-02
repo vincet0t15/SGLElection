@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
@@ -9,7 +9,6 @@ import { Download, Upload, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { download, restore, reset } from '@/routes/settings/backup';
 import { useRef, useState } from 'react';
-import Alert from './alert';
 import ImportDatabase from './alert';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Backup() {
     const [openAlert, setOpenAlert] = useState(false);
-    const [acceptImport, setAcceptImport] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,31 +48,33 @@ export default function Backup() {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        setSelectedFile(file);
         setOpenAlert(true);
+    };
 
-        if (!acceptImport) {
-            return;
-        }
+    const handleAcceptImport = () => {
+        if (!selectedFile) return;
 
         const formData = new FormData();
-        formData.append('backup_file', file);
+        formData.append('backup_file', selectedFile);
 
         router.post(restore().url, formData, {
             onError: () => {
                 toast.error('Failed to restore database');
                 if (fileInputRef.current) fileInputRef.current.value = '';
+                setSelectedFile(null);
+            },
+            onFinish: () => {
+                if (fileInputRef.current) fileInputRef.current.value = '';
+                setSelectedFile(null);
             },
             forceFormData: true,
         });
     };
 
-    const handleAcceptImport = () => {
-        setAcceptImport(true);
-    };
-
     const cancelImport = () => {
         if (fileInputRef.current) fileInputRef.current.value = '';
-        setAcceptImport(false);
+        setSelectedFile(null);
     };
 
     return (
