@@ -41,7 +41,7 @@ export function YearLevelCreateDialog({ open, setOpen }: Props) {
             preserveScroll: true,
             onSuccess: (response: { props: FlashProps }) => {
                 toast.success(response.props.flash?.success);
-                setOpen(false);
+                // setOpen(false); // Do not close modal
                 reset();
             },
         })
@@ -60,7 +60,7 @@ export function YearLevelCreateDialog({ open, setOpen }: Props) {
                     <div className="grid gap-4 mb-4">
                         <div className="grid gap-3">
                             <Label htmlFor="name">Year Level</Label>
-                            <Input id="name" name="name" placeholder="e.g. 1st Year" onChange={handleChange} />
+                            <Input id="name" name="name" placeholder="e.g. 1st Year" onChange={handleChange} value={data.name} />
 
                             <InputError message={errors.name} />
                         </div>

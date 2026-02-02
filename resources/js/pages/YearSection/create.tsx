@@ -45,9 +45,10 @@ export function YearSectionCreate({ open, setOpen, yearLevel }: Props) {
         e.preventDefault();
         post(yearSection.store().url, {
             preserveState: true,
+            preserveScroll: true,
             onSuccess: (response: { props: FlashProps }) => {
                 toast.success(response.props.flash?.success);
-                setOpen(false);
+                // setOpen(false); // Do not close modal
                 reset();
             },
         })
