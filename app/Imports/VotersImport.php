@@ -10,8 +10,9 @@ use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 
-class VotersImport implements ToModel, WithHeadingRow, WithValidation
+class VotersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyRows
 {
     protected $eventId;
     protected $headingRow;
@@ -44,8 +45,20 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
         // Remove UTF-8 BOM
         $string = str_replace("\xEF\xBB\xBF", '', $string);
 
-        // Convert to UTF-8 and ignore invalid characters
-        return mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        // If string is empty after removing BOM, return it
+        if ($string === '') {
+            return '';
+        }
+
+        // Try to convert to UTF-8 if not already
+        if (!mb_check_encoding($string, 'UTF-8')) {
+            $converted = mb_convert_encoding($string, 'UTF-8', 'auto');
+            if ($converted !== false) {
+                return $converted;
+            }
+        }
+
+        return $string;
     }
 
     public function model(array $row)
@@ -148,10 +161,15 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
     public function rules(): array
     {
         return [
-            'lrn_number' => 'nullable',
-            'name' => 'required|string',
-            'grade_level' => 'required',
-            'section' => 'required',
+            'name' => 'required_without:student_name',
+            'student_name' => 'required_without:name',
+
+            'grade_level' => 'required_without_all:level,year_level',
+            'level' => 'required_without_all:grade_level,year_level',
+            'year_level' => 'required_without_all:grade_level,level',
+
+            'section' => 'required_without:class_section',
+            'class_section' => 'required_without:section',
         ];
     }
 }
