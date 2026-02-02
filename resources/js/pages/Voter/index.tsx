@@ -240,8 +240,8 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                     title="Voters"
                     description="Manage registered voters eligible to participate in events."
                 />
-                <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div className='gap-2 flex'>
+                <div className="flex w-full flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
+                    <div className='gap-2 flex flex-wrap'>
                         <Link href={voter.create().url}>
                             <Button className="cursor-pointer" variant="outline">
                                 <PlusIcon className=" h-4 w-4" />
@@ -313,9 +313,9 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         </Button>
 
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap justify-end">
+                    <div className="flex w-full items-center gap-2 flex-wrap 2xl:w-auto 2xl:justify-end">
                         <Select value={yearLevelId} onValueChange={handleYearLevelFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-full md:w-[180px]">
                                 <SelectValue placeholder="Filter by Year" />
                             </SelectTrigger>
                             <SelectContent>
@@ -329,7 +329,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         </Select>
 
                         <Select value={yearSectionId} onValueChange={handleYearSectionFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-full md:w-[180px]">
                                 <SelectValue placeholder="Filter by Section" />
                             </SelectTrigger>
                             <SelectContent>
@@ -343,7 +343,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         </Select>
 
                         <Select value={eventId} onValueChange={handleEventFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-full md:w-[180px]">
                                 <SelectValue placeholder="Filter by Event" />
                             </SelectTrigger>
                             <SelectContent>
@@ -355,7 +355,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                                 ))}
                             </SelectContent>
                         </Select>
-                        <Input placeholder="Search..." value={search} onChange={handleSearch} onKeyDown={handleKeyDown} className="w-[200px]" />
+                        <Input placeholder="Search..." value={search} onChange={handleSearch} onKeyDown={handleKeyDown} className="w-full md:w-[200px]" />
                     </div>
                 </div>
 
