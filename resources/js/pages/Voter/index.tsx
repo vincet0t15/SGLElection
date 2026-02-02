@@ -16,6 +16,16 @@ import position from '@/routes/position';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -54,16 +64,25 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
     const [yearSectionId, setYearSectionId] = useState<string>(filters.year_section_id ? String(filters.year_section_id) : 'all');
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
-    const [selectedPosition, setSelectedPosition] = useState<PositionProps>();
+    const [deleteId, setDeleteId] = useState<number | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-    const handleClickEdit = (position: PositionProps) => {
-        setSelectedPosition(position);
-        setOpenEditDialog(true);
-    }
-    const handleClickDelete = (position: PositionProps) => {
-        setSelectedPosition(position);
+    const handleClickDelete = (id: number) => {
+        setDeleteId(id);
         setOpenDeleteDialog(true);
+    }
+
+    const handleConfirmDelete = () => {
+        if (deleteId) {
+            router.delete(`/voter/${deleteId}`, {
+                preserveScroll: true,
+                onSuccess: (response: { props: FlashProps }) => {
+                    toast.success(response.props.flash?.success);
+                    setOpenDeleteDialog(false);
+                    setDeleteId(null);
+                },
+            });
+        }
     }
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -380,6 +399,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                                             </Link>
                                             <span
                                                 className="text-red-500 cursor-pointer hover:text-orange-700 hover:underline"
+                                                onClick={() => handleClickDelete(voter.id)}
                                             >
                                                 Delete
                                             </span>
@@ -402,6 +422,23 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                     <Pagination data={voters} />
                 </div>
             </div>
+
+            <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the voter and remove their data from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmDelete} className="bg-red-600 hover:bg-red-700">
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout >
     );
 }

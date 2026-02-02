@@ -379,4 +379,10 @@ class VoterController extends Controller
 
         return redirect()->route('voter.index')->with('success', 'Voter updated successfully.');
     }
+
+    public function destroy(Voter $voter)
+    {
+        $voter->delete();
+        return back()->with('success', 'Voter deleted successfully.');
+    }
 }
