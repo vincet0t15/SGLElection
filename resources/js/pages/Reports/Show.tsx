@@ -440,57 +440,71 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                             </div>
                         </div>
 
-                        {positions.map((position) => (
-                            <Card key={position.id}>
-                                <CardHeader>
-                                    <CardTitle>{position.name}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Name</TableHead>
-                                                <TableHead>Party List</TableHead>
-                                                <TableHead>Year & Section</TableHead>
-                                                <TableHead className="text-right">Votes</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {position.candidates.map((candidate) => (
-                                                <TableRow key={candidate.id}>
-                                                    <TableCell className="font-medium flex items-center gap-3">
-                                                        <Avatar className="h-8 w-8">
-                                                            <AvatarImage
-                                                                src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
-                                                                alt={candidate.name}
-                                                            />
-                                                            <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
-                                                        </Avatar>
-                                                        {candidate.name}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge variant="outline" className="font-normal">
-                                                            {candidate.partylist?.name || 'Independent'}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {candidate.year_level?.name} - {candidate.year_section?.name}
-                                                    </TableCell>
-                                                    <TableCell className="text-right">{candidate.votes_count}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                            {position.candidates.length === 0 && (
+                        {positions.map((position) => {
+                            const totalVotes = position.candidates.reduce((sum, c) => sum + (c.votes_count || 0), 0);
+                            return (
+                                <Card key={position.id}>
+                                    <CardHeader>
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <CardTitle>{position.name}</CardTitle>
+                                                <div className="flex gap-4 text-sm text-muted-foreground mt-1">
+                                                    <p>Total Votes: {totalVotes}</p>
+                                                    <p>Abstentions: {stats.voted_count - (position.votes_cast_count || 0)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <Table>
+                                            <TableHeader>
                                                 <TableRow>
-                                                    <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                                                        No candidates for this position.
-                                                    </TableCell>
+                                                    <TableHead>Name</TableHead>
+                                                    <TableHead className="text-right">Votes</TableHead>
                                                 </TableRow>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </CardContent>
-                            </Card>
-                        ))}
+                                            </TableHeader>
+                                            <TableBody>
+                                                {position.candidates.map((candidate, index) => (
+                                                    <TableRow key={candidate.id}>
+                                                        <TableCell className="font-medium flex items-center gap-3">
+                                                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                                                                #{index + 1}
+                                                            </div>
+                                                            <Avatar className="h-10 w-10">
+                                                                <AvatarImage
+                                                                    src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : undefined}
+                                                                    alt={candidate.name}
+                                                                />
+                                                                <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
+                                                            </Avatar>
+                                                            <div>
+                                                                <div className="font-medium">{candidate.name}</div>
+                                                                <div className="text-sm text-muted-foreground">
+                                                                    {candidate.partylist?.name && (
+                                                                        <span className="font-semibold text-primary mr-1">
+                                                                            {candidate.partylist.name} •
+                                                                        </span>
+                                                                    )}
+                                                                    {candidate.year_level?.name} - {candidate.year_section?.name}
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-right">{candidate.votes_count}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                                {position.candidates.length === 0 && (
+                                                    <TableRow>
+                                                        <TableCell colSpan={2} className="h-24 text-center text-muted-foreground">
+                                                            No candidates for this position.
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
                     </TabsContent>
 
                     <TabsContent value="voters" className="mt-6">
