@@ -16,11 +16,18 @@ export default function AppLogo() {
                     </div>
                 )}
             </div>
-            <div className="grid flex-1 text-center">
-                <span className="text-base font-bold leading-tight tracking-tight break-words flex items-center justify-between w-full">
-                    <img src="/middle_logo.png" alt="System Logo" className="h-10 w-auto object-contain" />
+            <div className="flex-1 flex flex-col items-left justify-center text-center ">
+                <span className="text-2xl font-bold text-primary tracking-widest mb-[-0.5rem]">
+                    SVNHS
+                </span>
+                <span className="text-[12px] text-primary tracking-wide mb-[-0.2rem]">
+                    Electronic Voting and
+                </span>
+                <span className="text-[12px] text-primary tracking-wide mb-[-0.5rem]">
+                    Tallying System eVote
                 </span>
             </div>
+
         </>
     );
 }
