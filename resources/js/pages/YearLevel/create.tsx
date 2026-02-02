@@ -38,6 +38,7 @@ export function YearLevelCreateDialog({ open, setOpen }: Props) {
         e.preventDefault();
         post(yearLevel.store().url, {
             preserveState: true,
+            preserveScroll: true,
             onSuccess: (response: { props: FlashProps }) => {
                 toast.success(response.props.flash?.success);
                 setOpen(false);

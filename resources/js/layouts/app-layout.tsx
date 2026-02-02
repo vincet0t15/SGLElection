@@ -7,7 +7,7 @@ import { FlashMessageToaster } from '@/components/flash-message-toaster';
 
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
     <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-        <FlashMessageToaster />
+        {/* <FlashMessageToaster /> */}
         {children}
         <Toaster richColors position="top-right" />
     </AppLayoutTemplate>
