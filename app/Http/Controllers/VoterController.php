@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\VotersImport;
 use App\Exports\VotersExport;
+use App\Exports\VoterTemplateExport;
 use App\Models\Event;
 use App\Models\Voter;
 use Maatwebsite\Excel\Facades\Excel;
@@ -96,6 +97,11 @@ class VoterController extends Controller
     public function export(Request $request)
     {
         return Excel::download(new VotersExport($request->all()), 'voters.xlsx');
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new VoterTemplateExport, 'voters_template.xlsx');
     }
 
     public function activateAll(Request $request)

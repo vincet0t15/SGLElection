@@ -68,19 +68,7 @@ export default function ImportVoter({ events }: Props) {
     };
 
     const handleDownloadTemplate = () => {
-        const headers = ['LRN NUMBER', 'NAME', 'SECTION', 'GRADE LEVEL'];
-        const sample = ['111201170026', 'Abao, Aldrich Franz Caabay', '3', '3'];
-        const csvContent = "data:text/csv;charset=utf-8,"
-            + headers.join(",") + "\n"
-            + sample.join(",");
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "voters_import_template.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        window.location.href = '/voter/template';
     }
 
     return (
@@ -139,7 +127,7 @@ export default function ImportVoter({ events }: Props) {
                                         <li>File must be in .xlsx, .xls, or .csv format.</li>
                                         <li>The first row must contain the column headers: <strong>Learners Reference Number, Name, Section, Grade Level</strong>.</li>
                                         <li>Name format should be "Lastname, Firstname MiddleName" (e.g., Abao, Aldrich Franz Caabay).</li>
-                                        <li>Section and Grade Level should match the name in the system (e.g., "3").</li>
+                                        <li>Section and Grade Level can be the <strong>Name</strong> (e.g., "Grade 7") or <strong>ID</strong> (e.g., "1").</li>
                                         <li>Username and Password will be auto-generated based on Name and LRN.</li>
                                     </ul>
                                 </div>

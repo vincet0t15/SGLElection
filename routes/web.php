@@ -97,6 +97,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('voter', [VoterController::class, 'index'])->name('voter.index');
     Route::get('voter/import', [VoterController::class, 'importView'])->name('voter.import.view');
     Route::post('voter/import', [VoterController::class, 'import'])->name('voter.import');
+    Route::get('voter/template', [VoterController::class, 'downloadTemplate'])->name('voter.template');
     Route::get('voter/export', [VoterController::class, 'export'])->name('voter.export');
     Route::get('voter/print', [VoterController::class, 'print'])->name('voter.print');
     Route::get('voter/print-cards', [VoterController::class, 'printCards'])->name('voter.print-cards');
