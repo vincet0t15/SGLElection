@@ -12,8 +12,11 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\RemembersRowNumber;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
-class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
+class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithChunkReading, WithBatchInserts
 {
     use RemembersRowNumber;
 
@@ -24,15 +27,81 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
 
     public function __construct($eventId, $headingRow = 1)
     {
+        // Disable automatic heading formatting to avoid UTF-8 errors on headers
+        // HeadingRowFormatter::default('none'); // Removed – class not available in current package version
+        HeadingRowFormatter::default('none');
+        // Increase memory limit for this import if possible
+        ini_set('memory_limit', '512M');
+        set_time_limit(300); // 5 minutes
+
         $this->eventId = $eventId;
         $this->headingRow = $headingRow;
         $this->yearLevels = YearLevel::all();
         $this->yearSections = YearSection::all();
     }
 
+    public function chunkSize(): int
+    {
+        return 500;
+    }
+
+    public function batchSize(): int
+    {
+        return 500;
+    }
+
     public function headingRow(): int
     {
         return $this->headingRow;
+    }
+
+    /**
+     * Aggressively clean and ensure valid UTF-8 string
+     */
+    private function forceUtf8($string)
+    {
+        if (is_null($string)) {
+            return null;
+        }
+
+        $string = (string) $string;
+
+        // 1. Remove UTF-8 BOM
+        $string = str_replace("\xEF\xBB\xBF", '', $string);
+
+        // 2. Convert Excel encodings -> UTF-8
+        // Try UTF-8 first. If invalid, fall back to Windows-1252 (common in Excel)
+        $string = mb_convert_encoding(
+            $string,
+            'UTF-8',
+            'UTF-8, Windows-1252, ISO-8859-1'
+        );
+
+        // 3. Remove control chars safely (keeps valid UTF-8 text)
+        $string = preg_replace('/[^\P{C}]+/u', '', $string);
+
+        return trim($string);
+    }
+
+    /**
+     * Normalize row keys AND values to handle encoding issues
+     */
+    private function normalizeRow(array $row): array
+    {
+        $clean = [];
+
+        foreach ($row as $key => $value) {
+            // Clean Key
+            $key = $this->forceUtf8($key);
+            $key = Str::snake(trim($key));
+
+            // Clean Value (CRITICAL: Clean the input value here too!)
+            $value = $this->forceUtf8($value);
+
+            $clean[$key] = $value;
+        }
+
+        return $clean;
     }
 
     /**
@@ -42,29 +111,13 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
      */
     private function cleanString($string)
     {
-        if (is_null($string)) {
-            return null;
-        }
-
-        // 1. Remove UTF-8 BOM
-        $string = str_replace("\xEF\xBB\xBF", '', $string);
-
-        // 2. Force convert to UTF-8 to handle "ñ" or Windows-1252 characters
-        // We try multiple source encodings common in Excel files
-        if (!mb_check_encoding($string, 'UTF-8')) {
-            $string = mb_convert_encoding($string, 'UTF-8', 'Windows-1252, ISO-8859-1');
-        }
-
-        // 3. Remove invisible characters/control characters but keep standard text
-        // This removes binary garbage but keeps normal text
-        $string = preg_replace('/[\x00-\x1F\x7F]/u', '', $string);
-
-        return trim($string);
+        return isset($string) ? trim($this->forceUtf8($string)) : null;
     }
 
     public function model(array $row)
     {
         $currentRowNumber = $this->getRowNumber();
+        $row = $this->normalizeRow($row);
 
         $name = $this->cleanString($row['name'] ?? $row['student_name'] ?? null);
         $lrn = $this->cleanString($row['learners_reference_number'] ?? $row['lrn'] ?? $row['lrn_number'] ?? null);
@@ -88,7 +141,9 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
         ]);
 
         if ($validator->fails()) {
-            throw new \Exception("Row {$currentRowNumber}: " . implode(', ', $validator->errors()->all()));
+            throw new \RuntimeException(
+                $this->forceUtf8("Row {$currentRowNumber}: " . implode(', ', $validator->errors()->all()))
+            );
         }
 
         if (!$name) {
@@ -111,9 +166,14 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
 
 
         $lastName = str_replace(' ', '', $lastName);
+        // Ensure lastName is ASCII for username generation to prevent invalid characters
+        $cleanLastName = Str::ascii($lastName);
+        // Remove any remaining non-alphanumeric characters
+        $cleanLastName = preg_replace('/[^a-zA-Z0-9]/', '', $cleanLastName);
 
         $lrnSuffix = $lrn ? substr($lrn, -4) : rand(1000, 9999);
-        $baseUsername = substr($lastName, 0, 2) . $lrnSuffix;
+        // Use mb_substr just in case, though Str::ascii should handle it
+        $baseUsername = substr($cleanLastName, 0, 2) . $lrnSuffix;
         $username = $baseUsername;
         $counter = 1;
 
@@ -140,7 +200,7 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
         }
 
         if (!$yearLevel) {
-            throw new \Exception("Row {$currentRowNumber}: Year Level '{$gradeLevel}' not found. Please create it first.");
+            throw new \RuntimeException($this->forceUtf8("Row {$currentRowNumber}: Year Level '{$gradeLevel}' not found. Please create it first."));
         }
 
         $section = null;
@@ -160,7 +220,7 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
         }
 
         if (!$section) {
-            throw new \Exception("Row {$currentRowNumber}: Section '{$sectionName}' not found in Year Level '{$yearLevel->name}'. Please create it first.");
+            throw new \RuntimeException($this->forceUtf8("Row {$currentRowNumber}: Section '{$sectionName}' not found in Year Level '{$yearLevel->name}'. Please create it first."));
         }
 
         $yearSectionId = $section->id;

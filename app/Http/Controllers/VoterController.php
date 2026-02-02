@@ -70,6 +70,18 @@ class VoterController extends Controller
         ]);
     }
 
+    /**
+     * Helper to safely clean strings for UTF-8 compatibility
+     */
+    private function cleanError($string)
+    {
+        // 1. Convert to UTF-8 trying common encodings
+        $string = mb_convert_encoding($string, 'UTF-8', 'Windows-1252, ISO-8859-1, UTF-8');
+
+        // 2. Strip control characters safely
+        return preg_replace('/[^\P{C}]+/u', '', $string);
+    }
+
     public function import(Request $request)
     {
         set_time_limit(300); // Increase time limit to 5 minutes
@@ -90,9 +102,10 @@ class VoterController extends Controller
             foreach ($failures as $failure) {
                 $messages[] = 'Row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
             }
-            return back()->withErrors(['file' => implode(' | ', $messages)]);
+            $errorMsg = implode(' | ', $messages);
+            return back()->withErrors(['file' => $this->cleanError($errorMsg)]);
         } catch (\Exception $e) {
-            return back()->withErrors(['file' => 'Error importing file: ' . $e->getMessage()]);
+            return back()->withErrors(['file' => 'Error importing file: ' . $this->cleanError($e->getMessage())]);
         }
     }
 
