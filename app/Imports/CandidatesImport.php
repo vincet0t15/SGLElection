@@ -58,6 +58,15 @@ class CandidatesImport implements ToModel, WithHeadingRow, WithValidation
         $partylistId = null;
         if (!empty($row['partylist'])) {
             $partylistId = $this->findId(Partylist::class, $row['partylist'], ['event_id' => $eventId]);
+
+            if (!$partylistId) {
+                $partylist = Partylist::create([
+                    'name' => trim($row['partylist']),
+                    'event_id' => $eventId,
+                    'description' => 'Imported via Excel',
+                ]);
+                $partylistId = $partylist->id;
+            }
         }
 
 
