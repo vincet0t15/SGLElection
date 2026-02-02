@@ -396,7 +396,7 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                     )}
                 </div>
 
-                <div className="flex w-full justify-center mt-4">
+                <div>
                     <Pagination data={candidates} />
                 </div>
             </div>
