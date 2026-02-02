@@ -17,12 +17,9 @@ export default function AppLogo() {
                 )}
             </div>
             <div className="grid flex-1 text-left">
-                <span className="truncate text-base font-bold leading-none tracking-tight">
-                    <img src="/smartvote.png" alt="System Logo" className="size-full object-contain" />
-                </span>
-                {/* <span className="truncate text-xs text-muted-foreground font-medium">
+                <span className="text-base font-bold leading-tight tracking-tight break-words">
                     {system_settings.name}
-                </span> */}
+                </span>
             </div>
         </>
     );
