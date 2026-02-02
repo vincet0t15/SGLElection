@@ -73,12 +73,12 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
         $gradeLevel = $this->cleanString($row['grade_level'] ?? $row['level'] ?? $row['year_level'] ?? null);
         $sectionName = $this->cleanString($row['section'] ?? $row['class_section'] ?? null);
 
-        // Check if the row is effectively empty (skip it)
+
         if (empty($name) && empty($lrn) && empty($gradeLevel) && empty($sectionName)) {
             return null;
         }
 
-        // Manual Validation
+
         $validator = Validator::make([
             'name' => $name,
             'grade_level' => $gradeLevel,
@@ -129,12 +129,12 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
 
         $yearLevel = null;
 
-        // Try to find by ID if numeric
+
         if (is_numeric($gradeLevel)) {
             $yearLevel = $this->yearLevels->firstWhere('id', $gradeLevel);
         }
 
-        // If not found by ID, try by name
+
         if (!$yearLevel) {
             $yearLevel = $this->yearLevels->first(function ($level) use ($gradeLevel) {
                 return strcasecmp($level->name, $gradeLevel) === 0;
@@ -142,20 +142,19 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
         }
 
         if (!$yearLevel) {
-            $yearLevel = YearLevel::create(['name' => $gradeLevel]);
-            $this->yearLevels->push($yearLevel);
+            throw new \Exception("Row {$currentRowNumber}: Year Level '{$gradeLevel}' not found. Please create it first.");
         }
 
         $section = null;
 
-        // Try to find by ID if numeric (must match year level)
+
         if (is_numeric($sectionName)) {
             $section = $this->yearSections->first(function ($sec) use ($sectionName, $yearLevel) {
                 return $sec->id == $sectionName && $sec->year_level_id == $yearLevel->id;
             });
         }
 
-        // If not found by ID, try by name (must match year level)
+
         if (!$section) {
             $section = $this->yearSections->first(function ($sec) use ($sectionName, $yearLevel) {
                 return strcasecmp($sec->name, $sectionName) === 0 && $sec->year_level_id == $yearLevel->id;
@@ -163,11 +162,7 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
         }
 
         if (!$section) {
-            $section = YearSection::create([
-                'name' => $sectionName,
-                'year_level_id' => $yearLevel->id
-            ]);
-            $this->yearSections->push($section);
+            throw new \Exception("Row {$currentRowNumber}: Section '{$sectionName}' not found in Year Level '{$yearLevel->name}'. Please create it first.");
         }
 
         $yearSectionId = $section->id;

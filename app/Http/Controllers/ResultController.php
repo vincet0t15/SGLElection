@@ -10,7 +10,7 @@ class ResultController extends Controller
 {
     public function index()
     {
-        // Get the active event, or the latest one if no active event.
+
         $event = Event::where('is_active', true)->latest()->first() ?? Event::latest()->first();
 
         if (!$event) {

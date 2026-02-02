@@ -61,7 +61,7 @@ class DashboardController extends Controller
                     }])
                     ->get()
                     ->map(function ($position) {
-                        // Calculate total votes for the position BEFORE filtering
+
                         $totalVotes = $position->candidates->sum('votes_count');
 
 
@@ -112,7 +112,7 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        // System Health Check
+
         $systemHealth = [
             'database' => false,
             'database_latency' => 0,

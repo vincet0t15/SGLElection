@@ -154,7 +154,7 @@ class VoterController extends Controller
             }
         }
 
-        // Sort by hierarchy: Event > Year Level > Section > Name
+
         $query->orderBy('event_id')
             ->orderBy('year_level_id')
             ->orderBy('year_section_id')
@@ -162,7 +162,7 @@ class VoterController extends Controller
 
         $voters = $query->get();
 
-        // Fetch signatories
+
         $signatoriesQuery = \App\Models\Signatory::where('is_active', true)
             ->orderBy('order');
 
@@ -177,7 +177,7 @@ class VoterController extends Controller
 
         $signatories = $signatoriesQuery->get();
 
-        // Prepare filter labels for the view
+
         $filters = $request->all();
         if ($eventId && $eventId !== 'all') {
             $filters['event_name'] = Event::find($eventId)->name ?? null;
@@ -231,7 +231,7 @@ class VoterController extends Controller
             }
         }
 
-        // Sort by hierarchy: Event > Year Level > Section > Name
+
         $query->orderBy('event_id')
             ->orderBy('year_level_id')
             ->orderBy('year_section_id')
@@ -239,7 +239,7 @@ class VoterController extends Controller
 
         $voters = $query->get();
 
-        // Prepare filter labels for the view
+
         $filters = $request->all();
         if ($eventId && $eventId !== 'all') {
             $filters['event_name'] = Event::find($eventId)->name ?? null;

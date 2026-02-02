@@ -172,7 +172,7 @@ class CandidateController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            // Delete old photo if exists
+
             if ($candidate->candidatePhotos->isNotEmpty()) {
                 foreach ($candidate->candidatePhotos as $photo) {
                     Storage::disk('public')->delete($photo->path);
@@ -244,7 +244,6 @@ class CandidateController extends Controller
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
 
-            // Add an example row
             fputcsv($file, ['John Doe', 'SSG Election 2024', 'President', 'Grade 7', 'Section A', 'Blue Party', 'My platform...']);
 
             fclose($file);

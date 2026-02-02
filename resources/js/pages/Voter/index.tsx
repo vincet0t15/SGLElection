@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Delete, PlusIcon, Upload, Download, Printer, ShieldBan, CreditCard, Trash2 } from 'lucide-react';
+import { PlusIcon, Upload, Download, Printer, ShieldBan, CreditCard, Trash2 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -11,8 +11,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { KeyboardEventHandler, useState } from 'react';
 import Pagination from '@/components/paginationData';
 import { EventProps } from '@/types/event';
-import { PositionProps } from '@/types/position';
-import position from '@/routes/position';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -62,8 +60,6 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
     const [eventId, setEventId] = useState<string>(filters.event_id ? String(filters.event_id) : 'all');
     const [yearLevelId, setYearLevelId] = useState<string>(filters.year_level_id ? String(filters.year_level_id) : 'all');
     const [yearSectionId, setYearSectionId] = useState<string>(filters.year_section_id ? String(filters.year_section_id) : 'all');
-    const [openCreateDialog, setOpenCreateDialog] = useState(false);
-    const [openEditDialog, setOpenEditDialog] = useState(false);
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openBulkDeleteDialog, setOpenBulkDeleteDialog] = useState(false);
@@ -128,7 +124,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         }
     }
 
-    // Filter sections based on selected year level
+
     const filteredSections = yearLevelId !== 'all'
         ? yearSections.filter(section => section.year_level_id.toString() === yearLevelId)
         : yearSections;
@@ -443,7 +439,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="py-3 text-center text-gray-500">
+                                    <TableCell colSpan={9} className="py-3 text-center text-gray-500">
                                         No data available.
                                     </TableCell>
                                 </TableRow>

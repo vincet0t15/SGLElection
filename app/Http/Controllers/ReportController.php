@@ -106,15 +106,15 @@ class ReportController extends Controller
             });
         }
 
-        // Calculate actual voters (turnout)
+
         $actualVoters = \App\Models\Vote::where('event_id', $event->id)
             ->distinct('voter_id')
             ->count();
 
-        // Calculate total registered voters for this event
+
         $registeredVoters = \App\Models\Voter::where('event_id', $event->id)->count();
 
-        // Calculate total sections (precincts equivalent)
+
         $totalSections = \App\Models\Voter::where('event_id', $event->id)
             ->distinct('year_section_id')
             ->count('year_section_id');
@@ -162,15 +162,15 @@ class ReportController extends Controller
             });
         }
 
-        // Calculate actual voters (turnout)
+
         $actualVoters = \App\Models\Vote::where('event_id', $event->id)
             ->distinct('voter_id')
             ->count();
 
-        // Calculate total registered voters for this event
+
         $registeredVoters = \App\Models\Voter::where('event_id', $event->id)->count();
 
-        // Calculate total sections (precincts equivalent)
+
         $totalSections = \App\Models\Voter::where('event_id', $event->id)
             ->distinct('year_section_id')
             ->count('year_section_id');
@@ -224,7 +224,7 @@ class ReportController extends Controller
 
     public function analytics(Event $event)
     {
-        // 1. Turnout by Section
+
         $sections = \App\Models\YearSection::withCount(['voters' => function ($query) use ($event) {
             $query->where('event_id', $event->id);
         }])
@@ -249,7 +249,7 @@ class ReportController extends Controller
             })
             ->values();
 
-        // 1.5 Turnout by Year Level
+
         $yearLevels = \App\Models\YearLevel::withCount(['voters' => function ($query) use ($event) {
             $query->where('event_id', $event->id);
         }])
@@ -274,7 +274,7 @@ class ReportController extends Controller
             })
             ->values();
 
-        // 2. Candidate Performance by Section
+
         $candidates = \App\Models\Candidate::where('event_id', $event->id)
             ->with(['position', 'partylist'])
             ->get()
@@ -296,14 +296,14 @@ class ReportController extends Controller
                 ];
             });
 
-        // 3. Hourly Trends
+
         $hourlyVotes = \App\Models\Vote::where('event_id', $event->id)
             ->selectRaw('HOUR(created_at) as hour, count(distinct voter_id) as count')
             ->groupBy('hour')
             ->orderBy('hour')
             ->get();
 
-        // 4. Abstentions
+
         $totalVotersThatVoted = \App\Models\Vote::where('event_id', $event->id)
             ->distinct('voter_id')
             ->count();
@@ -316,7 +316,7 @@ class ReportController extends Controller
             $maxPotentialVotes = $totalVotersThatVoted * $position->max_votes;
             $undervotes = $maxPotentialVotes - $totalVotesForPosition;
 
-            // Voters who cast ZERO votes for this position
+
             $votersWhoVotedForPosition = \App\Models\Vote::where('event_id', $event->id)
                 ->where('position_id', $position->id)
                 ->distinct('voter_id')
@@ -358,10 +358,10 @@ class ReportController extends Controller
             }])
             ->get();
 
-        // Calculate total registered voters for this event
+
         $registeredVoters = \App\Models\Voter::where('event_id', $event->id)->count();
 
-        // Calculate actual voters (turnout)
+
         $actualVoters = \App\Models\Vote::where('event_id', $event->id)
             ->distinct('voter_id')
             ->count();
@@ -445,12 +445,12 @@ class ReportController extends Controller
             'position_id' => 'required|exists:positions,id',
         ]);
 
-        // Reset previous tie breaker winner for this position in this event (if any)
+
         \App\Models\Candidate::where('event_id', $event->id)
             ->where('position_id', $request->position_id)
             ->update(['is_tie_breaker_winner' => false]);
 
-        // Set the new tie breaker winner
+
         $candidate = \App\Models\Candidate::findOrFail($request->candidate_id);
         $candidate->update(['is_tie_breaker_winner' => true]);
 
