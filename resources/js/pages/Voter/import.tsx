@@ -59,7 +59,8 @@ export default function ImportVoter({ events }: Props) {
             onSuccess: () => {
                 toast.success('Voters imported successfully');
                 reset();
-                const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                // Reset file input manually since reset() only clears form state
+                const fileInput = document.getElementById('file') as HTMLInputElement;
                 if (fileInput) fileInput.value = '';
             },
             onError: () => {
@@ -118,6 +119,7 @@ export default function ImportVoter({ events }: Props) {
                                         type="file"
                                         accept=".xlsx,.xls,.csv"
                                         onChange={(e) => setData('file', e.target.files ? e.target.files[0] : null)}
+
                                         required
                                     />
                                     <InputError message={errors.file} />
