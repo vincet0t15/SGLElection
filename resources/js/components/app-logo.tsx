@@ -24,7 +24,7 @@ export default function AppLogo() {
                     Electronic Voting and
                 </span>
                 <span className="text-[12px] text-primary tracking-wide mb-[-0.5rem]">
-                    Tallying System eVote
+                    Tallying System <span className='font-bold'>(eVote)</span>
                 </span>
             </div>
 
