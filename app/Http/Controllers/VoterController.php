@@ -72,6 +72,8 @@ class VoterController extends Controller
 
     public function import(Request $request)
     {
+        set_time_limit(300); // Increase time limit to 5 minutes
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
             'event_id' => 'required|exists:events,id',
