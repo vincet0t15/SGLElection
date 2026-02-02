@@ -252,6 +252,14 @@
                         </td>
                     </tr>
                     @endforeach
+                    @if($type !== 'winners')
+                    <tr>
+                        <td colspan="2" style="text-align: right; font-weight: bold; background-color: #f9f9f9;">Abstentions / Undervotes</td>
+                        <td style="font-weight: bold; background-color: #f9f9f9;">{{ number_format($stats['actual_voters'] - ($position->votes_cast_count ?? 0)) }}</td>
+                        <td style="background-color: #f9f9f9;">{{ $stats['actual_voters'] > 0 ? round((($stats['actual_voters'] - ($position->votes_cast_count ?? 0)) / $stats['actual_voters']) * 100, 2) : 0 }}%</td>
+                        <td style="background-color: #f9f9f9;"></td>
+                    </tr>
+                    @endif
             </tbody>
         </table>
     </div>

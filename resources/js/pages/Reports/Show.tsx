@@ -283,10 +283,15 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                             return (
                                 <Card key={position.id}>
                                     <CardHeader>
-                                        <CardTitle>{position.name}</CardTitle>
-                                        <CardDescription>
-                                            Total Votes: {totalVotes}
-                                        </CardDescription>
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <CardTitle>{position.name}</CardTitle>
+                                                <div className="flex gap-4 text-sm text-muted-foreground">
+                                                    <p>Total Votes: {totalVotes}</p>
+                                                    <p>Abstentions: {stats.voted_count - (position.votes_cast_count || 0)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="space-y-6">
@@ -362,6 +367,11 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                                         )}
                                                                     </div>
                                                                     <div className="text-xs text-muted-foreground">
+                                                                        {candidate.partylist?.name && (
+                                                                            <span className="font-semibold text-primary mr-1">
+                                                                                {candidate.partylist.name} •
+                                                                            </span>
+                                                                        )}
                                                                         {candidate.year_level?.name} - {candidate.year_section?.name}
                                                                     </div>
                                                                 </div>

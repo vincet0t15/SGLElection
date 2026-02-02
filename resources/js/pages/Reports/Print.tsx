@@ -211,6 +211,20 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                                     </tr>
                                                                 );
                                                             })}
+                                                            {type !== 'winners' && (
+                                                                <tr className="bg-gray-50 border-t border-black font-bold text-xs">
+                                                                    <td colSpan={2} className="py-1 px-4 border border-black text-right uppercase">Abstentions / Undervotes</td>
+                                                                    <td className="py-1 px-4 border border-black text-center">
+                                                                        {stats.actual_voters - (position.votes_cast_count || 0)}
+                                                                    </td>
+                                                                    <td className="py-1 px-4 border border-black text-center">
+                                                                        {stats.actual_voters > 0
+                                                                            ? (((stats.actual_voters - (position.votes_cast_count || 0)) / stats.actual_voters) * 100).toFixed(2)
+                                                                            : "0.00"}%
+                                                                    </td>
+                                                                    <td className="py-1 px-4 border border-black"></td>
+                                                                </tr>
+                                                            )}
                                                             {position.candidates.length === 0 && (
                                                                 <tr>
                                                                     <td colSpan={5} className="py-4 text-center italic text-gray-500 border border-black">

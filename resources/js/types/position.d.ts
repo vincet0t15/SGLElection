@@ -9,6 +9,7 @@ export interface PositionProps {
     event: EventProps;
     candidates: CandidateProps[];
     year_levels?: { id: number; name: string }[];
+    votes_cast_count?: number;
 }
 
 export type PositionType = {

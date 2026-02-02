@@ -8,6 +8,7 @@ use App\Models\SystemSetting;
 use App\Models\Voter;
 use App\Models\Vote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\VoterReceiptExport;
@@ -37,6 +38,16 @@ class ReportController extends Controller
                     ->orderBy('is_tie_breaker_winner', 'desc');
             }])
             ->get();
+
+        $votesPerPosition = Vote::where('event_id', $event->id)
+            ->select('position_id', DB::raw('count(distinct voter_id) as count'))
+            ->groupBy('position_id')
+            ->pluck('count', 'position_id');
+
+        $positions->transform(function ($position) use ($votesPerPosition) {
+            $position->votes_cast_count = $votesPerPosition[$position->id] ?? 0;
+            return $position;
+        });
 
 
         $totalVoters = \App\Models\Vote::where('event_id', $event->id)
@@ -99,6 +110,16 @@ class ReportController extends Controller
             }])
             ->get();
 
+        $votesPerPosition = Vote::where('event_id', $event->id)
+            ->select('position_id', DB::raw('count(distinct voter_id) as count'))
+            ->groupBy('position_id')
+            ->pluck('count', 'position_id');
+
+        $positions->transform(function ($position) use ($votesPerPosition) {
+            $position->votes_cast_count = $votesPerPosition[$position->id] ?? 0;
+            return $position;
+        });
+
         if ($request->input('type') === 'winners') {
             $positions->transform(function ($position) {
                 $position->setRelation('candidates', $position->candidates->take($position->max_votes));
@@ -154,6 +175,16 @@ class ReportController extends Controller
                     ->orderBy('is_tie_breaker_winner', 'desc');
             }])
             ->get();
+
+        $votesPerPosition = Vote::where('event_id', $event->id)
+            ->select('position_id', DB::raw('count(distinct voter_id) as count'))
+            ->groupBy('position_id')
+            ->pluck('count', 'position_id');
+
+        $positions->transform(function ($position) use ($votesPerPosition) {
+            $position->votes_cast_count = $votesPerPosition[$position->id] ?? 0;
+            return $position;
+        });
 
         if ($request->input('type') === 'winners') {
             $positions->transform(function ($position) {
