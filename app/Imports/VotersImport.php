@@ -7,13 +7,16 @@ use App\Models\YearLevel;
 use App\Models\YearSection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Maatwebsite\Excel\Concerns\RemembersRowNumber;
 
-class VotersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyRows
+class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
 {
+    use RemembersRowNumber;
+
     protected $eventId;
     protected $headingRow;
     protected $yearLevels;
@@ -63,11 +66,32 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmpt
 
     public function model(array $row)
     {
+        $currentRowNumber = $this->getRowNumber();
 
         $name = $this->cleanString($row['name'] ?? $row['student_name'] ?? null);
         $lrn = $this->cleanString($row['learners_reference_number'] ?? $row['lrn'] ?? $row['lrn_number'] ?? null);
         $gradeLevel = $this->cleanString($row['grade_level'] ?? $row['level'] ?? $row['year_level'] ?? null);
         $sectionName = $this->cleanString($row['section'] ?? $row['class_section'] ?? null);
+
+        // Check if the row is effectively empty (skip it)
+        if (empty($name) && empty($lrn) && empty($gradeLevel) && empty($sectionName)) {
+            return null;
+        }
+
+        // Manual Validation
+        $validator = Validator::make([
+            'name' => $name,
+            'grade_level' => $gradeLevel,
+            'section' => $sectionName,
+        ], [
+            'name' => 'required|string',
+            'grade_level' => 'required',
+            'section' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            throw new \Exception("Row {$currentRowNumber}: " . implode(', ', $validator->errors()->all()));
+        }
 
         if (!$name) {
             return null;
@@ -146,30 +170,18 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmpt
             $this->yearSections->push($section);
         }
 
+        $yearSectionId = $section->id;
+        $yearLevelId = $yearLevel->id;
+
         return new Voter([
             'name'            => $name,
             'lrn_number'      => $lrn,
             'username'        => $username,
             'password'        => Hash::make($password),
-            'year_level_id'   => $yearLevel->id,
-            'year_section_id' => $section->id,
+            'year_level_id'   => $yearLevelId,
+            'year_section_id' => $yearSectionId,
             'event_id'        => $this->eventId,
             'is_active'       => false,
         ]);
-    }
-
-    public function rules(): array
-    {
-        return [
-            'name' => 'required_without:student_name',
-            'student_name' => 'required_without:name',
-
-            'grade_level' => 'required_without_all:level,year_level',
-            'level' => 'required_without_all:grade_level,year_level',
-            'year_level' => 'required_without_all:grade_level,level',
-
-            'section' => 'required_without:class_section',
-            'class_section' => 'required_without:section',
-        ];
     }
 }
