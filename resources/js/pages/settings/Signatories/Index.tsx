@@ -27,11 +27,10 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { index as indexSignatories, store as storeSignatory, update as updateSignatory, destroy as destroySignatory } from '@/routes/signatories';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';

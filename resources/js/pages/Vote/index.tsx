@@ -23,12 +23,12 @@ interface Props {
 }
 
 export default function VoteIndex({ events }: Props) {
-    // State to store votes: { [positionId]: [candidateId1, candidateId2, ...] }
+
     const [votes, setVotes] = useState<Record<number, number[]>>({});
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Calculate progress
+
     const totalPositions = useMemo(() => {
         return events.reduce((acc, event) => acc + event.positions.length, 0);
     }, [events]);
@@ -44,13 +44,13 @@ export default function VoteIndex({ events }: Props) {
         const isSelected = currentVotes.includes(candidateId);
 
         if (isSelected) {
-            // Deselect
+
             setVotes(prev => ({
                 ...prev,
                 [positionId]: currentVotes.filter(id => id !== candidateId)
             }));
         } else {
-            // Select
+
             if (currentVotes.length >= maxVotes) {
                 toast.error(`You can only select ${maxVotes} candidate(s) for this position.`);
                 return;
@@ -119,7 +119,7 @@ export default function VoteIndex({ events }: Props) {
             <Head title="Official Ballot" />
             <Toaster richColors position="top-center" />
 
-            {/* Top Navigation / Progress Bar */}
+
             <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
                 <div className="container mx-auto max-w-5xl px-4 h-16 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
@@ -135,7 +135,7 @@ export default function VoteIndex({ events }: Props) {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        {/* Progress Bar (Desktop) */}
+
                         <div className="hidden md:flex flex-col w-48 gap-1.5">
                             <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                                 <div
@@ -160,7 +160,7 @@ export default function VoteIndex({ events }: Props) {
                         </Button>
                     </div>
                 </div>
-                {/* Mobile Progress Bar (Slim) */}
+
                 <div className="md:hidden w-full h-1 bg-slate-100">
                     <div
                         className="h-full bg-blue-600 transition-all duration-500 ease-out"
@@ -181,7 +181,7 @@ export default function VoteIndex({ events }: Props) {
                 ) : (
                     events.map((event) => (
                         <div key={event.id} className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            {/* Event Header */}
+
                             <div className="text-center space-y-2 mb-10">
                                 <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-100 px-3 py-1">
                                     {event.name}
@@ -191,7 +191,7 @@ export default function VoteIndex({ events }: Props) {
 
                             {event.positions.map((position) => (
                                 <section key={position.id} className="scroll-mt-24 relative">
-                                    {/* Position Header */}
+
                                     <div className="flex items-center justify-between mb-6 sticky top-16 z-30 bg-slate-50/95 backdrop-blur py-3 border-b border-slate-200">
                                         <div className="flex items-center gap-3">
                                             <div className="h-8 w-1 bg-blue-600 rounded-full" />
@@ -213,7 +213,7 @@ export default function VoteIndex({ events }: Props) {
                                         </div>
                                     </div>
 
-                                    {/* Candidates Grid */}
+
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                                         {position.candidates.map((candidate) => {
                                             const selected = isSelected(position.id, candidate.id);
@@ -232,14 +232,14 @@ export default function VoteIndex({ events }: Props) {
                                                             : "border-slate-200 hover:border-blue-300 hover:shadow-md"
                                                     )}
                                                 >
-                                                    {/* Selected Indicator Icon */}
+
                                                     {selected && (
                                                         <div className="absolute top-2 right-2 z-20 bg-blue-600 text-white p-1 rounded-full shadow-sm animate-in zoom-in duration-200">
                                                             <Check className="h-3 w-3 stroke-[4]" />
                                                         </div>
                                                     )}
 
-                                                    {/* Image Section */}
+
                                                     <div className="w-24 h-24 sm:w-full sm:h-auto sm:aspect-square shrink-0 bg-slate-100 relative overflow-hidden">
                                                         {photoUrl ? (
                                                             <img
@@ -257,7 +257,7 @@ export default function VoteIndex({ events }: Props) {
                                                         )}
                                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 sm:opacity-0 transition-opacity" />
 
-                                                        {/* Partylist Badge (Desktop Overlay) */}
+
                                                         {candidate.partylist && (
                                                             <div className="absolute bottom-2 left-2 hidden sm:block">
                                                                 <Badge variant="secondary" className="bg-white/90 text-slate-900 text-[10px] font-bold shadow-sm backdrop-blur-sm border-0">
@@ -267,9 +267,9 @@ export default function VoteIndex({ events }: Props) {
                                                         )}
                                                     </div>
 
-                                                    {/* Content Section */}
+
                                                     <div className="flex-1 p-4 flex flex-col justify-center sm:justify-start">
-                                                        {/* Partylist Badge (Mobile) */}
+
                                                         {candidate.partylist && (
                                                             <div className="mb-1 sm:hidden">
                                                                 <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
@@ -314,7 +314,7 @@ export default function VoteIndex({ events }: Props) {
                 )}
             </main>
 
-            {/* Mobile Sticky Action Bar */}
+
             <div className="fixed bottom-0 left-0 right-0 md:hidden z-[100] bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
                 <Button
                     size="lg"
@@ -335,7 +335,7 @@ export default function VoteIndex({ events }: Props) {
                 </Button>
             </div>
 
-            {/* Review Dialog */}
+
             <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
                 <DialogContent className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
                     <DialogHeader className="p-6 pb-2">

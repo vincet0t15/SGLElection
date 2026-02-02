@@ -120,7 +120,7 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
         setSelectedVoter(voter);
         setIsLoadingVotes(true);
         setIsDialogOpen(true);
-        setVotes([]); // Clear previous votes
+        setVotes([]);
         try {
             const response = await fetch(`/reports/${event.id}/voters/${voter.id}/votes`);
             const data = await response.json();
@@ -379,7 +379,7 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                                     </div>
                                                 );
                                             })}
-                                            {/* Show Resolve Tie Button if there is an active tie */}
+
                                             {(() => {
                                                 const lastWinnerVotes = position.candidates[position.max_votes - 1]?.votes_count || 0;
                                                 const firstLoserVotes = position.candidates[position.max_votes]?.votes_count || 0;
@@ -536,67 +536,6 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                 </Table>
 
                                 <div className="mt-4">
-                                    {/* <Pagination>
-                                        <PaginationContent>
-                                            {voters.links.map((link, index) => {
-                                                if (link.url === null) return null;
-                                                const isPrevious = link.label.includes('Previous');
-                                                const isNext = link.label.includes('Next');
-
-                                                if (isPrevious) {
-                                                    return (
-                                                        <PaginationItem key={index}>
-                                                            <Link
-                                                                href={link.url}
-                                                                preserveScroll
-                                                                preserveState
-                                                                className={cn(buttonVariants({ variant: "ghost", size: "default" }), "gap-1 pl-2.5")}
-                                                            >
-                                                                <ChevronLeft className="h-4 w-4" />
-                                                                <span>Previous</span>
-                                                            </Link>
-                                                        </PaginationItem>
-                                                    );
-                                                }
-
-                                                if (isNext) {
-                                                    return (
-                                                        <PaginationItem key={index}>
-                                                            <Link
-                                                                href={link.url}
-                                                                preserveScroll
-                                                                preserveState
-                                                                className={cn(buttonVariants({ variant: "ghost", size: "default" }), "gap-1 pr-2.5")}
-                                                            >
-                                                                <span>Next</span>
-                                                                <ChevronRight className="h-4 w-4" />
-                                                            </Link>
-                                                        </PaginationItem>
-                                                    );
-                                                }
-
-                                                if (link.label === '...') {
-                                                    return (
-                                                        <PaginationItem key={index}>
-                                                            <PaginationEllipsis />
-                                                        </PaginationItem>
-                                                    );
-                                                }
-
-                                                return (
-                                                    <PaginationItem key={index}>
-                                                        <Link
-                                                            href={link.url}
-                                                            preserveScroll
-                                                            preserveState
-                                                            className={cn(buttonVariants({ variant: link.active ? "outline" : "ghost", size: "icon" }))}
-                                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                                        />
-                                                    </PaginationItem>
-                                                );
-                                            })}
-                                        </PaginationContent>
-                                    </Pagination> */}
                                     <Pagination data={voters} />
                                 </div>
                             </CardContent>
@@ -604,8 +543,6 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                     </TabsContent>
                 </Tabs>
             </div>
-
-            {/* Resolve Tie Dialog */}
             <Dialog open={resolveTieDialogOpen} onOpenChange={setResolveTieDialogOpen}>
                 <DialogContent>
                     <DialogHeader>

@@ -124,7 +124,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
             position_id: 0,
         }));
 
-        // Fetch positions for the selected event
+
         router.get(`/candidate/${candidate.id}/edit`, { event_id: eventId }, {
             preserveState: true,
             preserveScroll: true,
@@ -200,7 +200,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                     <CardContent>
                         <form onSubmit={submit}>
                             <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
-                                {/* Left Column: Photo Upload */}
+
                                 <div className="flex flex-col gap-4">
                                     <div
                                         className="relative group aspect-[3/4] w-full overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors bg-muted/5 flex items-center justify-center cursor-pointer"
@@ -247,7 +247,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                                     </p>
                                 </div>
 
-                                {/* Right Column: Form Fields */}
+
                                 <div className="space-y-6">
                                     <div>
                                         <h3 className="text-lg font-medium">Personal Information</h3>

@@ -87,12 +87,12 @@ export default function ResultsIndex({ event, positions }: Props) {
         return null;
     });
 
-    // --- Smart Polling Logic ---
+
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     const refreshData = () => {
-        // Clear any pending scheduled refresh
+
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
             timeoutRef.current = null;
@@ -103,7 +103,7 @@ export default function ResultsIndex({ event, positions }: Props) {
             only: ['event', 'positions'],
             onFinish: () => {
                 setIsRefreshing(false);
-                // Schedule next refresh only if page is visible
+
                 if (!document.hidden) {
                     timeoutRef.current = setTimeout(refreshData, 10000);
                 }
@@ -112,18 +112,18 @@ export default function ResultsIndex({ event, positions }: Props) {
     };
 
     useEffect(() => {
-        // Start polling
+
         refreshData();
 
         const handleVisibilityChange = () => {
             if (document.hidden) {
-                // Pause polling
+
                 if (timeoutRef.current) {
                     clearTimeout(timeoutRef.current);
                     timeoutRef.current = null;
                 }
             } else {
-                // Resume polling
+
                 if (!isRefreshing && !timeoutRef.current) {
                     refreshData();
                 }
@@ -137,7 +137,7 @@ export default function ResultsIndex({ event, positions }: Props) {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
-    // ---------------------------
+
 
     useEffect(() => {
         if (event?.is_active && event?.dateTime_end) {
@@ -149,12 +149,12 @@ export default function ResultsIndex({ event, positions }: Props) {
         }
     }, [event]);
 
-    // Helper to get total votes for a position to calculate percentage
+
     const getTotalVotes = (candidates: Candidate[]) => {
         return candidates.reduce((sum, candidate) => sum + candidate.votes_count, 0);
     };
 
-    // Determine if results should be shown (Event not active OR Time has passed)
+
     const isTimeUp = timeLeft?.days === 0 && timeLeft?.hours === 0 && timeLeft?.minutes === 0 && timeLeft?.seconds === 0;
     const showResults = !event?.is_active || isTimeUp;
 
@@ -162,7 +162,7 @@ export default function ResultsIndex({ event, positions }: Props) {
         <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/50 text-foreground pb-20">
             <Head title="Election Results" />
 
-            {/* Hero Section with Countdown */}
+
             <div className="bg-white dark:bg-slate-900 border-b shadow-sm mb-8">
                 <div className="container mx-auto py-12 px-4 md:px-6 flex flex-col items-center justify-center text-center space-y-6">
                     <div className="space-y-2">
@@ -238,7 +238,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                         {positions.map((position) => {
                             const totalVotes = getTotalVotes(position.candidates);
 
-                            // Sort candidates by votes just to be safe, though controller likely does it
+
                             const sortedCandidates = [...position.candidates].sort((a, b) => b.votes_count - a.votes_count);
 
                             return (
@@ -283,7 +283,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                                                             const isWinner = showResults && index < position.max_votes && candidate.votes_count > 0;
                                                             const rank = index + 1;
 
-                                                            // Distinct styles for Top 3
+
                                                             let rowClass = "transition-all duration-300";
                                                             let rankBadgeClass = "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
 

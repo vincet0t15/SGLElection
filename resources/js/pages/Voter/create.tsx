@@ -52,7 +52,7 @@ export default function CreateVoter({ yearLevels, yearSections, events }: Props)
         event_id: '',
     });
 
-    // Filter sections based on selected year level
+
     const filteredSections = data.year_level_id
         ? yearSections.filter(section => section.year_level_id.toString() === data.year_level_id)
         : yearSections;

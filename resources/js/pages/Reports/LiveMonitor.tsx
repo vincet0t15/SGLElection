@@ -26,20 +26,20 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Smart polling with visibility check
+
     useEffect(() => {
-        // Initial load
+
         refreshData();
 
         const handleVisibilityChange = () => {
             if (document.hidden) {
-                // Pause polling when tab is hidden
+
                 if (timeoutRef.current) {
                     clearTimeout(timeoutRef.current);
                     timeoutRef.current = null;
                 }
             } else {
-                // Resume polling when tab becomes visible
+
                 if (!isRefreshing && !timeoutRef.current) {
                     refreshData();
                 }
@@ -55,7 +55,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
     }, []);
 
     const refreshData = () => {
-        // Clear any pending scheduled refresh to prevent collisions
+
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
             timeoutRef.current = null;
@@ -73,7 +73,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
             },
             onFinish: () => {
                 setIsRefreshing(false);
-                // Only schedule next refresh if page is still visible
+
                 if (!document.hidden) {
                     timeoutRef.current = setTimeout(refreshData, 10000);
                 }
@@ -99,7 +99,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
         <div className="min-h-screen bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500/30">
             <Head title={`LIVE: ${event.name}`} />
 
-            {/* Header / Toolbar */}
+
             <div className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
@@ -112,7 +112,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                 </div>
 
                 <div className="flex items-center gap-6">
-                    {/* Stats Ticker */}
+
                     <div className="hidden md:flex items-center gap-6 text-sm">
                         <div className="flex flex-col items-end">
                             <span className="text-slate-400 text-xs uppercase">Turnout</span>
@@ -173,7 +173,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                 </div>
             </div>
 
-            {/* Main Content Grid */}
+
             <div className="p-6 grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                 {positions.map((position) => (
                     <Card key={position.id} className="bg-slate-900 border-slate-800 shadow-xl overflow-hidden flex flex-col">
@@ -186,28 +186,28 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-0 flex-1 flex flex-col">
-                            {/* Candidates List */}
+
                             <div className="divide-y divide-slate-800/50 flex-1">
                                 {position.candidates.map((candidate, index) => {
                                     const votes = candidate.votes_count || 0;
 
-                                    // Let's find the leader's votes to scale the bars relative to the winner
+
                                     const leaderVotes = position.candidates[0]?.votes_count || 0;
                                     const percentage = leaderVotes > 0 ? (votes / leaderVotes) * 100 : 0;
 
                                     const lastWinnerVotes = position.candidates[position.max_votes - 1]?.votes_count || 0;
                                     const firstLoserVotes = position.candidates[position.max_votes]?.votes_count || 0;
 
-                                    // Check for a tie at the cutoff boundary
+
                                     const isTieForLastSpot = position.candidates.length > position.max_votes &&
                                         lastWinnerVotes > 0 &&
                                         lastWinnerVotes === firstLoserVotes;
 
-                                    // Determine status
+
                                     let isTied = isTieForLastSpot && votes === lastWinnerVotes;
                                     let isWinner = !isTied && index < position.max_votes && votes > 0;
 
-                                    // Check for manual tie breaker
+
                                     if (candidate.is_tie_breaker_winner) {
                                         isWinner = true;
                                         isTied = false;
@@ -219,7 +219,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                         }
                                     }
 
-                                    // Calculate rank (handle ties)
+
                                     const rank = position.candidates.findIndex(c => c.votes_count === votes) + 1;
 
                                     return (
@@ -227,7 +227,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                             "relative p-4 transition-colors",
                                             isWinner ? "bg-emerald-950/10" : (isTied ? "bg-orange-950/10" : "")
                                         )}>
-                                            {/* Progress Bar Background */}
+
                                             <div
                                                 className={cn(
                                                     "absolute left-0 top-0 bottom-0 bg-emerald-500/5 transition-all duration-1000 ease-out",
@@ -237,7 +237,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                             />
 
                                             <div className="relative flex items-center gap-4">
-                                                {/* Rank/Avatar */}
+
                                                 <div className="flex-shrink-0 w-10 text-center">
                                                     {isWinner ? (
                                                         <div className="w-8 h-8 rounded-full bg-emerald-500 text-slate-950 font-bold flex items-center justify-center mx-auto text-sm shadow-[0_0_15px_rgba(16,185,129,0.4)]">
@@ -252,7 +252,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                                     )}
                                                 </div>
 
-                                                {/* Name & Party */}
+
                                                 <div className="flex-1 min-w-0">
                                                     <h3 className={cn(
                                                         "font-bold truncate text-lg leading-none mb-1",
@@ -267,7 +267,7 @@ export default function LiveMonitor({ event, positions, stats }: Props) {
                                                     </p>
                                                 </div>
 
-                                                {/* Vote Count */}
+
                                                 <div className="text-right">
                                                     <div className={cn(
                                                         "text-2xl font-black font-mono tracking-tighter",

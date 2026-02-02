@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-import { ChangeEventHandler, FormEventHandler, SubmitEventHandler } from "react";
+import { ChangeEventHandler, SubmitEventHandler } from "react";
 import partylist from "@/routes/partylist";
 import InputError from "@/components/input-error";
 import { LoaderCircle } from "lucide-react";

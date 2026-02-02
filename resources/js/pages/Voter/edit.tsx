@@ -19,7 +19,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Voters',
-        href: '/voter', // Fallback if route helper isn't available for index
+        href: '/voter',
     },
 ];
 
@@ -69,7 +69,7 @@ export default function EditVoter({ voter, yearLevels, yearSections, events }: P
         is_active: voter.is_active,
     });
 
-    // Filter sections based on selected year level
+
     const filteredSections = data.year_level_id
         ? yearSections.filter(section => section.year_level_id.toString() === data.year_level_id)
         : yearSections;

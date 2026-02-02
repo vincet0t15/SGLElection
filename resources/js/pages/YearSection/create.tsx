@@ -14,13 +14,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { YearLevelProps, YearLevelType } from "@/types/yearlevel";
 import { ChangeEventHandler, SubmitEventHandler } from "react";
-import yearLevel from "@/routes/year-level";
 import InputError from "@/components/input-error";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { YearSectionType } from "@/types/section";
 import yearSection from "@/routes/year-section";
-import CustomSelect from "@/components/custom-select";
 interface Props {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -70,7 +68,7 @@ export function YearSectionCreate({ open, setOpen, yearLevel }: Props) {
                     <div className="grid gap-4 mb-4">
                         <div className="grid gap-3">
                             <Label htmlFor="name">Section</Label>
-                            <Input id="name" name="name" placeholder="e.g. 1st Year" onChange={handleChange} />
+                            <Input id="name" name="name" placeholder="e.g. 1st Year" onChange={handleChange} value={data.name} />
                             <InputError message={errors.name} />
                         </div>
 

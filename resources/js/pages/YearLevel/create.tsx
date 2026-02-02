@@ -61,7 +61,6 @@ export function YearLevelCreateDialog({ open, setOpen }: Props) {
                         <div className="grid gap-3">
                             <Label htmlFor="name">Year Level</Label>
                             <Input id="name" name="name" placeholder="e.g. 1st Year" onChange={handleChange} value={data.name} />
-
                             <InputError message={errors.name} />
                         </div>
 

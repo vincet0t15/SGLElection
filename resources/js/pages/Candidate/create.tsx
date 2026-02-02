@@ -116,7 +116,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
             position_id: 0,
         }));
 
-        // Fetch positions for the selected event
+
         router.get('/candidate/create', { event_id: eventId }, {
             preserveState: true,
             preserveScroll: true,
@@ -140,7 +140,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
 
         if (!file) return;
 
-        // OPTIONAL: validate size (5MB)
+
         if (file.size > 5 * 1024 * 1024) {
             toast.error("Image must be less than 5MB");
             return;
@@ -148,16 +148,16 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
 
         setData('photo', file);
 
-        // Revoke old preview to avoid memory leaks
+
         if (previewUrl) {
             URL.revokeObjectURL(previewUrl);
         }
 
-        // Create preview
+
         const objectUrl = URL.createObjectURL(file);
         setPreviewUrl(objectUrl);
 
-        // 🔑 IMPORTANT: reset input so same file can be reselected
+
         e.target.value = "";
     };
 
@@ -206,7 +206,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                     <CardContent>
                         <form onSubmit={submit}>
                             <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
-                                {/* Left Column: Photo Upload */}
+
                                 <div className="flex flex-col gap-4">
                                     <div
                                         className="relative group aspect-[3/4] w-full overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors bg-muted/5 flex items-center justify-center cursor-pointer"
@@ -253,7 +253,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                                     </p>
                                 </div>
 
-                                {/* Right Column: Form Fields */}
+
                                 <div className="space-y-6">
                                     <div>
                                         <h3 className="text-lg font-medium">Personal Information</h3>

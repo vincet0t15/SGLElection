@@ -142,7 +142,6 @@ export default function ReportsAudit({ event, logs }: Props) {
                             </TableBody>
                         </Table>
 
-                        {/* Pagination */}
                         <Pagination data={logs} />
                     </CardContent>
                 </Card>

@@ -133,17 +133,17 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
         }
     }
 
-    // Filter sections based on selected year level
+
     const filteredSections = yearLevelId !== 'all'
         ? yearSections.filter(section => section.year_level_id.toString() === yearLevelId)
         : yearSections;
 
-    // Filter partylists based on selected event (optional but good for UX)
+
     const filteredPartylists = eventId !== 'all'
         ? partylists.filter(partylist => partylist.event_id.toString() === eventId)
         : partylists;
 
-    // Group candidates by position (preserving order)
+
     const groupedCandidates: { position: PositionProps | undefined, candidates: CandidateProps[] }[] = [];
     candidates.data.forEach(candidate => {
         const lastGroup = groupedCandidates[groupedCandidates.length - 1];

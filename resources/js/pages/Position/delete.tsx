@@ -7,12 +7,8 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import event from '@/routes/event';
 import position from '@/routes/position';
-import yearLevel from '@/routes/year-level';
-import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
-import { YearLevelProps } from '@/types/yearlevel';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 interface Props {

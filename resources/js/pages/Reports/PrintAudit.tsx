@@ -63,7 +63,7 @@ export default function ReportsPrintAudit({ event, logs, signatories }: Props) {
         <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[300mm] mx-auto font-sans">
             <Head title={`Audit Log - ${event.name}`} />
 
-            {/* Print controls - hidden when printing */}
+
             <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4">
                 <button
                     onClick={() => window.print()}
@@ -86,7 +86,7 @@ export default function ReportsPrintAudit({ event, logs, signatories }: Props) {
                     <tbody>
                         <tr>
                             <td>
-                                {/* Header Section */}
+
                                 <div className="flex items-start gap-4 mb-8">
                                     <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
                                         {system_settings.logo ? (
@@ -113,7 +113,7 @@ export default function ReportsPrintAudit({ event, logs, signatories }: Props) {
                                     </div>
                                 </div>
 
-                                {/* Metadata Section */}
+
                                 <div className="mb-8 text-sm leading-relaxed font-medium text-gray-800">
                                     <div className="grid grid-cols-[100px_1fr] gap-1">
                                         <div>Period:</div>
@@ -123,7 +123,7 @@ export default function ReportsPrintAudit({ event, logs, signatories }: Props) {
                                     </div>
                                 </div>
 
-                                {/* Logs Section */}
+
                                 <div className="mb-8">
                                     <table className="w-full text-xs border-collapse border border-black">
                                         <thead>
@@ -166,7 +166,7 @@ export default function ReportsPrintAudit({ event, logs, signatories }: Props) {
                                     </table>
                                 </div>
 
-                                {/* Footer / Certification */}
+
                                 <div className="mt-16 break-inside-avoid print:mt-12">
                                     <p className="text-xs font-bold uppercase mb-8">Certified Correct:</p>
 
@@ -183,7 +183,7 @@ export default function ReportsPrintAudit({ event, logs, signatories }: Props) {
                                                 </div>
                                             ))
                                         ) : (
-                                            /* Fallback for when no signatories are defined yet */
+
                                             <>
                                                 <div className="text-center flex-1">
                                                     <div className="border-b border-black w-full mb-2"></div>

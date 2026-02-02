@@ -46,7 +46,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
         <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[300mm] mx-auto font-sans">
             <Head title={`Official Result - ${event.name}`} />
 
-            {/* Print controls - hidden when printing */}
+
             <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4 gap-2">
 
                 <button
@@ -79,7 +79,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                     <tbody>
                         <tr>
                             <td>
-                                {/* Header Section */}
+
                                 <div className="flex items-start gap-4 mb-8">
                                     <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
                                         {system_settings.logo ? (
@@ -118,7 +118,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                     </div>
                                 </div>
 
-                                {/* Metadata Section */}
+
                                 <div className="mb-8 text-sm leading-relaxed font-medium text-gray-800">
                                     <div className="grid grid-cols-[300px_1fr] gap-1">
                                         <div>Period:</div>
@@ -138,7 +138,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                     </div>
                                 </div>
 
-                                {/* Results Section */}
+
                                 <div className="space-y-8 print:space-y-1">
                                     {positions.map((position) => {
                                         const totalVotes = position.candidates.reduce((sum, c) => sum + (c.votes_count || 0), 0);
@@ -176,7 +176,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
 
                                                                 let isTied = isTieForLastSpot && votes === lastWinnerVotes;
 
-                                                                // Handle manual tie breaker display
+
                                                                 if (candidate.is_tie_breaker_winner) {
                                                                     isTied = false;
                                                                 } else if (isTieForLastSpot && votes === lastWinnerVotes) {
@@ -226,7 +226,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                     })}
                                 </div>
 
-                                {/* Footer / Certification */}
+
                                 <div className="mt-16 break-inside-avoid print:mt-12">
                                     <p className="text-xs font-bold uppercase mb-12">Certified Correct:</p>
 
@@ -243,7 +243,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                 </div>
                                             ))
                                         ) : (
-                                            /* Fallback for when no signatories are defined yet */
+
                                             <>
                                                 <div className="text-center flex-1">
                                                     <div className="border-b border-black w-4/5 mx-auto mb-1"></div>

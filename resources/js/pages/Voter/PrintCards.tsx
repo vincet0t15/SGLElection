@@ -17,11 +17,11 @@ export default function PrintCards({ voters, filters }: Props) {
         <div className="bg-white text-black min-h-screen p-8 print:p-0 font-sans max-w-[297mm] mx-auto print:max-w-none">
             <Head title="Print Credential Slips" />
 
-             <div className="print:hidden mb-8 flex flex-col sm:flex-row justify-between items-center border-b pb-4 gap-4">
+            <div className="print:hidden mb-8 flex flex-col sm:flex-row justify-between items-center border-b pb-4 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold mb-1">Voter Credential Slips</h1>
                     <p className="text-sm text-gray-500">
-                        Printing {voters.length} slips. 
+                        Printing {voters.length} slips.
                         <span className="block mt-1 text-emerald-600 font-medium">
                             Tip: Use "Landscape" orientation for best fit (3x5 grid).
                         </span>
@@ -39,15 +39,15 @@ export default function PrintCards({ voters, filters }: Props) {
             <div className="grid grid-cols-3 gap-0 border-t border-l border-gray-300 print:w-full">
                 {voters.map((voter) => (
                     <div key={voter.id} className="border-b border-r border-gray-300 p-3 break-inside-avoid relative page-break-inside-avoid h-[60mm] flex flex-col justify-between">
-                        
-                        {/* Cut guide (visual only, subtle) */}
+
+
                         <div className="absolute top-0 right-0 p-1 opacity-20 print:opacity-10">
                             <Scissors size={10} />
                         </div>
 
-                        {/* Header */}
+
                         <div className="flex items-start gap-2 mb-2">
-                             <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center pt-1">
+                            <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center pt-1">
                                 {system_settings.logo ? (
                                     <img src={system_settings.logo} alt="Logo" className="w-full h-full object-contain" />
                                 ) : (
@@ -63,13 +63,13 @@ export default function PrintCards({ voters, filters }: Props) {
                             </div>
                         </div>
 
-                        {/* Body */}
+
                         <div className="space-y-1.5 text-[11px] flex-1">
                             <div>
                                 <div className="text-[9px] text-gray-500 uppercase tracking-wider">Name</div>
                                 <div className="font-bold uppercase truncate leading-tight">{voter.name}</div>
                             </div>
-                            
+
                             <div className="grid grid-cols-2 gap-2">
                                 <div>
                                     <div className="text-[9px] text-gray-500 uppercase tracking-wider">Username</div>
@@ -81,11 +81,11 @@ export default function PrintCards({ voters, filters }: Props) {
                                 </div>
                             </div>
                         </div>
-                        
-                        {/* Footer */}
+
+
                         <div className="mt-2 pt-1 text-[9px] text-gray-400 flex justify-between items-center border-t border-gray-100">
-                             <span className="truncate max-w-[60%]">{voter.year_level?.name} - {voter.year_section?.name}</span>
-                             <span className="font-mono">{voter.lrn_number}</span>
+                            <span className="truncate max-w-[60%]">{voter.year_level?.name} - {voter.year_section?.name}</span>
+                            <span className="font-mono">{voter.lrn_number}</span>
                         </div>
                     </div>
                 ))}

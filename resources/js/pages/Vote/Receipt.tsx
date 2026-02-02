@@ -1,8 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { LogOut, Printer, CheckCircle2, QrCode, ShieldCheck } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
 
 interface Vote {
     id: number;
@@ -35,7 +33,7 @@ interface Props {
 }
 
 export default function Receipt({ votes, event, voter }: Props) {
-    // Group votes by position
+
     const votesByPosition = votes.reduce((acc, vote) => {
         const positionName = vote.candidate.position.name;
         if (!acc[positionName]) {
@@ -53,7 +51,7 @@ export default function Receipt({ votes, event, voter }: Props) {
         window.print();
     };
 
-    // Get current date formatted
+
     const date = new Date();
     const formattedDate = date.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -69,13 +67,13 @@ export default function Receipt({ votes, event, voter }: Props) {
         <div className="min-h-screen bg-slate-100 py-8 px-4 flex flex-col items-center justify-center print:bg-white print:p-0">
             <Head title="Vote Receipt" />
 
-            {/* Receipt Container */}
+
             <div className="w-full max-w-md bg-white shadow-2xl overflow-hidden print:shadow-none print:max-w-none print:w-full relative">
-                {/* Decorative Top Edge */}
+
                 <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 w-full print:hidden"></div>
 
                 <div className="p-8 print:p-0">
-                    {/* Header */}
+
                     <div className="text-center space-y-4 mb-8">
                         <div className="flex justify-center">
                             <img src="/smartvote.png" alt="Logo" className="h-16 w-auto mix-blend-multiply" />
@@ -94,7 +92,7 @@ export default function Receipt({ votes, event, voter }: Props) {
                         <div className="flex-grow border-t border-dashed border-slate-300"></div>
                     </div>
 
-                    {/* Voter Info */}
+
                     <div className="space-y-4 mb-8">
                         <div className="flex justify-between items-end">
                             <div>
@@ -120,7 +118,7 @@ export default function Receipt({ votes, event, voter }: Props) {
 
                     <div className="border-t-2 border-slate-900 mb-6"></div>
 
-                    {/* Votes List */}
+
                     <div className="space-y-6">
                         {Object.entries(votesByPosition).map(([position, positionVotes]) => (
                             <div key={position} className="space-y-2 break-inside-avoid">
@@ -129,7 +127,7 @@ export default function Receipt({ votes, event, voter }: Props) {
                                     {positionVotes.map((vote) => (
                                         <div key={vote.id} className="flex justify-between items-center group">
                                             <div className="flex items-center gap-3">
-                                                {/* Small Avatar */}
+
                                                 <div className="h-8 w-8 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 print:hidden">
                                                     {vote.candidate.candidate_photos && vote.candidate.candidate_photos.length > 0 ? (
                                                         <img
@@ -159,7 +157,7 @@ export default function Receipt({ votes, event, voter }: Props) {
                         ))}
                     </div>
 
-                    {/* Footer / Auth Code */}
+
                     <div className="mt-8 pt-8 text-center space-y-4">
                         <div className="flex justify-center text-slate-900">
                             <QrCode className="w-20 h-20 opacity-90" />
@@ -176,11 +174,11 @@ export default function Receipt({ votes, event, voter }: Props) {
                     </div>
                 </div>
 
-                {/* Decorative Bottom Pattern */}
+
                 <div className="h-2 bg-slate-900 w-full print:hidden"></div>
             </div>
 
-            {/* Actions (Hidden on Print) */}
+
             <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-md print:hidden">
                 <Button
                     variant="outline"

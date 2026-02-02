@@ -56,7 +56,7 @@ interface Props {
 }
 
 export default function Analytics({ event, sections, yearLevels, candidates, hourly_trends, abstentions }: Props) {
-    // Group candidates by position
+
     const candidatesByPosition = candidates.reduce((acc, candidate) => {
         if (!acc[candidate.position]) {
             acc[candidate.position] = [];
@@ -65,7 +65,7 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
         return acc;
     }, {} as Record<string, CandidatePerformance[]>);
 
-    // Get all unique section names for columns
+
     const sectionNames = Array.from(new Set(
         candidates.flatMap(c => Object.keys(c.section_votes))
     )).sort();
@@ -117,7 +117,7 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
                         </TabsTrigger>
                     </TabsList>
 
-                    {/* Turnout by Section */}
+
                     <TabsContent value="turnout" className="space-y-4">
                         <Card>
                             <CardHeader>
@@ -155,7 +155,7 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
                         </Card>
                     </TabsContent>
 
-                    {/* Turnout by Year Level */}
+
                     <TabsContent value="yearLevel" className="space-y-4">
                         <Card>
                             <CardHeader>
@@ -193,7 +193,7 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
                         </Card>
                     </TabsContent>
 
-                    {/* Candidate Performance */}
+
                     <TabsContent value="candidates" className="space-y-4">
                         <Card>
                             <CardHeader>
@@ -239,7 +239,7 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
                         </Card>
                     </TabsContent>
 
-                    {/* Hourly Trends */}
+
                     <TabsContent value="time" className="space-y-4">
                         <Card>
                             <CardHeader>
@@ -277,7 +277,7 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
                         </Card>
                     </TabsContent>
 
-                    {/* Abstentions */}
+
                     <TabsContent value="abstentions" className="space-y-4">
                         <Card>
                             <CardHeader>
