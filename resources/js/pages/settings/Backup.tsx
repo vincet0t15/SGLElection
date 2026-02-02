@@ -31,7 +31,9 @@ export default function Backup() {
     const handleReset = (action: string, confirmationMessage: string) => {
         if (confirm(confirmationMessage)) {
             router.post(reset().url, { action }, {
-                onSuccess: () => toast.success('System reset successfully'),
+                onSuccess: (reposense: { props: FlashProps }) => {
+                    toast.success(reposense.props?.message);
+                },
                 onError: () => toast.error('Failed to reset system'),
             });
         }
@@ -54,9 +56,8 @@ export default function Backup() {
         formData.append('backup_file', file);
 
         router.post(restore().url, formData, {
-            onSuccess: () => {
-                toast.success('Database restored successfully');
-                if (fileInputRef.current) fileInputRef.current.value = '';
+            onSuccess: (reposense: { props: FlashProps }) => {
+                toast.success(reposense.props?.message);
             },
             onError: () => {
                 toast.error('Failed to restore database');
