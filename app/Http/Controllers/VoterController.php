@@ -9,6 +9,8 @@ use App\Models\Event;
 use App\Models\Voter;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\QueryException;
 use Inertia\Inertia;
 
 class VoterController extends Controller
@@ -93,6 +95,24 @@ class VoterController extends Controller
                 $messages[] = 'Row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
             }
             return back()->withErrors(['file' => implode(' | ', $messages)]);
+        } catch (QueryException $e) {
+            // Handle specific SQL errors gracefully
+            if ($e->errorInfo[1] == 1062) { // Duplicate entry
+                preg_match("/Duplicate entry '(.*)' for key '(.*)'/", $e->getMessage(), $matches);
+                $value = $matches[1] ?? 'Unknown';
+                $key = $matches[2] ?? 'Unknown';
+
+                // Customize message based on key
+                if (str_contains($key, 'lrn')) {
+                    return back()->withErrors(['file' => "Duplicate LRN found: The LRN '{$value}' is already registered."]);
+                }
+                if (str_contains($key, 'username')) {
+                    return back()->withErrors(['file' => "Duplicate Username found: The username '{$value}' is already taken."]);
+                }
+
+                return back()->withErrors(['file' => "Duplicate entry found: The value '{$value}' is already used in the system."]);
+            }
+            return back()->withErrors(['file' => 'Database error: ' . $e->getMessage()]);
         } catch (\Exception $e) {
             return back()->withErrors(['file' => 'Error importing file: ' . $e->getMessage()]);
         }

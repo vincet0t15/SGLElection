@@ -25,6 +25,7 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithChunk
     protected $yearLevels;
     protected $yearSections;
     protected $generatedUsernames = [];
+    protected $seenLrns = [];
 
     public function __construct($eventId, $headingRow = 1)
     {
@@ -143,6 +144,19 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithChunk
             throw new \RuntimeException(
                 $this->forceUtf8("Row {$currentRowNumber}: " . implode(', ', $validator->errors()->all()))
             );
+        }
+
+        // Check for duplicate LRN in Database
+        if ($lrn && Voter::where('lrn_number', $lrn)->exists()) {
+            throw new \RuntimeException($this->forceUtf8("Row {$currentRowNumber}: LRN Number '{$lrn}' already exists in the system."));
+        }
+
+        // Check for duplicate LRN in current import session
+        if ($lrn && isset($this->seenLrns[$lrn])) {
+            throw new \RuntimeException($this->forceUtf8("Row {$currentRowNumber}: Duplicate LRN Number '{$lrn}' found in the same file (Row {$this->seenLrns[$lrn]})."));
+        }
+        if ($lrn) {
+            $this->seenLrns[$lrn] = $currentRowNumber;
         }
 
         if (!$name) {
