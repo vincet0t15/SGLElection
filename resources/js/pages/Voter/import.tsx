@@ -59,6 +59,8 @@ export default function ImportVoter({ events }: Props) {
             onSuccess: () => {
                 toast.success('Voters imported successfully');
                 reset();
+                const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                if (fileInput) fileInput.value = '';
             },
             onError: () => {
                 toast.error('Failed to import voters. Please check the file and try again.');

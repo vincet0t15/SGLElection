@@ -83,7 +83,7 @@ class VoterController extends Controller
         try {
             $headingRow = $request->input('header_row', 1);
             Excel::import(new VotersImport($request->event_id, $headingRow), $request->file('file'));
-            return redirect()->route('voter.index')->with('success', 'Voters imported successfully.');
+            return redirect()->back()->with('success', 'Voters imported successfully.');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $messages = [];
