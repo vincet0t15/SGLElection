@@ -36,20 +36,32 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
+    private function cleanString($string)
+    {
+        if (is_null($string)) {
+            return null;
+        }
+        // Remove UTF-8 BOM
+        $string = str_replace("\xEF\xBB\xBF", '', $string);
+
+        // Convert to UTF-8 and ignore invalid characters
+        return mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+    }
+
     public function model(array $row)
     {
 
-        $name = $row['name'] ?? $row['student_name'] ?? null;
-        $lrn = $row['learners_reference_number'] ?? $row['lrn'] ?? $row['lrn_number'] ?? null;
-        $gradeLevel = $row['grade_level'] ?? $row['level'] ?? $row['year_level'] ?? null;
-        $sectionName = $row['section'] ?? $row['class_section'] ?? null;
+        $name = $this->cleanString($row['name'] ?? $row['student_name'] ?? null);
+        $lrn = $this->cleanString($row['learners_reference_number'] ?? $row['lrn'] ?? $row['lrn_number'] ?? null);
+        $gradeLevel = $this->cleanString($row['grade_level'] ?? $row['level'] ?? $row['year_level'] ?? null);
+        $sectionName = $this->cleanString($row['section'] ?? $row['class_section'] ?? null);
 
-        if (!$name || !$lrn) {
+        if (!$name) {
             return null;
         }
 
         $name = trim($name);
-        $lrn = trim($lrn);
+        $lrn = $lrn ? trim($lrn) : null;
         $gradeLevel = trim($gradeLevel);
         $sectionName = trim($sectionName);
 
@@ -65,7 +77,8 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
 
         $lastName = str_replace(' ', '', $lastName);
 
-        $baseUsername = substr($lastName, 0, 2) . substr($lrn, -4);
+        $lrnSuffix = $lrn ? substr($lrn, -4) : rand(1000, 9999);
+        $baseUsername = substr($lastName, 0, 2) . $lrnSuffix;
         $username = $baseUsername;
         $counter = 1;
 
