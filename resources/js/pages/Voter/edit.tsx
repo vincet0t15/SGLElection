@@ -21,6 +21,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Voters',
         href: '/voter',
     },
+    {
+        title: 'Edit',
+        href: '#',
+    },
 ];
 
 interface YearLevel {

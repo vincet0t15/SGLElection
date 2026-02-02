@@ -17,6 +17,14 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Dashboard',
         href: dashboard().url,
     },
+    {
+        title: 'Voters',
+        href: '/voter',
+    },
+    {
+        title: 'Create',
+        href: '/voter/create',
+    },
 ];
 
 interface YearLevel {

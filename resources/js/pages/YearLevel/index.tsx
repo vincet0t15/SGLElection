@@ -25,6 +25,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Dashboard',
         href: dashboard().url,
     },
+    {
+        title: 'Year Levels',
+        href: yearLevel.index().url,
+    },
 ];
 
 interface Props {

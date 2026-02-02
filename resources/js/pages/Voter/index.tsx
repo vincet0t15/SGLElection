@@ -29,6 +29,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Dashboard',
         href: dashboard().url,
     },
+    {
+        title: 'Voters',
+        href: '/voter',
+    },
 ];
 
 import type { VoterProps } from '@/types/voter';

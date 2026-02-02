@@ -25,6 +25,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Dashboard',
         href: dashboard().url,
     },
+    {
+        title: 'Positions',
+        href: position.index().url,
+    },
 ];
 
 

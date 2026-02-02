@@ -9,6 +9,7 @@ import { EventProps } from '@/types/event';
 import Heading from '@/components/heading';
 import Pagination from '@/components/paginationData';
 import { PaginatedDataResponse } from '@/types/pagination';
+import { dashboard } from '@/routes';
 
 interface VoteActivityLog {
     id: number;
@@ -47,6 +48,7 @@ interface Props {
 export default function ReportsAudit({ event, logs }: Props) {
     return (
         <AppLayout breadcrumbs={[
+            { title: 'Dashboard', href: dashboard().url },
             { title: 'Reports', href: '/reports' },
             { title: event.name, href: `/reports/${event.id}` },
             { title: 'Audit Log', href: '' },

@@ -17,6 +17,7 @@ import { dashboard } from "@/routes";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Heading from "@/components/heading";
+import candidate from "@/routes/candidate";
 
 interface Position {
     id: number;
@@ -47,6 +48,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
         href: dashboard().url,
+    },
+    {
+        title: 'Candidates',
+        href: candidate.index().url,
+    },
+    {
+        title: 'Create',
+        href: candidate.create().url,
     },
 ];
 

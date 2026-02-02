@@ -24,6 +24,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Dashboard',
         href: dashboard().url,
     },
+    {
+        title: 'Partylists',
+        href: partylist.index().url,
+    },
 ];
 
 interface Props {

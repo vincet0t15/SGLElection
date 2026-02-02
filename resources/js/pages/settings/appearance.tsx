@@ -10,8 +10,13 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { FormEventHandler, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { dashboard } from '@/routes';
 
 const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Dashboard',
+        href: dashboard().url,
+    },
     {
         title: 'Appearance settings',
         href: editAppearance().url,
