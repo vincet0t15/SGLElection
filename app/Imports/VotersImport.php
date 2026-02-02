@@ -65,7 +65,15 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
 
         $lastName = str_replace(' ', '', $lastName);
 
-        $username = substr($lastName, 0, 2) . substr($lrn, -4);
+        $baseUsername = substr($lastName, 0, 2) . substr($lrn, -4);
+        $username = $baseUsername;
+        $counter = 1;
+
+        while (Voter::where('username', $username)->exists()) {
+            $username = $baseUsername . $counter;
+            $counter++;
+        }
+
         $password = $username;
 
 
@@ -127,7 +135,7 @@ class VotersImport implements ToModel, WithHeadingRow, WithValidation
     public function rules(): array
     {
         return [
-            'lrn_number' => 'required|unique:voters,lrn_number',
+            'lrn_number' => 'nullable',
             'name' => 'required|string',
             'grade_level' => 'required',
             'section' => 'required',
