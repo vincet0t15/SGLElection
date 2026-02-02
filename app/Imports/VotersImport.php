@@ -24,13 +24,13 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithChunk
     protected $headingRow;
     protected $yearLevels;
     protected $yearSections;
+    protected $generatedUsernames = [];
 
     public function __construct($eventId, $headingRow = 1)
     {
-        // Disable automatic heading formatting to avoid UTF-8 errors on headers
-        // HeadingRowFormatter::default('none'); // Removed – class not available in current package version
+
         HeadingRowFormatter::default('none');
-        // Increase memory limit for this import if possible
+
         ini_set('memory_limit', '512M');
         set_time_limit(300); // 5 minutes
 
@@ -66,18 +66,17 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithChunk
 
         $string = (string) $string;
 
-        // 1. Remove UTF-8 BOM
+
         $string = str_replace("\xEF\xBB\xBF", '', $string);
 
-        // 2. Convert Excel encodings -> UTF-8
-        // Try UTF-8 first. If invalid, fall back to Windows-1252 (common in Excel)
+
         $string = mb_convert_encoding(
             $string,
             'UTF-8',
             'UTF-8, Windows-1252, ISO-8859-1'
         );
 
-        // 3. Remove control chars safely (keeps valid UTF-8 text)
+
         $string = preg_replace('/[^\P{C}]+/u', '', $string);
 
         return trim($string);
@@ -91,11 +90,11 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithChunk
         $clean = [];
 
         foreach ($row as $key => $value) {
-            // Clean Key
+
             $key = $this->forceUtf8($key);
             $key = Str::snake(trim($key));
 
-            // Clean Value (CRITICAL: Clean the input value here too!)
+
             $value = $this->forceUtf8($value);
 
             $clean[$key] = $value;
@@ -166,21 +165,25 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithChunk
 
 
         $lastName = str_replace(' ', '', $lastName);
-        // Ensure lastName is ASCII for username generation to prevent invalid characters
+
         $cleanLastName = Str::ascii($lastName);
-        // Remove any remaining non-alphanumeric characters
+
         $cleanLastName = preg_replace('/[^a-zA-Z0-9]/', '', $cleanLastName);
 
         $lrnSuffix = $lrn ? substr($lrn, -4) : rand(1000, 9999);
-        // Use mb_substr just in case, though Str::ascii should handle it
+
         $baseUsername = substr($cleanLastName, 0, 2) . $lrnSuffix;
         $username = $baseUsername;
         $counter = 1;
 
-        while (Voter::where('username', $username)->exists()) {
+
+        while (Voter::where('username', $username)->exists() || isset($this->generatedUsernames[$username])) {
             $username = $baseUsername . $counter;
             $counter++;
         }
+
+
+        $this->generatedUsernames[$username] = true;
 
         $password = $username;
 
