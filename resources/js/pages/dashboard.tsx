@@ -138,7 +138,7 @@ export default function Dashboard({ stats, winners = [], turnoutByYearLevel = []
         { name: 'Not Voted', value: totalNotVoted },
     ];
 
-    const COLORS = ['#2563eb', '#e2e8f0']; // blue-600, slate-200
+    const COLORS = ['#059669', '#e2e8f0']; // emerald-600, slate-200
 
     const formatBytes = (bytes: number, decimals = 2) => {
         if (!+bytes) return '0 Bytes';
@@ -268,7 +268,7 @@ export default function Dashboard({ stats, winners = [], turnoutByYearLevel = []
                                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                     />
                                     <Legend />
-                                    <Bar dataKey="voted" name="Voted" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                                    <Bar dataKey="voted" name="Voted" fill="#059669" radius={[4, 4, 0, 0]} />
                                     <Bar dataKey="not_voted" name="Not Voted" fill="#e2e8f0" radius={[4, 4, 0, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -309,7 +309,7 @@ export default function Dashboard({ stats, winners = [], turnoutByYearLevel = []
                             </div>
                             <div className="flex justify-center gap-6 mt-4">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+                                    <div className="w-3 h-3 rounded-full bg-emerald-600"></div>
                                     <span className="text-sm text-muted-foreground">Voted ({totalVoted})</span>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -423,7 +423,7 @@ export default function Dashboard({ stats, winners = [], turnoutByYearLevel = []
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <Badge variant="secondary" className="text-xs font-normal">
+                                                <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 text-xs font-normal border-emerald-200 shadow-none">
                                                     Voted
                                                 </Badge>
                                                 <p className="text-[10px] text-muted-foreground mt-0.5">
