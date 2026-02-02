@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\YearLevel;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class YearLevelController extends Controller
@@ -17,7 +16,9 @@ class YearLevelController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             })
-            ->with('section')
+            ->with('section', function ($query) {
+                $query->orderBy('name', 'asc');
+            })
             ->orderBy('id', 'asc')
             ->paginate(20)->withQueryString();
 
