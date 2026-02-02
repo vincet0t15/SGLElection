@@ -37,9 +37,6 @@ interface Props {
 }
 
 export default function Receipt({ votes, event, voter, systemSettings }: Props) {
-
-    console.log(systemSettings)
-
     const votesByPosition = votes.reduce((acc, vote) => {
         const positionName = vote.candidate.position.name;
         if (!acc[positionName]) {
