@@ -102,10 +102,6 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
         $gradeLevel = trim($gradeLevel);
         $sectionName = trim($sectionName);
 
-        // Check if LRN already exists to avoid duplicate entry error
-        if ($lrn && Voter::where('lrn_number', $lrn)->exists()) {
-            return null; // Skip if voter with this LRN already exists
-        }
 
         if (str_contains($name, ',')) {
             $lastName = Str::lower(trim(explode(',', $name)[0]));
