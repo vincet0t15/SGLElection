@@ -45,23 +45,21 @@ class VotersImport implements ToModel, WithHeadingRow, SkipsEmptyRows
         if (is_null($string)) {
             return null;
         }
-        // Remove UTF-8 BOM
+
+        // 1. Remove UTF-8 BOM
         $string = str_replace("\xEF\xBB\xBF", '', $string);
 
-        // If string is empty after removing BOM, return it
-        if ($string === '') {
-            return '';
-        }
-
-        // Try to convert to UTF-8 if not already
+        // 2. Force convert to UTF-8 to handle "ñ" or Windows-1252 characters
+        // We try multiple source encodings common in Excel files
         if (!mb_check_encoding($string, 'UTF-8')) {
-            $converted = mb_convert_encoding($string, 'UTF-8', 'auto');
-            if ($converted !== false) {
-                return $converted;
-            }
+            $string = mb_convert_encoding($string, 'UTF-8', 'Windows-1252, ISO-8859-1');
         }
 
-        return $string;
+        // 3. Remove invisible characters/control characters but keep standard text
+        // This removes binary garbage but keeps normal text
+        $string = preg_replace('/[\x00-\x1F\x7F]/u', '', $string);
+
+        return trim($string);
     }
 
     public function model(array $row)
