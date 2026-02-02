@@ -14,10 +14,22 @@ import { Printer, Calendar, MapPin, Search, Eye } from 'lucide-react';
 import { EventProps } from '@/types/event';
 import { useState } from 'react';
 import Heading from '@/components/heading';
-
+import { dashboard } from '@/routes';
+import type { BreadcrumbItem } from '@/types';
 interface Props {
     events: EventProps[];
 }
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Dashboard',
+        href: dashboard().url,
+    },
+    {
+        title: 'Reports',
+        href: '/reports',
+    },
+];
 
 export default function ReportsIndex({ events }: Props) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +41,7 @@ export default function ReportsIndex({ events }: Props) {
     );
 
     return (
-        <AppLayout breadcrumbs={[{ title: 'Reports', href: '/reports' }]}>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reports" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Heading
