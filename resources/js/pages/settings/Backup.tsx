@@ -8,7 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Download, Upload, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { download, restore, reset } from '@/routes/settings/backup';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import Alert from './alert';
+import ImportDatabase from './alert';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,6 +24,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Backup() {
+    const [openAlert, setOpenAlert] = useState(false);
+    const [acceptImport, setAcceptImport] = useState(false);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleDownload = () => {
@@ -31,9 +36,6 @@ export default function Backup() {
     const handleReset = (action: string, confirmationMessage: string) => {
         if (confirm(confirmationMessage)) {
             router.post(reset().url, { action }, {
-                onSuccess: (reposense: { props: FlashProps }) => {
-                    toast.success(reposense.props?.message);
-                },
                 onError: () => toast.error('Failed to reset system'),
             });
         }
@@ -47,8 +49,9 @@ export default function Backup() {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (!confirm('WARNING: This will overwrite the current database with the selected backup file. All current data will be lost. Are you sure you want to proceed?')) {
-            if (fileInputRef.current) fileInputRef.current.value = '';
+        setOpenAlert(true);
+
+        if (!acceptImport) {
             return;
         }
 
@@ -56,15 +59,21 @@ export default function Backup() {
         formData.append('backup_file', file);
 
         router.post(restore().url, formData, {
-            onSuccess: (reposense: { props: FlashProps }) => {
-                toast.success(reposense.props?.message);
-            },
             onError: () => {
                 toast.error('Failed to restore database');
                 if (fileInputRef.current) fileInputRef.current.value = '';
             },
             forceFormData: true,
         });
+    };
+
+    const handleAcceptImport = () => {
+        setAcceptImport(true);
+    };
+
+    const cancelImport = () => {
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        setAcceptImport(false);
     };
 
     return (
@@ -176,6 +185,7 @@ export default function Backup() {
                     </div>
                 </div>
             </SettingsLayout>
+            {openAlert && <ImportDatabase open={openAlert} setOpen={setOpenAlert} acceptImport={handleAcceptImport} cancelImport={cancelImport} />}
         </AppLayout>
     );
 }
