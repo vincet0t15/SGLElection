@@ -15,8 +15,8 @@ export default function Pagination({ data }: { data: PaginatedDataResponse<any> 
                         preserveState
                         preserveScroll
                         className={`rounded border px-3 py-1 text-sm transition-colors ${link.active
-                                ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-black'
-                                : 'border-gray-300 bg-white text-gray-800 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'
+                            ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-black'
+                            : 'border-gray-300 bg-white text-gray-800 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'
                             } ${!link.url ? 'pointer-events-none opacity-50' : ''} `}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />

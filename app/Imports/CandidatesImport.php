@@ -38,40 +38,37 @@ class CandidatesImport implements ToModel, WithHeadingRow, WithValidation
 
     public function model(array $row)
     {
-
+        // 1. Event (Check only)
         $eventId = $this->findId(Event::class, $row['event']);
-        if (!$eventId) return null;
+        if (!$eventId) return null; // Skip if event not found
 
-
+        // 2. Position (Check only)
         $positionId = $this->findId(Position::class, $row['position'], ['event_id' => $eventId]);
-        if (!$positionId) return null;
+        if (!$positionId) return null; // Skip if position not found
 
-
+        // 3. Year Level (Check only)
         $yearLevelId = $this->findId(YearLevel::class, $row['year_level']);
-        if (!$yearLevelId) return null;
+        if (!$yearLevelId) return null; // Skip if year level not found
 
-
+        // 4. Section (Check only)
         $sectionId = $this->findId(YearSection::class, $row['section'], ['year_level_id' => $yearLevelId]);
-        if (!$sectionId) return null;
+        if (!$sectionId) return null; // Skip if section not found
 
-
+        // 5. Partylist (Check only)
         $partylistId = null;
         if (!empty($row['partylist'])) {
+            // Strict check: Only assign if it exists.
             $partylistId = $this->findId(Partylist::class, $row['partylist'], ['event_id' => $eventId]);
 
-            if (!$partylistId) {
-                $partylist = Partylist::create([
-                    'name' => trim($row['partylist']),
-                    'event_id' => $eventId,
-                    'description' => 'Imported via Excel',
-                ]);
-                $partylistId = $partylist->id;
-            }
+            // Note: If partylist is not found, $partylistId remains null (Independent).
+            // We do NOT create it, as per user instruction.
         }
 
-
+        // 6. Create Candidate
+        // Using new Candidate(...) as per original request to "save all rows".
+        // This will create a new record.
         return new Candidate([
-            'name'            => $row['name'],
+            'name'            => trim($row['name']),
             'event_id'        => $eventId,
             'position_id'     => $positionId,
             'year_level_id'   => $yearLevelId,
