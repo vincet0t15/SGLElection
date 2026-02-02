@@ -304,6 +304,49 @@ class VoterController extends Controller
         return back()->with('success', "Successfully {$statusText} {$count} voters.");
     }
 
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'nullable|array',
+            'ids.*' => 'exists:voters,id',
+        ]);
+
+        if ($request->has('ids') && count($request->ids) > 0) {
+            $count = Voter::whereIn('id', $request->ids)->delete();
+        } else {
+            $search = $request->input('search');
+            $eventId = $request->input('event_id');
+            $yearLevelId = $request->input('year_level_id');
+            $yearSectionId = $request->input('year_section_id');
+
+            $query = Voter::query();
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('lrn_number', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%");
+                });
+            }
+
+            if ($eventId && $eventId !== 'all') {
+                $query->where('event_id', $eventId);
+            }
+
+            if ($yearLevelId && $yearLevelId !== 'all') {
+                $query->where('year_level_id', $yearLevelId);
+            }
+
+            if ($yearSectionId && $yearSectionId !== 'all') {
+                $query->where('year_section_id', $yearSectionId);
+            }
+
+            $count = $query->delete();
+        }
+
+        return back()->with('success', "Successfully deleted {$count} voters.");
+    }
+
     public function toggleStatus(Voter $voter)
     {
 

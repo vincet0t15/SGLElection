@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Delete, PlusIcon, Upload, Download, Printer, ShieldBan, CreditCard } from 'lucide-react';
+import { Delete, PlusIcon, Upload, Download, Printer, ShieldBan, CreditCard, Trash2 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -66,6 +66,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openBulkDeleteDialog, setOpenBulkDeleteDialog] = useState(false);
 
     const handleClickDelete = (id: number) => {
         setDeleteId(id);
@@ -213,6 +214,27 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         }
     };
 
+    const handleBulkDelete = () => {
+        setOpenBulkDeleteDialog(true);
+    };
+
+    const confirmBulkDelete = () => {
+        router.post(voter.bulkDestroy().url, {
+            ids: selectedIds.length > 0 ? selectedIds : undefined,
+            search: search,
+            event_id: eventId,
+            year_level_id: yearLevelId,
+            year_section_id: yearSectionId,
+        }, {
+            preserveScroll: true,
+            onSuccess: (response: { props: FlashProps }) => {
+                setSelectedIds([]);
+                toast.success(response.props.flash?.success);
+                setOpenBulkDeleteDialog(false);
+            }
+        });
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Voters" />
@@ -280,6 +302,17 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             <ShieldBan className="h-4 w-4 rotate-180" />
                             <span className="rounded-sm lg:inline">
                                 {selectedIds.length > 0 ? 'Activate Selected' : 'Activate All'}
+                            </span>
+                        </Button>
+
+                        <Button
+                            variant="destructive"
+                            className="cursor-pointer"
+                            onClick={handleBulkDelete}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                            <span className="rounded-sm lg:inline">
+                                {selectedIds.length > 0 ? 'Delete Selected' : 'Delete All'}
                             </span>
                         </Button>
 
@@ -435,6 +468,25 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleConfirmDelete} className="bg-red-600 hover:bg-red-700">
                             Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={openBulkDeleteDialog} onOpenChange={setOpenBulkDeleteDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You are about to delete <strong>{selectedIds.length > 0 ? `${selectedIds.length} selected` : 'ALL matching'}</strong> voters.
+                            <br /><br />
+                            This action cannot be undone. This will permanently remove their data from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmBulkDelete} className="bg-red-600 hover:bg-red-700">
+                            Delete {selectedIds.length > 0 ? 'Selected' : 'All'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
