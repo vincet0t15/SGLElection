@@ -46,6 +46,7 @@ class VoterController extends Controller
                 $query->where('year_section_id', $yearSectionId);
             })
             ->with(['yearLevel', 'yearSection', 'event'])
+            ->orderBy('name', 'asc')
             ->paginate(25)
             ->withQueryString();
 

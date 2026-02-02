@@ -268,6 +268,16 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                             <Progress value={turnoutPercentage} className="h-2 mt-2" />
                         </CardContent>
                     </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Did Not Vote</CardTitle>
+                            <User className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.total_assigned_voters - stats.voted_count}</div>
+                            <p className="text-xs text-muted-foreground">Pending voters</p>
+                        </CardContent>
+                    </Card>
                 </div>
 
                 <Tabs defaultValue="results" className="w-full">
