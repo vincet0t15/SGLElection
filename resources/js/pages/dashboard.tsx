@@ -30,6 +30,9 @@ import {
     Cell,
 } from 'recharts';
 import results from '@/routes/results';
+import event from '@/routes/event';
+import voter from '@/routes/voter';
+import candidate from '@/routes/candidate';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -447,19 +450,19 @@ export default function Dashboard({ stats, winners = [], turnoutByYearLevel = []
                                 <CardDescription>Common tasks and shortcuts</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-2">
-                                <Link href="/events/create" className="block">
+                                <Link href={event.index().url} className="block">
                                     <Button variant="outline" className="w-full justify-start">
                                         <Calendar className="mr-2 h-4 w-4" />
                                         Create New Event
                                     </Button>
                                 </Link>
-                                <Link href="/voters/import" className="block">
+                                <Link href={voter.import().url} className="block">
                                     <Button variant="outline" className="w-full justify-start">
                                         <Users className="mr-2 h-4 w-4" />
                                         Import Voters
                                     </Button>
                                 </Link>
-                                <Link href="/candidates" className="block">
+                                <Link href={candidate.index().url} className="block">
                                     <Button variant="outline" className="w-full justify-start">
                                         <UserCheck className="mr-2 h-4 w-4" />
                                         Manage Candidates
