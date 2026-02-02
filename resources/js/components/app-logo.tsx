@@ -6,7 +6,7 @@ export default function AppLogo() {
     const { system_settings } = usePage<SharedData>().props;
 
     return (
-        <>
+        <div className="flex items-center gap-2">
             <div className="flex aspect-square size-10 items-center justify-center rounded-lg text-sidebar-primary-foreground overflow-hidden">
                 {system_settings.logo ? (
                     <img src={system_settings.logo} alt="System Logo" className="size-full object-contain" />
@@ -28,6 +28,6 @@ export default function AppLogo() {
                 </span>
             </div>
 
-        </>
+        </div>
     );
 }
