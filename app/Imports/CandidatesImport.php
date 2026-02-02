@@ -38,35 +38,40 @@ class CandidatesImport implements ToModel, WithHeadingRow, WithValidation
 
     public function model(array $row)
     {
-        // 1. Event (Check only)
+
         $eventId = $this->findId(Event::class, $row['event']);
-        if (!$eventId) return null; // Skip if event not found
+        if (!$eventId) return null;
 
-        // 2. Position (Check only)
+
         $positionId = $this->findId(Position::class, $row['position'], ['event_id' => $eventId]);
-        if (!$positionId) return null; // Skip if position not found
+        if (!$positionId) return null;
 
-        // 3. Year Level (Check only)
+
         $yearLevelId = $this->findId(YearLevel::class, $row['year_level']);
-        if (!$yearLevelId) return null; // Skip if year level not found
+        if (!$yearLevelId) return null;
 
-        // 4. Section (Check only)
+
         $sectionId = $this->findId(YearSection::class, $row['section'], ['year_level_id' => $yearLevelId]);
-        if (!$sectionId) return null; // Skip if section not found
+        if (!$sectionId) return null;
 
-        // 5. Partylist (Check only)
+
         $partylistId = null;
         if (!empty($row['partylist'])) {
-            // Strict check: Only assign if it exists.
-            $partylistId = $this->findId(Partylist::class, $row['partylist'], ['event_id' => $eventId]);
 
-            // Note: If partylist is not found, $partylistId remains null (Independent).
-            // We do NOT create it, as per user instruction.
+            $partylistId = $this->findId(Partylist::class, $row['partylist'], ['event_id' => $eventId]);
         }
 
-        // 6. Create Candidate
-        // Using new Candidate(...) as per original request to "save all rows".
-        // This will create a new record.
+
+        $exists = Candidate::where('name', trim($row['name']))
+            ->where('event_id', $eventId)
+            ->where('position_id', $positionId)
+            ->exists();
+
+        if ($exists) {
+            return null;
+        }
+
+
         return new Candidate([
             'name'            => trim($row['name']),
             'event_id'        => $eventId,
