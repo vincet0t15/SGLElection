@@ -21,8 +21,10 @@ class VoterController extends Controller
         $yearSectionId = request()->input('year_section_id');
 
         $events = Event::all();
-        $yearLevels = \App\Models\YearLevel::all();
-        $yearSections = \App\Models\YearSection::all();
+        $yearLevels = \App\Models\YearLevel::orderBy('id', 'asc')
+            ->get();
+        $yearSections = \App\Models\YearSection::orderBy('name', 'asc')
+            ->get();
 
         $voters = Voter::query()
             ->when($search, function ($query, $search) {
