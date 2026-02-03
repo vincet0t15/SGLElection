@@ -43,7 +43,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
     };
 
     return (
-        <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[300mm] mx-auto font-sans">
+        <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[216mm] mx-auto font-sans text-[11px] leading-[1.3]">
             <Head title={`Official Result - ${event.name}`} />
 
 
@@ -69,7 +69,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                     <tbody>
                         <tr>
                             <td>
-                                <div className="mb-6 flex justify-center">
+                                <div className="mb-6 flex justify-center border-b-2 border-black pb-2">
                                     <table className="border-collapse border-none">
                                         <tbody>
                                             <tr>
@@ -95,41 +95,37 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                     )}
                                                 </td>
                                                 <td className="align-middle text-center border-none !p-0">
-                                                    <div className="font-serif text-[14px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>REPUBLIC OF THE PHILIPPINES</div>
-                                                    <div className="font-serif text-[14px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>DEPARTMENT OF EDUCATION</div>
-                                                    <div className="font-serif text-[13px]">MIMAROPA Region</div>
-                                                    <div className="font-serif text-[13px]">Schools Division of Palawan</div>
-                                                    <div className="font-serif text-[16px] font-bold text-[#006400] uppercase my-1">
-                                                        {system_settings?.name || 'SAN VICENTE NATIONAL HIGH SCHOOL'}
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>REPUBLIC OF THE PHILIPPINES</div>
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>DEPARTMENT OF EDUCATION</div>
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>MIMAROPA Region</div>
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>Schools Division of Palawan</div>
+                                                    <div className="font-serif text-[16px] font-bold text-[#006400] uppercase my-1" style={{ fontFamily: '"Times New Roman", serif' }}>
+                                                        SAN VICENTE NATIONAL HIGH SCHOOL
                                                     </div>
-                                                    <div className="font-serif text-[12px] italic">Poblacion, San Vicente, Palawan</div>
+                                                    <div className="font-serif text-[12px] italic" style={{ fontFamily: '"Times New Roman", serif' }}>Poblacion, San Vicente, Palawan</div>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
 
-
-
-
-                                <div className="mb-8 text-sm leading-relaxed font-medium text-gray-800">
-                                    <div className="grid grid-cols-[300px_1fr] gap-1">
-                                        <div>Period:</div>
-                                        <div>{formatDate(event.dateTime_start)} - {formatDate(event.dateTime_end)}</div>
-
-                                        <div>Total Number of Sections:</div>
-                                        <div>{stats.total_sections.toLocaleString()}</div>
-
-                                        <div>Total Number of Registered Voters:</div>
-                                        <div>{stats.registered_voters.toLocaleString()}</div>
-
-                                        <div>Total Number of Voters that Actually Voted:</div>
-                                        <div>{stats.actual_voters.toLocaleString()}</div>
-
-                                        <div>Voters' Turnout (%):</div>
-                                        <div>{stats.turnout}%</div>
-                                    </div>
+                                {/* Title */}
+                                <div className="text-center mb-5">
+                                    <h2 className="m-0 text-[16px] font-bold uppercase" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>OFFICIAL RESULT</h2>
+                                    <p className="m-[5px_0] text-[12px]">{event.name}</p>
+                                    <p className="m-0 text-[12px]">Date of Election: {formatDate(event.dateTime_start)}</p>
                                 </div>
+
+                                {/* Meta Info */}
+                                <table className="w-full mb-5 border-collapse">
+                                    <tbody>
+                                        <tr>
+                                            <td className="p-1 font-bold">Total Registered Voters: {stats.registered_voters.toLocaleString()}</td>
+                                            <td className="p-1 font-bold">Total Votes Cast: {stats.actual_voters.toLocaleString()}</td>
+                                            <td className="p-1 font-bold">Voter Turnout: {stats.turnout}%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
 
                                 <div className="space-y-8 print:space-y-1">
@@ -137,13 +133,16 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                         const totalVotes = position.candidates.reduce((sum, c) => sum + (c.votes_count || 0), 0);
 
                                         return (
-                                            <div key={position.id} className="break-inside-avoid print:mb-4">
-                                                <h3 className="font-bold uppercase mb-2  text-sm bg-gray-100 p-1 border border-black border-b-0 mb-[-2px]">
+                                            <div key={position.id} className="mb-4">
+                                                <div
+                                                    className="font-bold uppercase bg-gray-100 p-1 border border-black"
+                                                    style={{ pageBreakAfter: 'avoid' }}
+                                                >
                                                     {position.name} (Vote for {position.max_votes})
-                                                </h3>
+                                                </div>
 
                                                 <div className="">
-                                                    <table className="w-full text-sm border-collapse border border-black table-fixed">
+                                                    <table className="w-full border-collapse border border-black table-fixed -mt-[1px]">
                                                         <thead>
                                                             <tr className="bg-gray-50 border-b border-black">
                                                                 <th className="border border-black py-1 px-4 text-left">Candidate</th>
@@ -276,23 +275,31 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
             </div >
 
             <style>{`
-                @media print {
-                    @page { margin: 0; size: auto; }
-                    body { margin: 0 10mm; -webkit-print-color-adjust: exact; }
-                    /* Hide default browser headers/footers */
-                    header, footer { display: none !important; }
-                    
-                       table {
-                        border-collapse: collapse;
-                    }
+                    @media print {
+  @page {
+    margin: 10mm;
+  }
 
-                    td {
-                        padding: 4px 6px !important;
-                        font-size: 12px;
-                        page-break-inside: avoid;
-                    }
-                }
-            `}</style>
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  table {
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+}
+
+                `}</style>
         </div >
     );
 }
