@@ -40,25 +40,36 @@ class CandidatesImport implements ToModel, WithHeadingRow, WithValidation
     {
 
         $eventId = $this->findId(Event::class, $row['event']);
-        if (!$eventId) return null;
+        if (!$eventId) {
+            throw new \Exception("Event '{$row['event']}' not found.");
+        }
 
 
         $positionId = $this->findId(Position::class, $row['position'], ['event_id' => $eventId]);
-        if (!$positionId) return null;
+        if (!$positionId) {
+            throw new \Exception("Position '{$row['position']}' not found for the specified event.");
+        }
 
 
         $yearLevelId = $this->findId(YearLevel::class, $row['year_level']);
-        if (!$yearLevelId) return null;
+        if (!$yearLevelId) {
+            throw new \Exception("Year Level '{$row['year_level']}' not found.");
+        }
 
 
         $sectionId = $this->findId(YearSection::class, $row['section'], ['year_level_id' => $yearLevelId]);
-        if (!$sectionId) return null;
+        if (!$sectionId) {
+            throw new \Exception("Section '{$row['section']}' not found in Year Level '{$row['year_level']}'.");
+        }
 
 
         $partylistId = null;
         if (!empty($row['partylist'])) {
 
             $partylistId = $this->findId(Partylist::class, $row['partylist'], ['event_id' => $eventId]);
+            if (!$partylistId) {
+                throw new \Exception("Partylist '{$row['partylist']}' not found.");
+            }
         }
 
 

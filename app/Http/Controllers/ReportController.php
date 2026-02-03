@@ -7,8 +7,11 @@ use App\Models\Signatory;
 use App\Models\SystemSetting;
 use App\Models\Voter;
 use App\Models\Vote;
+use App\Models\Position;
+use App\Models\Partylist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\VoterReceiptExport;
@@ -489,5 +492,36 @@ class ReportController extends Controller
         $candidate->update(['is_tie_breaker_winner' => true]);
 
         return back()->with('success', 'Tie resolved successfully. Winner updated.');
+    }
+
+    public function generateComelecForm(Event $event)
+    {
+        $totalRegisteredVoters = \App\Models\Voter::where('event_id', $event->id)->count();
+        $totalVotesCast = Vote::where('event_id', $event->id)->distinct('voter_id')->count();
+        $voterTurnout = $totalRegisteredVoters > 0 ? round(($totalVotesCast / $totalRegisteredVoters) * 100, 2) : 0;
+
+        $positions = Position::where('event_id', $event->id)
+            ->orderBy('id')
+            ->with(['candidates' => function ($query) use ($event) {
+                $query->withCount(['votes' => function ($q) use ($event) {
+                    $q->where('event_id', $event->id);
+                }])->orderBy('votes_count', 'desc');
+            }])
+            ->get();
+
+        $partylists = Partylist::where('event_id', $event->id)->get();
+
+        $data = [
+            'event' => $event,
+            'positions' => $positions,
+            'partylists' => $partylists,
+            'totalRegisteredVoters' => $totalRegisteredVoters,
+            'totalVotesCast' => $totalVotesCast,
+            'voterTurnout' => $voterTurnout,
+            'date' => Carbon::parse($event->start_date)->format('F d, Y'),
+        ];
+
+        $pdf = Pdf::loadView('reports.comelec', $data);
+        return $pdf->stream('comelec_form_' . $event->id . '.pdf');
     }
 }

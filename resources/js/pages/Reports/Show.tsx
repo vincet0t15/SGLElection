@@ -234,6 +234,12 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                                 Winners Only
                             </a>
                         </Button>
+                        <Button asChild variant="outline" className="gap-2 bg-purple-600 text-white hover:bg-purple-700 hover:text-white border-purple-600">
+                            <a href={`/reports/comelec/${event.id}`} target="_blank" rel="noopener noreferrer">
+                                <FileText className="h-4 w-4" />
+                                COMELEC Form
+                            </a>
+                        </Button>
                     </div>
                 </div>
 
