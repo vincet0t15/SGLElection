@@ -219,7 +219,7 @@ class ReportController extends Controller
 
         $system_settings = SystemSetting::first();
 
-        $pdf = Pdf::loadView('reports.print', [
+        return Inertia::render('Reports/Print', [
             'event' => $event,
             'positions' => $positions,
             'signatories' => $signatories,
@@ -230,11 +230,7 @@ class ReportController extends Controller
                 'total_sections' => $totalSections,
                 'turnout' => $registeredVoters > 0 ? round(($actualVoters / $registeredVoters) * 100, 2) : 0,
             ],
-            'system_settings' => $system_settings
         ]);
-
-        $filename = $request->input('type') === 'winners' ? "official_winners_{$event->id}.pdf" : "election_results_{$event->id}.pdf";
-        return $pdf->download($filename);
     }
 
     public function getVoterVotes(Event $event, Voter $voter)
@@ -523,7 +519,6 @@ class ReportController extends Controller
             'positions' => $positions,
             'partylists' => $partylists,
             'signatories' => $signatories,
-            'system_settings' => $system_settings,
             'totalRegisteredVoters' => $totalRegisteredVoters,
             'totalVotesCast' => $totalVotesCast,
             'voterTurnout' => $voterTurnout,

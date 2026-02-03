@@ -50,7 +50,7 @@ export default function ReportsComelec({
             <Head title={`COMELEC Election Return - ${event.name}`} />
 
             {/* Print Controls */}
-            <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4 gap-2">
+            <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4 gap-2 relative z-10">
                 <button
                     onClick={() => window.print()}
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"
@@ -60,7 +60,7 @@ export default function ReportsComelec({
                 </button>
             </div>
 
-            <div className="print:w-full">
+            <div className="relative z-10 print:w-full">
                 {/* Header */}
                 <div className="mb-6 flex justify-center border-b-2 border-black pb-2">
                     <table className="border-collapse border-none">
@@ -93,7 +93,7 @@ export default function ReportsComelec({
                                     <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>MIMAROPA Region</div>
                                     <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>Schools Division of Palawan</div>
                                     <div className="font-serif text-[16px] font-bold text-[#006400] uppercase my-1" style={{ fontFamily: '"Times New Roman", serif' }}>
-                                        SAN VICENTE NATIONAL HIGH SCHOOL
+                                        {system_settings?.name || 'SAN VICENTE NATIONAL HIGH SCHOOL'}
                                     </div>
                                     <div className="font-serif text-[12px] italic" style={{ fontFamily: '"Times New Roman", serif' }}>Poblacion, San Vicente, Palawan</div>
                                 </td>
