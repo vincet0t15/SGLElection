@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Delete, Dot, Minus, PlusIcon } from 'lucide-react';
+import { Delete, Dot, Minus, PlusIcon, ChevronRight, ChevronDown } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -48,6 +48,15 @@ export default function YearLevel({ yearLevels, filters }: Props) {
     const [yearSections, setYearSections] = useState<YearSectionProps | null>(null);
     const [openEditYearSectionDialog, setOpenEditYearSectionDialog] = useState(false);
     const [openDeleteSectionDialog, setOpenDeleteSectionDialog] = useState(false);
+    const [expandedYearLevels, setExpandedYearLevels] = useState<number[]>([]);
+
+    const toggleYearLevel = (id: number) => {
+        setExpandedYearLevels(prev =>
+            prev.includes(id)
+                ? prev.filter(expandedId => expandedId !== id)
+                : [...prev, id]
+        );
+    };
 
     const handleCLickDeleteSection = (section: YearSectionProps) => {
         setYearSections(section);
@@ -123,9 +132,22 @@ export default function YearLevel({ yearLevels, filters }: Props) {
                                 yearLevels.data.map((yearLevel) => (
                                     <React.Fragment key={yearLevel.id}>
                                         {/* Year Level row */}
-                                        <TableRow className="text-sm font-medium">
+                                        <TableRow className="text-sm font-medium hover:bg-muted/50 transition-colors">
                                             <TableCell>
-                                                {yearLevel.name}
+                                                <div
+                                                    className="flex items-center gap-2 cursor-pointer select-none"
+                                                    onClick={() => toggleYearLevel(yearLevel.id)}
+                                                >
+                                                    {expandedYearLevels.includes(yearLevel.id) ? (
+                                                        <ChevronDown className="h-4 w-4 text-gray-500" />
+                                                    ) : (
+                                                        <ChevronRight className="h-4 w-4 text-gray-500" />
+                                                    )}
+                                                    <span className="font-semibold">{yearLevel.name}</span>
+                                                    <span className="text-xs text-muted-foreground ml-2">
+                                                        ({yearLevel.section.length} sections)
+                                                    </span>
+                                                </div>
                                             </TableCell>
 
                                             <TableCell className="flex justify-end gap-3">
@@ -152,11 +174,11 @@ export default function YearLevel({ yearLevels, filters }: Props) {
                                         </TableRow>
 
                                         {/* Section rows */}
-                                        {yearLevel.section.map((section) => (
-                                            <TableRow key={section.id} className="text-sm bg-gray-50">
+                                        {expandedYearLevels.includes(yearLevel.id) && yearLevel.section.map((section) => (
+                                            <TableRow key={section.id} className="text-sm bg-gray-50/50 animate-in fade-in-0 zoom-in-95 duration-200">
                                                 <TableCell>
-                                                    <div className="pl-8 flex items-center gap-1">
-                                                        <Minus className="h-4 w-4 text-gray-400" />
+                                                    <div className="pl-10 flex items-center gap-2">
+                                                        <div className="h-px w-4 bg-gray-300"></div>
                                                         <span>{section.name}</span>
                                                     </div>
                                                 </TableCell>

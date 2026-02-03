@@ -20,7 +20,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                         <SidebarGroupLabel>{group.name}</SidebarGroupLabel>
                     )}
                     <SidebarMenu>
-                        {group.items.map((item) => (
+                        {group.items?.map((item) => (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton
                                     asChild
