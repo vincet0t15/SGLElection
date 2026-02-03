@@ -519,11 +519,14 @@ class ReportController extends Controller
             ->orderBy('order')
             ->get();
 
+        $system_settings = \App\Models\SystemSetting::first();
+
         $data = [
             'event' => $event,
             'positions' => $positions,
             'partylists' => $partylists,
             'signatories' => $signatories,
+            'system_settings' => $system_settings,
             'totalRegisteredVoters' => $totalRegisteredVoters,
             'totalVotesCast' => $totalVotesCast,
             'voterTurnout' => $voterTurnout,

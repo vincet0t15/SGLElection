@@ -119,10 +119,55 @@
 
 <body>
     <div class="header">
-        <h1>COMMISSION ON ELECTIONS</h1>
-        <h2>ELECTION RETURN</h2>
-        <p>{{ $event->name }}</p>
-        <p>Date of Election: {{ $date }}</p>
+        <table style="margin: 0 auto; width: auto;">
+            <tr>
+                <td style="vertical-align: top; padding-right: 15px;">
+                    @php
+                    $logoPath = null;
+                    if ($system_settings && $system_settings->system_logo) {
+                    $storagePath = \Illuminate\Support\Facades\Storage::disk('public')->path($system_settings->system_logo);
+                    if (file_exists($storagePath)) {
+                    $logoPath = $storagePath;
+                    } elseif (file_exists(public_path($system_settings->system_logo))) {
+                    $logoPath = public_path($system_settings->system_logo);
+                    }
+                    }
+
+                    $logoData = null;
+
+                    if ($logoPath && file_exists($logoPath)) {
+                    $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+                    $data = file_get_contents($logoPath);
+                    $logoData = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                    }
+                    @endphp
+
+                    @if ($logoData)
+                    <img src="{{ $logoData }}" alt="Logo" style="height: 80px; width: auto;">
+                    @else
+                    <svg width="80" height="80" viewBox="0 0 40 42" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#059669" fill-rule="evenodd" clip-rule="evenodd"
+                            d="M17.2 5.63325L8.6 0.855469L0 5.63325V32.1434L16.2 41.1434L32.4 32.1434V23.699L40 19.4767V9.85547L31.4 5.07769L22.8 9.85547V18.2999L17.2 21.411V5.63325Z" />
+                    </svg>
+                    @endif
+                </td>
+
+                <td style="vertical-align: middle; text-align: center;">
+                    <div style="font-family: 'Times New Roman', serif; font-size: 13px;">REPUBLIC OF THE PHILIPPINES</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 13px;">DEPARTMENT OF EDUCATION</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 13px;">MIMAROPA Region</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 13px;">Schools Division of Palawan</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 16px; font-weight: bold; color: #006400; text-transform: uppercase; margin: 5px 0;">{{ $system_settings->system_name ?? 'SAN VICENTE NATIONAL HIGH SCHOOL' }}</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 12px; font-style: italic;">Poblacion, San Vicente, Palawan</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="margin: 0; text-transform: uppercase;">ELECTION RETURN</h2>
+        <p style="margin: 5px 0;">{{ $event->name }}</p>
+        <p style="margin: 0; font-size: 12px;">Date of Election: {{ $date }}</p>
     </div>
 
     <table class="meta-info">

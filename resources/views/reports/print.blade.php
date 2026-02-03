@@ -149,9 +149,9 @@
 
 <body>
     <div class="header">
-        <table width="100%">
+        <table style="margin: 0 auto; width: auto;">
             <tr>
-                <td width="10%" style="vertical-align: top; text-align: center;">
+                <td style="vertical-align: top; padding-right: 15px;">
                     @php
                     $logoPath = null;
                     if ($system_settings->system_logo) {
@@ -176,26 +176,32 @@
                     <img
                         src="{{ $logoData }}"
                         alt="Logo"
-                        style="height: 60px; width: auto;">
+                        style="height: 80px; width: auto;">
                     @else
                     {{-- Default SVG Logo --}}
-                    <svg width="60" height="60" viewBox="0 0 40 42" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="80" height="80" viewBox="0 0 40 42" xmlns="http://www.w3.org/2000/svg">
                         <path fill="#059669" fill-rule="evenodd" clip-rule="evenodd"
                             d="M17.2 5.63325L8.6 0.855469L0 5.63325V32.1434L16.2 41.1434L32.4 32.1434V23.699L40 19.4767V9.85547L31.4 5.07769L22.8 9.85547V18.2999L17.2 21.411V5.63325Z" />
                     </svg>
                     @endif
                 </td>
 
-                <td width="70%" style="vertical-align: top; text-align: left; padding-left: 10px;">
-                    <div style="font-weight: bold; font-size: 14px; text-transform: uppercase; font-family: 'Times New Roman', serif;">{{ $system_settings->system_name ?? 'Voting System' }}</div>
-                    <div style="font-weight: bold; font-size: 12px; margin-top: 2px; text-transform: uppercase;">{{ $type === 'winners' ? 'OFFICIAL LIST OF WINNERS' : 'OFFICIAL ELECTION RESULTS' }}</div>
-                    <div style="font-size: 12px; margin-top: 2px; text-transform: uppercase;">{{ $event->name }}</div>
-                </td>
-                <td width="20%" style="vertical-align: top; text-align: right; font-size: 10px; color: #666;">
-                    Ref: {{ $event->id }}-{{ date('Y') }}
+                <td style="vertical-align: middle; text-align: center;">
+                    <div style="font-family: 'Times New Roman', serif; font-size: 13px;">REPUBLIC OF THE PHILIPPINES</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 13px;">DEPARTMENT OF EDUCATION</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 13px;">MIMAROPA Region</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 13px;">Schools Division of Palawan</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 16px; font-weight: bold; color: #006400; text-transform: uppercase; margin: 5px 0;">{{ $system_settings->system_name ?? 'SAN VICENTE NATIONAL HIGH SCHOOL' }}</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 12px; font-style: italic;">Poblacion, San Vicente, Palawan</div>
                 </td>
             </tr>
         </table>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-weight: bold; font-size: 14px; text-transform: uppercase;">{{ $type === 'winners' ? 'OFFICIAL LIST OF WINNERS' : 'OFFICIAL ELECTION RESULTS' }}</div>
+        <div style="font-size: 12px; margin-top: 2px; text-transform: uppercase;">{{ $event->name }}</div>
+        <div style="font-size: 10px; color: #666; margin-top: 5px;">Ref: {{ $event->id }}-{{ date('Y') }}</div>
     </div>
 
     <table class="meta-table">
