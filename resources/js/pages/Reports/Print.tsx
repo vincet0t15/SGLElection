@@ -124,7 +124,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                         <div>Period:</div>
                                         <div>{formatDate(event.dateTime_start)} - {formatDate(event.dateTime_end)}</div>
 
-                                        <div>Total Number of Clustered Precincts (Sections):</div>
+                                        <div>Total Number of Sections:</div>
                                         <div>{stats.total_sections.toLocaleString()}</div>
 
                                         <div>Total Number of Registered Voters:</div>

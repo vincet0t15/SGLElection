@@ -220,8 +220,8 @@
                 <td style="width: 350px; padding: 5px 0;">Period:</td>
                 <td style="padding: 5px 0;">{{ \Carbon\Carbon::parse($event->start_date)->format('F j, Y') }} - {{ \Carbon\Carbon::parse($event->end_date)->format('F j, Y') }}</td>
             </tr>
-            <tr>
-                <td style="padding: 5px 0;">Total Number of Clustered Precincts (Sections):</td>
+            <tr>`
+                <td style="padding: 5px 0;">Total Number of Sections:</td>
                 <td style="padding: 5px 0;">{{ $stats['total_sections'] }}</td>
             </tr>
             <tr>
