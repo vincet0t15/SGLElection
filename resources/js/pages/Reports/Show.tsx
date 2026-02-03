@@ -650,13 +650,13 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                             </div>
                             <div className="flex gap-2">
                                 <a
-                                    href={`/reports/${event.id}/voters/${selectedVoter?.id}/receipt?type=pdf`}
+                                    href={`/reports/${event.id}/voters/${selectedVoter?.id}/receipt`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-2")}
                                 >
-                                    <FileText className="h-4 w-4" />
-                                    PDF
+                                    <Printer className="h-4 w-4" />
+                                    View Receipt
                                 </a>
                                 <a
                                     href={`/reports/${event.id}/voters/${selectedVoter?.id}/receipt?type=excel`}

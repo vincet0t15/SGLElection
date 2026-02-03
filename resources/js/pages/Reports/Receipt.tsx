@@ -65,7 +65,7 @@ export default function ReportsReceipt({ event, voter, votes }: Props) {
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"
                 >
                     <Printer className="w-4 h-4" />
-                    Print / Save as PDFzzzzzzzzzzzzzzz
+                    Print / Save as PDF
                 </button>
             </div>
 
