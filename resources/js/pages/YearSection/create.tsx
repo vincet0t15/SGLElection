@@ -59,7 +59,7 @@ export function YearSectionCreate({ open, setOpen, yearLevel }: Props) {
 
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Create Section</DialogTitle>
+                    <DialogTitle>Create Section for {yearLevel?.name}</DialogTitle>
                     <DialogDescription>
                     </DialogDescription>
                 </DialogHeader>
