@@ -88,8 +88,8 @@ export default function ReportsComelec({
                                     )}
                                 </td>
                                 <td className="align-middle text-center border-none !p-0">
-                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>REPUBLIC OF THE PHILIPPINES</div>
-                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>DEPARTMENT OF EDUCATION</div>
+                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>REPUBLIC OF THE PHILIPPINES</div>
+                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>DEPARTMENT OF EDUCATION</div>
                                     <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>MIMAROPA Region</div>
                                     <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>Schools Division of Palawan</div>
                                     <div className="font-serif text-[16px] font-bold text-[#006400] uppercase my-1" style={{ fontFamily: '"Times New Roman", serif' }}>
@@ -104,7 +104,7 @@ export default function ReportsComelec({
 
                 {/* Title */}
                 <div className="text-center mb-5">
-                    <h2 className="m-0 text-[16px] font-bold uppercase">ELECTION RETURN</h2>
+                    <h2 className="m-0 text-[16px] font-bold uppercase" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>ELECTION RETURN</h2>
                     <p className="m-[5px_0] text-[12px]">{event.name}</p>
                     <p className="m-0 text-[12px]">Date of Election: {date}</p>
                 </div>
@@ -127,22 +127,18 @@ export default function ReportsComelec({
                         className="mb-5"
                         style={{ pageBreakInside: 'avoid' }}
                     >
-                        <div className="bg-[#ddd] p-1 font-bold uppercase border border-black">
+                        <div
+                            className="bg-gray-100 p-1 font-bold uppercase border border-black"
+                            style={{ pageBreakAfter: 'avoid' }}
+                        >
                             {position.name} (Vote for {position.max_votes})
                         </div>
-
-                        <table className="w-full border-collapse border border-black">
+                        <table className="w-full border-collapse -mt-[1px]">
                             <thead>
                                 <tr>
-                                    <th className="border border-black p-1 text-center bg-[#f0f0f0] w-1/2">
-                                        CANDIDATE NAME
-                                    </th>
-                                    <th className="border border-black p-1 text-center bg-[#f0f0f0] w-[30%]">
-                                        PARTY / AFFILIATION
-                                    </th>
-                                    <th className="border border-black p-1 text-center bg-[#f0f0f0] w-[20%]">
-                                        VOTES OBTAINED
-                                    </th>
+                                    <th className="border border-black p-1 text-center bg-gray-50 w-1/2">CANDIDATE NAME</th>
+                                    <th className="border border-black p-1 text-center bg-gray-50 w-[30%]">PARTY / AFFILIATION</th>
+                                    <th className="border border-black p-1 text-center bg-gray-50 w-[20%]">VOTES OBTAINED</th>
                                 </tr>
                             </thead>
 
