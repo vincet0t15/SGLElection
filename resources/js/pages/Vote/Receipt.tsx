@@ -81,7 +81,7 @@ export default function Receipt({ votes, event, voter }: Props) {
                 <div className="p-8 print:p-0">
 
                     <div className="mb-8 flex justify-center border-b border-slate-100 pb-6">
-                        <table className="border-collapse border-none w-full">
+                        <table className="border-collapse border-none">
                             <tbody>
                                 <tr>
                                     <td className="align-top pr-4 border-none !p-0 w-20 hidden sm:table-cell print:table-cell">
@@ -103,6 +103,7 @@ export default function Receipt({ votes, event, voter }: Props) {
                                         </div>
                                         <div className="font-serif text-[11px] text-slate-500 italic" style={{ fontFamily: '"Times New Roman", serif' }}>Poblacion, San Vicente, Palawan</div>
                                     </td>
+                                    <td className="w-20 hidden sm:table-cell print:table-cell"></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -188,7 +188,7 @@ export default function VoteIndex({ events }: Props) {
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600"></div>
 
                     <div className="mb-6 flex justify-center border-b border-slate-100 pb-6">
-                        <table className="border-collapse border-none w-full">
+                        <table className="border-collapse border-none">
                             <tbody>
                                 <tr>
                                     <td className="align-top pr-6 border-none !p-0 hidden sm:table-cell w-24">
@@ -206,7 +206,7 @@ export default function VoteIndex({ events }: Props) {
                                         <div className="font-serif text-sm text-slate-600" style={{ fontFamily: '"Times New Roman", serif' }}>MIMAROPA Region</div>
                                         <div className="font-serif text-sm text-slate-600" style={{ fontFamily: '"Times New Roman", serif' }}>Schools Division of Palawan</div>
                                         <div className="font-serif text-lg sm:text-xl font-bold text-emerald-800 uppercase my-2" style={{ fontFamily: '"Times New Roman", serif' }}>
-                                            {system_settings.name || 'SAN VICENTE NATIONAL HIGH SCHOOL'}
+                                            SAN VICENTE NATIONAL HIGH SCHOOL
                                         </div>
                                         <div className="font-serif text-xs text-slate-500 italic" style={{ fontFamily: '"Times New Roman", serif' }}>Poblacion, San Vicente, Palawan</div>
                                     </td>
@@ -219,6 +219,11 @@ export default function VoteIndex({ events }: Props) {
                     <h2 className="text-2xl sm:text-3xl font-bold uppercase tracking-widest text-slate-900 mb-2" style={{ fontFamily: '"Old English Text MT", serif' }}>
                         Official Ballot
                     </h2>
+                    {events.length > 0 && (
+                        <p className="text-xs sm:text-sm text-slate-600 uppercase tracking-widest font-bold mb-2">
+                            {events.map(e => e.name).join(' / ')}
+                        </p>
+                    )}
                     <p className="text-slate-500 font-serif italic">Please vote wisely.</p>
                 </div>
 
@@ -234,12 +239,7 @@ export default function VoteIndex({ events }: Props) {
                     events.map((event) => (
                         <div key={event.id} className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-                            <div className="text-center space-y-2 mb-10">
-                                <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-100 px-3 py-1">
-                                    {event.name}
-                                </Badge>
-                                <p className="text-slate-500 max-w-2xl mx-auto">{event.description}</p>
-                            </div>
+
 
                             {event.positions.map((position) => (
                                 <section key={position.id} className="scroll-mt-24 relative">
