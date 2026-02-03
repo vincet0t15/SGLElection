@@ -79,44 +79,48 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                     <tbody>
                         <tr>
                             <td>
-
-                                <div className="flex items-start gap-4 mb-8">
-                                    <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
-                                        {system_settings.logo ? (
-                                            <img
-                                                src={system_settings.logo}
-                                                alt="Logo"
-                                                className="w-full h-full object-contain"
-                                                onError={(e) => {
-                                                    const target = e.target as HTMLImageElement;
-                                                    if (target.src !== system_settings.logo) {
-                                                        target.src = system_settings.logo || '';
-                                                    } else {
-                                                        target.style.display = 'none';
-                                                    }
-                                                }}
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-emerald-600 flex items-center justify-center rounded-full text-white">
-                                                <AppLogoIcon className="w-10 h-10 fill-current" />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 pt-1">
-                                        <h1 className="text-xl font-serif font-bold uppercase tracking-wide leading-tight">
-                                            {system_settings.name || 'Voting System'}
-                                        </h1>
-                                        <h2 className="text-lg font-serif uppercase tracking-wide text-gray-800">
-                                            {type === 'winners' ? 'OFFICIAL LIST OF WINNERS' : 'OFFICIAL ELECTION RESULTS'}
-                                        </h2>
-                                        <p className="text-sm font-bold uppercase mt-1 text-gray-600">
-                                            {event.name}
-                                        </p>
-                                    </div>
-                                    <div className="text-right pt-2">
-                                        <p className="text-xs  text-gray-500">Ref: {event.id}-{new Date().getFullYear()}</p>
-                                    </div>
+                                <div className="mb-6">
+                                    <table className="w-full border-collapse border-none">
+                                        <tbody>
+                                            <tr>
+                                                <td className="w-[120px] align-top text-right pr-4 border-none !p-0">
+                                                    {system_settings.logo ? (
+                                                        <img
+                                                            src={system_settings.logo}
+                                                            alt="Logo"
+                                                            className="h-20 w-auto ml-auto object-contain"
+                                                            onError={(e) => {
+                                                                const target = e.target as HTMLImageElement;
+                                                                if (target.src !== system_settings.logo) {
+                                                                    target.src = system_settings.logo || '';
+                                                                } else {
+                                                                    target.style.display = 'none';
+                                                                }
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-20 h-20 bg-emerald-600 flex items-center justify-center rounded-full text-white ml-auto">
+                                                            <AppLogoIcon className="w-10 h-10 fill-current" />
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td className="align-middle text-center border-none !p-0">
+                                                    <div className="font-serif text-[14px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>REPUBLIC OF THE PHILIPPINES</div>
+                                                    <div className="font-serif text-[14px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>DEPARTMENT OF EDUCATION</div>
+                                                    <div className="font-serif text-[13px]">MIMAROPA Region</div>
+                                                    <div className="font-serif text-[13px]">Schools Division of Palawan</div>
+                                                    <div className="font-serif text-[16px] font-bold text-[#006400] uppercase my-1">
+                                                        SAN VICENTE NATIONAL HIGH SCHOOL
+                                                    </div>
+                                                    <div className="font-serif text-[12px] italic">Poblacion, San Vicente, Palawan</div>
+                                                </td>
+                                                <td className="w-[130px] border-none !p-0"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
+
+
 
 
                                 <div className="mb-8 text-sm leading-relaxed font-medium text-gray-800">
@@ -124,7 +128,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                         <div>Period:</div>
                                         <div>{formatDate(event.dateTime_start)} - {formatDate(event.dateTime_end)}</div>
 
-                                        <div>Total Number of Sections:</div>
+                                        <div>Total Number of Clustered Precincts (Sections):</div>
                                         <div>{stats.total_sections.toLocaleString()}</div>
 
                                         <div>Total Number of Registered Voters:</div>
