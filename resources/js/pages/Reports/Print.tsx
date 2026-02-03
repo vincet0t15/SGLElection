@@ -100,7 +100,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                     <div className="font-serif text-[13px]">MIMAROPA Region</div>
                                                     <div className="font-serif text-[13px]">Schools Division of Palawan</div>
                                                     <div className="font-serif text-[16px] font-bold text-[#006400] uppercase my-1">
-                                                        SAN VICENTE NATIONAL HIGH SCHOOL
+                                                        {system_settings?.name || 'SAN VICENTE NATIONAL HIGH SCHOOL'}
                                                     </div>
                                                     <div className="font-serif text-[12px] italic">Poblacion, San Vicente, Palawan</div>
                                                 </td>
@@ -279,10 +279,13 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                 @media print {
                     @page { margin: 0; size: auto; }
                     body { margin: 0 10mm; -webkit-print-color-adjust: exact; }
+                    /* Hide default browser headers/footers */
+                    header, footer { display: none !important; }
+                    
                        table {
                         border-collapse: collapse;
                     }
- 
+
                     td {
                         padding: 4px 6px !important;
                         font-size: 12px;

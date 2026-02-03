@@ -156,8 +156,10 @@ export default function ReportsReceipt({ event, voter, votes }: Props) {
 
             <style>{`
                 @media print {
-                    @page { margin: 10mm; size: auto; }
+                    @page { margin: 0; size: auto; }
                     body { margin: 0; -webkit-print-color-adjust: exact; }
+                    /* Hide default browser headers/footers */
+                    header, footer { display: none !important; }
                 }
             `}</style>
         </div>
