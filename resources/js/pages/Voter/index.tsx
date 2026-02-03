@@ -305,6 +305,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             variant="destructive"
                             className="cursor-pointer"
                             onClick={() => handleBulkAction(false)}
+                            disabled={voters.data.length === 0}
                         >
                             <ShieldBan className="h-4 w-4" />
                             <span className="rounded-sm lg:inline">
@@ -315,6 +316,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         <Button
                             className="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white"
                             onClick={() => handleBulkAction(true)}
+                            disabled={voters.data.length === 0}
                         >
                             <ShieldBan className="h-4 w-4 rotate-180" />
                             <span className="rounded-sm lg:inline">
@@ -322,16 +324,18 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             </span>
                         </Button>
 
-                        <Button
-                            variant="destructive"
-                            className="cursor-pointer"
-                            onClick={handleBulkDelete}
-                        >
-                            <Trash2 className="h-4 w-4" />
-                            <span className="rounded-sm lg:inline">
-                                {selectedIds.length > 0 ? 'Delete Selected' : 'Delete All'}
-                            </span>
-                        </Button>
+                        {selectedIds.length > 0 && (
+                            <Button
+                                variant="destructive"
+                                className="cursor-pointer"
+                                onClick={handleBulkDelete}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                <span className="rounded-sm lg:inline">
+                                    Delete Selected
+                                </span>
+                            </Button>
+                        )}
 
                     </div>
                     <div className="flex w-full items-center gap-2 flex-wrap 2xl:w-auto 2xl:justify-end">
