@@ -191,7 +191,7 @@
                     <div style="font-family: 'Times New Roman', serif; font-size: 13px;">DEPARTMENT OF EDUCATION</div>
                     <div style="font-family: 'Times New Roman', serif; font-size: 13px;">MIMAROPA Region</div>
                     <div style="font-family: 'Times New Roman', serif; font-size: 13px;">Schools Division of Palawan</div>
-                    <div style="font-family: 'Times New Roman', serif; font-size: 16px; font-weight: bold; color: #006400; text-transform: uppercase; margin: 5px 0;">{{ $system_settings->system_name ?? 'SAN VICENTE NATIONAL HIGH SCHOOL' }}</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 16px; font-weight: bold; color: #006400; text-transform: uppercase; margin: 5px 0;">SAN VICENTE NATIONAL HIGH SCHOOL</div>
                     <div style="font-family: 'Times New Roman', serif; font-size: 12px; font-style: italic;">Poblacion, San Vicente, Palawan</div>
                 </td>
                 <td width="130"></td>
@@ -199,26 +199,45 @@
         </table>
     </div>
 
-    <div style="text-align: center; margin-bottom: 20px;">
-        <div style="font-weight: bold; font-size: 14px; text-transform: uppercase;">{{ $type === 'winners' ? 'OFFICIAL LIST OF WINNERS' : 'OFFICIAL ELECTION RESULTS' }}</div>
-        <div style="font-size: 12px; margin-top: 2px; text-transform: uppercase;">{{ $event->name }}</div>
-        <div style="font-size: 10px; color: #666; margin-top: 5px;">Ref: {{ $event->id }}-{{ date('Y') }}</div>
+    <div style="margin-bottom: 30px; margin-top: 20px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="vertical-align: top;">
+                    <div style="font-family: 'Times New Roman', serif; font-weight: bold; font-size: 18px; text-transform: uppercase; margin-bottom: 5px;">SSG VOTING SYSTEM</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 14px; text-transform: uppercase; margin-bottom: 5px;">{{ $type === 'winners' ? 'OFFICIAL LIST OF WINNERS' : 'OFFICIAL ELECTION RESULTS' }}</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 12px; text-transform: uppercase;">{{ $event->name }}</div>
+                </td>
+                <td style="vertical-align: top; text-align: right; width: 150px;">
+                    <div style="font-size: 12px; color: #666;">Ref: {{ $event->id }}-{{ date('Y') }}</div>
+                </td>
+            </tr>
+        </table>
     </div>
 
-    <table class="meta-table">
-        <tr>
-            <td class="meta-label">Date Generated:</td>
-            <td>{{ now()->format('F j, Y h:i A') }}</td>
-            <td class="meta-label">Registered Voters:</td>
-            <td>{{ number_format($stats['registered_voters']) }}</td>
-        </tr>
-        <tr>
-            <td class="meta-label">Election Period:</td>
-            <td>{{ \Carbon\Carbon::parse($event->start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($event->end_date)->format('M d, Y') }}</td>
-            <td class="meta-label">Total Votes Cast:</td>
-            <td>{{ number_format($stats['actual_voters']) }} ({{ $stats['turnout'] }}%)</td>
-        </tr>
-    </table>
+    <div style="margin-bottom: 30px;">
+        <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px;">
+            <tr>
+                <td style="width: 350px; padding: 5px 0;">Period:</td>
+                <td style="padding: 5px 0;">{{ \Carbon\Carbon::parse($event->start_date)->format('F j, Y') }} - {{ \Carbon\Carbon::parse($event->end_date)->format('F j, Y') }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px 0;">Total Number of Clustered Precincts (Sections):</td>
+                <td style="padding: 5px 0;">{{ $stats['total_sections'] }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px 0;">Total Number of Registered Voters:</td>
+                <td style="padding: 5px 0;">{{ number_format($stats['registered_voters']) }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px 0;">Total Number of Voters that Actually Voted:</td>
+                <td style="padding: 5px 0;">{{ number_format($stats['actual_voters']) }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px 0;">Voters' Turnout (%):</td>
+                <td style="padding: 5px 0;">{{ $stats['turnout'] }}%</td>
+            </tr>
+        </table>
+    </div>
 
     @foreach($positions as $position)
     <div class="position-block">
