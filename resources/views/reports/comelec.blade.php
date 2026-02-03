@@ -49,19 +49,24 @@
             font-weight: bold;
         }
 
+        .position-container {
+            page-break-inside: avoid;
+            margin-bottom: 20px;
+        }
+
         .section-title {
             background-color: #ddd;
             padding: 5px;
             font-weight: bold;
             text-transform: uppercase;
             border: 1px solid #000;
-            margin-top: 15px;
         }
 
         .results-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 5px;
+            margin-top: -1px;
+            /* Overlap borders */
         }
 
         .results-table th,
@@ -117,46 +122,40 @@
     </table>
 
     @foreach($positions as $position)
-    <div class="section-title">{{ $position->name }} (Vote for {{ $position->max_votes }})</div>
-    <table class="results-table">
-        <thead>
-            <tr>
-                <th width="50%">CANDIDATE NAME</th>
-                <th width="30%">PARTY / AFFILIATION</th>
-                <th width="20%">VOTES OBTAINED</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($position->candidates as $candidate)
-            <tr>
-                <td>{{ strtoupper($candidate->name) }}</td>
-                <td>{{ $candidate->partylist ? strtoupper($candidate->partylist->name) : 'INDEPENDENT' }}</td>
-                <td style="text-align: center;">{{ number_format($candidate->votes_count) }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="position-container">
+        <div class="section-title">{{ $position->name }} (Vote for {{ $position->max_votes }})</div>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th width="50%">CANDIDATE NAME</th>
+                    <th width="30%">PARTY / AFFILIATION</th>
+                    <th width="20%">VOTES OBTAINED</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($position->candidates as $candidate)
+                <tr>
+                    <td>{{ strtoupper($candidate->name) }}</td>
+                    <td>{{ $candidate->partylist ? strtoupper($candidate->partylist->name) : 'INDEPENDENT' }}</td>
+                    <td style="text-align: center;">{{ number_format($candidate->votes_count) }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
     @endforeach
 
     <div class="footer">
         <p>WE HEREBY CERTIFY that the foregoing is a true and correct statement of the votes obtained by each candidate in the election.</p>
 
         <div class="signatures">
+            @foreach($signatories as $signatory)
             <div class="signature-box">
                 <div class="line"></div>
-                <strong>CHAIRMAN</strong>
-                <br>Board of Election Inspectors
+                <strong>{{ strtoupper($signatory->name) }}</strong>
+                <br>{{ $signatory->position }}
             </div>
-            <div class="signature-box">
-                <div class="line"></div>
-                <strong>MEMBER</strong>
-                <br>Board of Election Inspectors
-            </div>
-            <div class="signature-box">
-                <div class="line"></div>
-                <strong>MEMBER</strong>
-                <br>Board of Election Inspectors
-            </div>
+            @endforeach
         </div>
     </div>
 </body>

@@ -511,10 +511,19 @@ class ReportController extends Controller
 
         $partylists = Partylist::where('event_id', $event->id)->get();
 
+        $signatories = Signatory::where('is_active', true)
+            ->where(function ($query) use ($event) {
+                $query->where('event_id', $event->id)
+                    ->orWhereNull('event_id');
+            })
+            ->orderBy('order')
+            ->get();
+
         $data = [
             'event' => $event,
             'positions' => $positions,
             'partylists' => $partylists,
+            'signatories' => $signatories,
             'totalRegisteredVoters' => $totalRegisteredVoters,
             'totalVotesCast' => $totalVotesCast,
             'voterTurnout' => $voterTurnout,
