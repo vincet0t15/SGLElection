@@ -157,7 +157,7 @@
                     <div style="font-family: 'Times New Roman', serif; font-size: 13px;">DEPARTMENT OF EDUCATION</div>
                     <div style="font-family: 'Times New Roman', serif; font-size: 13px;">MIMAROPA Region</div>
                     <div style="font-family: 'Times New Roman', serif; font-size: 13px;">Schools Division of Palawan</div>
-                    <div style="font-family: 'Times New Roman', serif; font-size: 16px; font-weight: bold; color: #006400; text-transform: uppercase; margin: 5px 0;">{{ $system_settings->system_name ?? 'SAN VICENTE NATIONAL HIGH SCHOOL' }}</div>
+                    <div style="font-family: 'Times New Roman', serif; font-size: 16px; font-weight: bold; color: #006400; text-transform: uppercase; margin: 5px 0;">SAN VICENTE NATIONAL HIGH SCHOOL</div>
                     <div style="font-family: 'Times New Roman', serif; font-size: 12px; font-style: italic;">Poblacion, San Vicente, Palawan</div>
                 </td>
                 <td width="130"></td>
