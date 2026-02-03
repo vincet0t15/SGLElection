@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use App\Models\SystemSetting;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +28,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        if (Schema::hasTable('system_settings')) {
+            $settings = SystemSetting::first();
+            $logo = $settings && $settings->system_logo ? Storage::url($settings->system_logo) : '/SideBar.png';
+            View::share('app_logo', $logo);
+        } else {
+            View::share('app_logo', '/SideBar.png');
+        }
     }
 
     protected function configureDefaults(): void
@@ -34,14 +46,15 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
+        Password::defaults(
+            fn(): ?Password => app()->isProduction()
+                ? Password::min(12)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
                 ->symbols()
                 ->uncompromised()
-            : null
+                : null
         );
     }
 }
