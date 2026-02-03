@@ -86,21 +86,33 @@
             text-align: center;
         }
 
-        .signatures {
+        .signatories-grid {
             width: 100%;
+            border-collapse: separate;
+            border-spacing: 20px 0;
             margin-top: 50px;
         }
 
-        .signature-box {
-            width: 30%;
-            display: inline-block;
+        .signatory-cell {
+            vertical-align: top;
+            padding-top: 40px;
             text-align: center;
-            margin: 0 1.5%;
+            width: 33.33%;
         }
 
-        .line {
-            border-bottom: 1px solid #000;
-            margin-bottom: 5px;
+        .sig-line {
+            border-top: 1px solid #000;
+            margin: 0 auto 5px;
+            width: 80%;
+        }
+
+        .sig-name {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .sig-pos {
+            font-size: 10px;
         }
     </style>
 </head>
@@ -148,15 +160,21 @@
     <div class="footer">
         <p>WE HEREBY CERTIFY that the foregoing is a true and correct statement of the votes obtained by each candidate in the election.</p>
 
-        <div class="signatures">
-            @foreach($signatories as $signatory)
-            <div class="signature-box">
-                <div class="line"></div>
-                <strong>{{ strtoupper($signatory->name) }}</strong>
-                <br>{{ $signatory->position }}
-            </div>
-            @endforeach
-        </div>
+        <table class="signatories-grid">
+            <tr>
+                @foreach($signatories as $index => $signatory)
+                @if($index > 0 && $index % 3 == 0)
+            </tr>
+            <tr>
+                @endif
+                <td class="signatory-cell">
+                    <div class="sig-line"></div>
+                    <div class="sig-name">{{ $signatory->name }}</div>
+                    <div class="sig-pos">{{ $signatory->position }}</div>
+                </td>
+                @endforeach
+            </tr>
+        </table>
     </div>
 </body>
 
