@@ -92,7 +92,6 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::post('candidate/{candidate}', [CandidateController::class, 'update'])->name('candidate.update');
     Route::delete('candidate/{candidate}', [CandidateController::class, 'destroy'])->name('candidate.destroy');
 
-
     // VOTER
     Route::get('voter', [VoterController::class, 'index'])->name('voter.index');
     Route::get('voter/import', [VoterController::class, 'importView'])->name('voter.import.view');

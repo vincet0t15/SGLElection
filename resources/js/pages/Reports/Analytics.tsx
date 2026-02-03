@@ -12,6 +12,7 @@ import Heading from '@/components/heading';
 
 interface SectionTurnout {
     name: string;
+    year_level: string;
     total_voters: number;
     voted_count: number;
     turnout_percentage: number;
@@ -64,6 +65,14 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
         acc[candidate.position].push(candidate);
         return acc;
     }, {} as Record<string, CandidatePerformance[]>);
+
+    const sectionsByYearLevel = sections.reduce((acc, section) => {
+        if (!acc[section.year_level]) {
+            acc[section.year_level] = [];
+        }
+        acc[section.year_level].push(section);
+        return acc;
+    }, {} as Record<string, SectionTurnout[]>);
 
 
     const sectionNames = Array.from(new Set(
@@ -136,18 +145,27 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {sections.map((section) => (
-                                            <TableRow key={section.name}>
-                                                <TableCell className="font-medium">{section.name}</TableCell>
-                                                <TableCell>{section.total_voters}</TableCell>
-                                                <TableCell>{section.voted_count}</TableCell>
-                                                <TableCell>{section.turnout_percentage}%</TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center gap-2">
-                                                        <Progress value={section.turnout_percentage} className="h-2" />
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
+                                        {Object.entries(sectionsByYearLevel).map(([yearLevel, levelSections]) => (
+                                            <>
+                                                <TableRow key={yearLevel} className="bg-muted/50">
+                                                    <TableCell colSpan={5} className="font-bold">
+                                                        {yearLevel}
+                                                    </TableCell>
+                                                </TableRow>
+                                                {levelSections.map((section) => (
+                                                    <TableRow key={section.name}>
+                                                        <TableCell className="font-medium pl-8">{section.name}</TableCell>
+                                                        <TableCell>{section.total_voters}</TableCell>
+                                                        <TableCell>{section.voted_count}</TableCell>
+                                                        <TableCell>{section.turnout_percentage}%</TableCell>
+                                                        <TableCell>
+                                                            <div className="flex items-center gap-2">
+                                                                <Progress value={section.turnout_percentage} className="h-2" />
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </>
                                         ))}
                                     </TableBody>
                                 </Table>

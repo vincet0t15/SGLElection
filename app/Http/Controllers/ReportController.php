@@ -256,9 +256,10 @@ class ReportController extends Controller
     public function analytics(Event $event)
     {
 
-        $sections = \App\Models\YearSection::withCount(['voters' => function ($query) use ($event) {
-            $query->where('event_id', $event->id);
-        }])
+        $sections = \App\Models\YearSection::with(['yearLevel'])
+            ->withCount(['voters' => function ($query) use ($event) {
+                $query->where('event_id', $event->id);
+            }])
             ->get()
             ->map(function ($section) use ($event) {
                 $votedCount = \App\Models\Vote::where('event_id', $event->id)
@@ -270,6 +271,7 @@ class ReportController extends Controller
 
                 return [
                     'name' => $section->name,
+                    'year_level' => $section->yearLevel->name,
                     'total_voters' => $section->voters_count,
                     'voted_count' => $votedCount,
                     'turnout_percentage' => $section->voters_count > 0 ? round(($votedCount / $section->voters_count) * 100, 2) : 0,
@@ -278,6 +280,7 @@ class ReportController extends Controller
             ->filter(function ($s) {
                 return $s['total_voters'] > 0;
             })
+            ->sortBy(['year_level', 'name'])
             ->values();
 
 
