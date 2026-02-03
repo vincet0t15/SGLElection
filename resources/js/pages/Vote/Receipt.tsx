@@ -1,6 +1,8 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { LogOut, Printer, CheckCircle2, QrCode, ShieldCheck } from 'lucide-react';
+import { SharedData } from '@/types';
+import AppLogoIcon from '@/components/app-logo-icon';
 
 interface Vote {
     id: number;
@@ -30,13 +32,15 @@ interface Props {
         name: string;
         username: string;
     };
-    systemSettings: {
+    systemSettings?: {
         system_name: string;
         system_logo: string;
     }
 }
 
-export default function Receipt({ votes, event, voter, systemSettings }: Props) {
+export default function Receipt({ votes, event, voter }: Props) {
+    const { system_settings } = usePage<SharedData>().props;
+
     const votesByPosition = votes.reduce((acc, vote) => {
         const positionName = vote.candidate.position.name;
         if (!acc[positionName]) {
@@ -70,20 +74,43 @@ export default function Receipt({ votes, event, voter, systemSettings }: Props) 
             <Head title="Vote Receipt" />
 
 
-            <div className="w-full max-w-md bg-white shadow-2xl overflow-hidden print:shadow-none print:max-w-none print:w-full relative">
+            <div className="w-full max-w-2xl bg-white shadow-2xl overflow-hidden print:shadow-none print:max-w-none print:w-full relative rounded-xl print:rounded-none">
 
                 <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 w-full print:hidden"></div>
 
                 <div className="p-8 print:p-0">
 
-                    <div className="text-center space-y-4 mb-8">
-                        <div className="flex justify-center">
-                            <img src={`/storage/${systemSettings.system_logo}`} alt="Logo" className="h-16 w-auto mix-blend-multiply" />
-                        </div>
-                        <div className="space-y-1">
-                            <h1 className="text-xl font-black uppercase tracking-widest text-slate-900 leading-none">Official Ballot Receipt</h1>
-                            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">{event.name}</p>
-                        </div>
+                    <div className="mb-8 flex justify-center border-b border-slate-100 pb-6">
+                        <table className="border-collapse border-none w-full">
+                            <tbody>
+                                <tr>
+                                    <td className="align-top pr-4 border-none !p-0 w-20 hidden sm:table-cell print:table-cell">
+                                        {system_settings.logo ? (
+                                            <img src={system_settings.logo} alt="Logo" className="h-20 w-auto object-contain" />
+                                        ) : (
+                                            <div className="w-20 h-20 bg-emerald-600 flex items-center justify-center rounded-full text-white shadow-sm print:hidden">
+                                                <AppLogoIcon className="w-10 h-10 fill-current" />
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="align-middle text-center border-none !p-0">
+                                        <div className="font-serif text-[12px] sm:text-[13px] text-slate-900" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>REPUBLIC OF THE PHILIPPINES</div>
+                                        <div className="font-serif text-[12px] sm:text-[13px] text-slate-900" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>DEPARTMENT OF EDUCATION</div>
+                                        <div className="font-serif text-[12px] text-slate-600" style={{ fontFamily: '"Times New Roman", serif' }}>MIMAROPA Region</div>
+                                        <div className="font-serif text-[12px] text-slate-600" style={{ fontFamily: '"Times New Roman", serif' }}>Schools Division of Palawan</div>
+                                        <div className="font-serif text-[15px] sm:text-[16px] font-bold text-emerald-800 uppercase my-1" style={{ fontFamily: '"Times New Roman", serif' }}>
+                                            {system_settings.name || 'SAN VICENTE NATIONAL HIGH SCHOOL'}
+                                        </div>
+                                        <div className="font-serif text-[11px] text-slate-500 italic" style={{ fontFamily: '"Times New Roman", serif' }}>Poblacion, San Vicente, Palawan</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="text-center space-y-1 mb-8">
+                        <h1 className="text-2xl font-black uppercase tracking-widest text-slate-900 leading-none font-serif" style={{ fontFamily: '"Old English Text MT", serif' }}>Official Ballot Receipt</h1>
+                        <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">{event.name}</p>
                     </div>
 
                     <div className="relative flex py-5 items-center">

@@ -1,7 +1,8 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 import { EventProps } from '@/types/event';
+import { SharedData } from '@/types';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { Check, User, Vote, ChevronRight, AlertCircle, Loader2 } from 'lucide-re
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import vote from '@/routes/vote';
+import AppLogoIcon from '@/components/app-logo-icon';
 import {
     Dialog,
     DialogContent,
@@ -23,7 +25,7 @@ interface Props {
 }
 
 export default function VoteIndex({ events }: Props) {
-
+    const { system_settings } = usePage<SharedData>().props;
     const [votes, setVotes] = useState<Record<number, number[]>>({});
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -123,11 +125,22 @@ export default function VoteIndex({ events }: Props) {
             <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
                 <div className="container mx-auto max-w-5xl px-4 h-16 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="bg-blue-600 text-white p-2 rounded-lg shadow-blue-200 shadow-md">
-                            <Vote className="h-5 w-5" />
+                        <div className="flex-shrink-0">
+                            {system_settings.logo ? (
+                                <img src={system_settings.logo} alt="Logo" className="h-10 w-10 object-contain" />
+                            ) : (
+                                <div className="bg-emerald-600 text-white p-2 rounded-lg shadow-sm">
+                                    <AppLogoIcon className="h-6 w-6 fill-current" />
+                                </div>
+                            )}
                         </div>
                         <div>
-                            <h1 className="text-lg font-bold leading-none text-slate-900">Official Ballot</h1>
+                            <h1 className="text-lg font-bold leading-none text-slate-900 hidden sm:block">
+                                {system_settings.name || 'Official Ballot'}
+                            </h1>
+                            <h1 className="text-lg font-bold leading-none text-slate-900 sm:hidden">
+                                Ballot
+                            </h1>
                             <p className="text-xs text-slate-500 font-medium mt-1">
                                 {votedPositions} of {totalPositions} positions filled
                             </p>
@@ -170,6 +183,45 @@ export default function VoteIndex({ events }: Props) {
             </header>
 
             <main className="container mx-auto max-w-5xl px-4 py-8 space-y-10">
+
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600"></div>
+
+                    <div className="mb-6 flex justify-center border-b border-slate-100 pb-6">
+                        <table className="border-collapse border-none w-full">
+                            <tbody>
+                                <tr>
+                                    <td className="align-top pr-6 border-none !p-0 hidden sm:table-cell w-24">
+                                        {system_settings.logo ? (
+                                            <img src={system_settings.logo} alt="Logo" className="h-24 w-auto object-contain" />
+                                        ) : (
+                                            <div className="w-24 h-24 bg-emerald-600 flex items-center justify-center rounded-full text-white shadow-sm">
+                                                <AppLogoIcon className="w-12 h-12 fill-current" />
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="align-middle text-center border-none !p-0">
+                                        <div className="font-serif text-sm sm:text-base text-slate-900" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>REPUBLIC OF THE PHILIPPINES</div>
+                                        <div className="font-serif text-sm sm:text-base text-slate-900" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>DEPARTMENT OF EDUCATION</div>
+                                        <div className="font-serif text-sm text-slate-600" style={{ fontFamily: '"Times New Roman", serif' }}>MIMAROPA Region</div>
+                                        <div className="font-serif text-sm text-slate-600" style={{ fontFamily: '"Times New Roman", serif' }}>Schools Division of Palawan</div>
+                                        <div className="font-serif text-lg sm:text-xl font-bold text-emerald-800 uppercase my-2" style={{ fontFamily: '"Times New Roman", serif' }}>
+                                            {system_settings.name || 'SAN VICENTE NATIONAL HIGH SCHOOL'}
+                                        </div>
+                                        <div className="font-serif text-xs text-slate-500 italic" style={{ fontFamily: '"Times New Roman", serif' }}>Poblacion, San Vicente, Palawan</div>
+                                    </td>
+                                    <td className="w-24 hidden sm:table-cell"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2 className="text-2xl sm:text-3xl font-bold uppercase tracking-widest text-slate-900 mb-2" style={{ fontFamily: '"Old English Text MT", serif' }}>
+                        Official Ballot
+                    </h2>
+                    <p className="text-slate-500 font-serif italic">Please vote wisely.</p>
+                </div>
+
                 {events.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
                         <div className="bg-slate-100 p-4 rounded-full mb-4">
