@@ -79,16 +79,16 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                     <tbody>
                         <tr>
                             <td>
-                                <div className="mb-6">
-                                    <table className="w-full border-collapse border-none">
+                                <div className="mb-6 flex justify-center">
+                                    <table className="border-collapse border-none">
                                         <tbody>
                                             <tr>
-                                                <td className="w-[120px] align-top text-right pr-4 border-none !p-0">
+                                                <td className="align-top pr-4 border-none !p-0">
                                                     {system_settings.logo ? (
                                                         <img
                                                             src={system_settings.logo}
                                                             alt="Logo"
-                                                            className="h-20 w-auto ml-auto object-contain"
+                                                            className="h-20 w-auto object-contain"
                                                             onError={(e) => {
                                                                 const target = e.target as HTMLImageElement;
                                                                 if (target.src !== system_settings.logo) {
@@ -99,7 +99,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                             }}
                                                         />
                                                     ) : (
-                                                        <div className="w-20 h-20 bg-emerald-600 flex items-center justify-center rounded-full text-white ml-auto">
+                                                        <div className="w-20 h-20 bg-emerald-600 flex items-center justify-center rounded-full text-white">
                                                             <AppLogoIcon className="w-10 h-10 fill-current" />
                                                         </div>
                                                     )}
@@ -114,7 +114,6 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                     </div>
                                                     <div className="font-serif text-[12px] italic">Poblacion, San Vicente, Palawan</div>
                                                 </td>
-                                                <td className="w-[130px] border-none !p-0"></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -128,7 +127,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                         <div>Period:</div>
                                         <div>{formatDate(event.dateTime_start)} - {formatDate(event.dateTime_end)}</div>
 
-                                        <div>Total Number of Clustered Precincts (Sections):</div>
+                                        <div>Total Number of Sections:</div>
                                         <div>{stats.total_sections.toLocaleString()}</div>
 
                                         <div>Total Number of Registered Voters:</div>
@@ -293,7 +292,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                        table {
                         border-collapse: collapse;
                     }
-
+ 
                     td {
                         padding: 4px 6px !important;
                         font-size: 12px;
