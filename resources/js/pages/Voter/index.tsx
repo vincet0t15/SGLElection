@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { PaginatedDataResponse } from '@/types/pagination';
 import { FilterProps } from '@/types/filter';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { KeyboardEventHandler, useState } from 'react';
+import { KeyboardEventHandler, useState, useEffect } from 'react';
 import Pagination from '@/components/paginationData';
 import { EventProps } from '@/types/event';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -64,6 +64,23 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
     const [eventId, setEventId] = useState<string>(filters.event_id ? String(filters.event_id) : 'all');
     const [yearLevelId, setYearLevelId] = useState<string>(filters.year_level_id ? String(filters.year_level_id) : 'all');
     const [yearSectionId, setYearSectionId] = useState<string>(filters.year_section_id ? String(filters.year_section_id) : 'all');
+
+    useEffect(() => {
+        setSearch(filters.search || '');
+    }, [filters.search]);
+
+    useEffect(() => {
+        setEventId(filters.event_id ? String(filters.event_id) : 'all');
+    }, [filters.event_id]);
+
+    useEffect(() => {
+        setYearLevelId(filters.year_level_id ? String(filters.year_level_id) : 'all');
+    }, [filters.year_level_id]);
+
+    useEffect(() => {
+        setYearSectionId(filters.year_section_id ? String(filters.year_section_id) : 'all');
+    }, [filters.year_section_id]);
+
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openBulkDeleteDialog, setOpenBulkDeleteDialog] = useState(false);
@@ -332,7 +349,7 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             </SelectContent>
                         </Select>
 
-                        <Select value={yearSectionId} onValueChange={handleYearSectionFilter}>
+                        <Select value={yearSectionId} onValueChange={handleYearSectionFilter} disabled={yearLevelId === 'all'}>
                             <SelectTrigger className="w-full md:w-[180px]">
                                 <SelectValue placeholder="Filter by Section" />
                             </SelectTrigger>
