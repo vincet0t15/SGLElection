@@ -103,9 +103,9 @@
     <div class="watermark">OFFICIAL</div>
 
     <div class="header">
-        <table style="margin: 0 auto; width: auto;">
+        <table style="margin: 0 auto;">
             <tr>
-                <td style="vertical-align: top; padding-right: 15px;">
+                <td width="120" style="vertical-align: top; text-align: right; padding-right: 10px;">
                     @php
                     $logoPath = null;
                     if ($system_settings->system_logo) {
@@ -141,6 +141,7 @@
                     <div style="font-family: 'Times New Roman', serif; font-size: 16px; font-weight: bold; color: #006400; text-transform: uppercase; margin: 5px 0;">{{ $system_settings->system_name ?? 'SAN VICENTE NATIONAL HIGH SCHOOL' }}</div>
                     <div style="font-family: 'Times New Roman', serif; font-size: 12px; font-style: italic;">Poblacion, San Vicente, Palawan</div>
                 </td>
+                <td width="130"></td>
             </tr>
         </table>
     </div>
