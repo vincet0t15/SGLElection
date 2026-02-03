@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, BarChart3, PieChart, Clock, Users, AlertCircle } from 'lucide-react';
 import { EventProps } from '@/types/event';
 import Heading from '@/components/heading';
+import React from 'react';
 
 interface SectionTurnout {
     name: string;
@@ -145,8 +146,8 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {Object.entries(sectionsByYearLevel).map(([yearLevel, levelSections]) => (
-                                            <>
+                                        {Object.entries(sectionsByYearLevel).map(([yearLevel, levelSections], index) => (
+                                            <React.Fragment key={index}>
                                                 <TableRow key={yearLevel} className="bg-muted/50">
                                                     <TableCell colSpan={5} className="font-bold">
                                                         {yearLevel}
@@ -165,7 +166,7 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
                                                         </TableCell>
                                                     </TableRow>
                                                 ))}
-                                            </>
+                                            </React.Fragment>
                                         ))}
                                     </TableBody>
                                 </Table>
@@ -192,8 +193,8 @@ export default function Analytics({ event, sections, yearLevels, candidates, hou
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {yearLevels.map((level) => (
-                                            <TableRow key={level.name}>
+                                        {yearLevels.map((level, index) => (
+                                            <TableRow key={index}>
                                                 <TableCell className="font-medium">{level.name}</TableCell>
                                                 <TableCell>{level.total_voters}</TableCell>
                                                 <TableCell>{level.voted_count}</TableCell>
