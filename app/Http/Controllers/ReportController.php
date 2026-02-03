@@ -463,13 +463,10 @@ class ReportController extends Controller
             ->with(['candidate.position', 'candidate.partylist'])
             ->get();
 
-        $system_settings = SystemSetting::first();
-
-        $pdf = Pdf::loadView('reports.receipt', [
+        return Inertia::render('Reports/Receipt', [
             'event' => $event,
             'voter' => $voter,
             'votes' => $votes,
-            'system_settings' => $system_settings
         ]);
 
         return $pdf->download("receipt_{$voter->username}.pdf");
@@ -533,7 +530,6 @@ class ReportController extends Controller
             'date' => Carbon::parse($event->start_date)->format('F d, Y'),
         ];
 
-        $pdf = Pdf::loadView('reports.comelec', $data);
-        return $pdf->stream('comelec_form_' . $event->id . '.pdf');
+        return Inertia::render('Reports/Comelec', $data);
     }
 }

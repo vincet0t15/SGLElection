@@ -48,23 +48,13 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
 
 
             <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4 gap-2">
-
                 <button
                     onClick={() => window.print()}
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"
                 >
                     <Printer className="w-4 h-4" />
-                    Print Now
+                    Print / Save as PDF
                 </button>
-
-                <a
-                    href={`/reports/print-pdf/${event.id}?type=${type || ''}`}
-                    target="_blank"
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition-colors shadow-sm"
-                >
-                    <Download className="w-4 h-4" />
-                    Export PDF
-                </a>
             </div>
 
             <div className="print:w-full">
