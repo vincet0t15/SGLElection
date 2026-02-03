@@ -7,6 +7,7 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\YearLevelController;
 use App\Http\Controllers\YearSectionController;
+use App\Http\Middleware\EnsureVoterIsActive;
 use App\Http\Middleware\RedirectVoter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -126,7 +127,7 @@ Route::prefix('voter')->group(function () {
         Route::post('login', [VoterAuthController::class, 'store']);
     });
 
-    Route::middleware('auth:voter')->group(function () {
+    Route::middleware(['auth:voter', EnsureVoterIsActive::class])->group(function () {
         Route::post('logout', [VoterAuthController::class, 'destroy'])->name('voter.logout');
 
         // VOTE
