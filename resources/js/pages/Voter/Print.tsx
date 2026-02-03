@@ -27,17 +27,16 @@ export default function Print({ voters, filters, signatories }: Props) {
     }, []);
 
     return (
-        <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[300mm] mx-auto font-sans">
+        <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[216mm] mx-auto font-sans text-[11px] leading-[1.3]">
             <Head title="Print Voters" />
 
-
-            <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4">
+            <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4 gap-2">
                 <button
                     onClick={() => window.print()}
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"
                 >
                     <Printer className="w-4 h-4" />
-                    Print List
+                    Print / Save as PDF
                 </button>
             </div>
 
@@ -46,56 +45,87 @@ export default function Print({ voters, filters, signatories }: Props) {
                     <thead className="hidden print:table-header-group">
                         <tr>
                             <td>
-                                <div className="h-[9mm]"></div>
+                                <div className="h-[5mm]"></div>
                             </td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-
-                                <div className="flex items-start gap-4 mb-8">
-                                    <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
-                                        {system_settings.logo ? (
-                                            <img src={system_settings.logo} alt="Logo" className="w-full h-full object-contain" />
-                                        ) : (
-                                            <div className="w-full h-full bg-emerald-600 flex items-center justify-center rounded-full text-white">
-                                                <AppLogoIcon className="w-10 h-10 fill-current" />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 pt-1">
-                                        <h1 className="text-xl font-serif font-bold uppercase tracking-wide leading-tight">
-                                            {system_settings.name || 'Voting System'}
-                                        </h1>
-                                        <h2 className="text-lg font-serif uppercase tracking-wide text-gray-800">
-                                            OFFICIAL VOTER LIST
-                                        </h2>
-                                        <div className="text-sm font-bold uppercase mt-1 text-gray-600 flex flex-col gap-1">
-                                            {filters.event_name && <span>Event: {filters.event_name}</span>}
-                                            <div className="flex gap-4">
-                                                {filters.year_level_name && <span>Level: {filters.year_level_name}</span>}
-                                                {filters.year_level_name && !filters.section_name && <span>Section: All Sections</span>}
-                                                {filters.section_name && <span>Section: {filters.section_name}</span>}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="text-right pt-2">
-                                        <p className="text-xs text-gray-500">Date: {new Date().toLocaleDateString()}</p>
-                                    </div>
+                                <div className="mb-6 flex justify-center border-b-2 border-black pb-2">
+                                    <table className="border-collapse border-none">
+                                        <tbody>
+                                            <tr>
+                                                <td className="align-top pr-4 border-none !p-0">
+                                                    {system_settings.logo ? (
+                                                        <img
+                                                            src={system_settings.logo}
+                                                            alt="Logo"
+                                                            className="h-20 w-auto object-contain"
+                                                            onError={(e) => {
+                                                                const target = e.target as HTMLImageElement;
+                                                                if (target.src !== system_settings.logo) {
+                                                                    target.src = system_settings.logo || '';
+                                                                } else {
+                                                                    target.style.display = 'none';
+                                                                }
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-20 h-20 bg-emerald-600 flex items-center justify-center rounded-full text-white">
+                                                            <AppLogoIcon className="w-10 h-10 fill-current" />
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td className="align-middle text-center border-none !p-0">
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>REPUBLIC OF THE PHILIPPINES</div>
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>DEPARTMENT OF EDUCATION</div>
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>MIMAROPA Region</div>
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>Schools Division of Palawan</div>
+                                                    <div className="font-serif text-[16px] font-bold text-[#006400] uppercase my-1" style={{ fontFamily: '"Times New Roman", serif' }}>
+                                                        {system_settings.name || 'SAN VICENTE NATIONAL HIGH SCHOOL'}
+                                                    </div>
+                                                    <div className="font-serif text-[12px] italic" style={{ fontFamily: '"Times New Roman", serif' }}>Poblacion, San Vicente, Palawan</div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
 
+                                {/* Title */}
+                                <div className="text-center mb-5">
+                                    <h2 className="m-0 text-[16px] font-bold uppercase" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>OFFICIAL VOTER LIST</h2>
+                                    {filters.event_name && <p className="m-[5px_0] text-[12px]">{filters.event_name}</p>}
+                                    <p className="m-0 text-[12px]">Date Printed: {new Date().toLocaleDateString()}</p>
+                                </div>
+
+                                {/* Meta Info */}
+                                <table className="w-full mb-5 border-collapse">
+                                    <tbody>
+                                        <tr>
+                                            <td className="p-1 font-bold">
+                                                {filters.year_level_name && <span>Level: {filters.year_level_name}</span>}
+                                            </td>
+                                            <td className="p-1 font-bold text-center">
+                                                {(filters.year_level_name && !filters.section_name) ? <span>Section: All Sections</span> : (filters.section_name && <span>Section: {filters.section_name}</span>)}
+                                            </td>
+                                            <td className="p-1 font-bold text-right">
+                                                Total Voters: {voters.length}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
                                 <div className="w-full">
-                                    <table className="w-full text-xs text-left border-collapse border border-black">
+                                    <table className="w-full text-left border-collapse border border-black table-fixed -mt-[1px]">
                                         <thead>
                                             <tr className="bg-gray-100 border-b border-black">
-                                                <th className="p-2 border border-black font-bold uppercase w-[30%]">Name</th>
-                                                <th className="p-2 border border-black font-bold uppercase w-[15%]">LRN</th>
-                                                <th className="p-2 border border-black font-bold uppercase w-[15%]">Username</th>
-                                                <th className="p-2 border border-black font-bold uppercase w-[15%]">Year Level</th>
-                                                <th className="p-2 border border-black font-bold uppercase w-[15%]">Section</th>
-                                                <th className="p-2 border border-black font-bold uppercase w-[10%]">Status</th>
+                                                <th className="p-1 px-2 border border-black font-bold uppercase w-[30%]">Name</th>
+                                                <th className="p-1 px-2 border border-black font-bold uppercase w-[15%]">LRN</th>
+                                                <th className="p-1 px-2 border border-black font-bold uppercase w-[15%]">Username</th>
+                                                <th className="p-1 px-2 border border-black font-bold uppercase w-[15%]">Year Level</th>
+                                                <th className="p-1 px-2 border border-black font-bold uppercase w-[15%]">Section</th>
+                                                <th className="p-1 px-2 border border-black font-bold uppercase w-[10%] text-center">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -123,36 +153,39 @@ export default function Print({ voters, filters, signatories }: Props) {
                                     </table>
                                 </div>
 
-
-                                <div className="mt-8 break-inside-avoid print:mt-8 px-8">
-                                    <p className="text-xs font-bold uppercase mb-8">Certified Correct:</p>
+                                <div className="mt-16 break-inside-avoid print:mt-12">
+                                    <p className="text-xs font-bold uppercase mb-12">Certified Correct:</p>
 
                                     <div className="grid grid-cols-3 gap-8 gap-y-12">
                                         {signatories && signatories.length > 0 ? (
                                             signatories.map((signatory) => (
-                                                <div key={signatory.id} className="text-center break-inside-avoid px-4">
-                                                    <p className="uppercase font-bold mb-1 text-sm">{signatory.name}</p>
-                                                    <div className="border-b border-black w-full mb-2"></div>
-                                                    <p className="text-xs uppercase font-bold">{signatory.position}</p>
+                                                <div key={signatory.id} className="text-center break-inside-avoid px-2">
+                                                    <div className="border-b border-black w-4/5 mx-auto mb-1"></div>
+                                                    <p className="uppercase font-bold text-sm">{signatory.name}</p>
+                                                    <p className="text-[10px] text-gray-600 uppercase font-bold">{signatory.position}</p>
                                                     {signatory.description && (
                                                         <p className="text-[10px] text-gray-500 mt-0.5">{signatory.description}</p>
                                                     )}
                                                 </div>
                                             ))
                                         ) : (
-
-                                            <div className="text-center break-inside-avoid px-4">
-                                                <div className="border-b border-black w-full mb-2 mt-6"></div>
-                                                <p className="text-xs uppercase font-bold">Election Committee Head</p>
-                                            </div>
+                                            <>
+                                                <div className="text-center flex-1">
+                                                    <div className="border-b border-black w-4/5 mx-auto mb-1"></div>
+                                                    <p className="text-[10px] uppercase font-bold">Election Committee Head</p>
+                                                </div>
+                                                <div className="text-center flex-1">
+                                                    <div className="border-b border-black w-4/5 mx-auto mb-1"></div>
+                                                    <p className="text-[10px] uppercase font-bold">School Administrator</p>
+                                                </div>
+                                            </>
                                         )}
                                     </div>
-                                </div>
 
-
-                                <div className="mt-8 pt-4 border-t text-[10px] text-gray-400 flex justify-between break-inside-avoid print:mt-12">
-                                    <span>Generated by {system_settings.name || 'System'}</span>
-                                    <span>Date Printed: {new Date().toLocaleString()}</span>
+                                    <div className="mt-8 pt-4 border-t text-[10px] text-gray-400 flex justify-between">
+                                        <span>Generated by {system_settings.name || 'System'}</span>
+                                        <span>Date Printed: {new Date().toLocaleString()}</span>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -162,17 +195,11 @@ export default function Print({ voters, filters, signatories }: Props) {
 
             <style>{`
                 @media print {
-                    @page { margin: 0; size: auto; }
-                    body { margin: 0 10mm; -webkit-print-color-adjust: exact; }
-                    table {
-                        border-collapse: collapse;
-                    }
-
-                    td {
-                        padding: 4px 6px !important;
-                        font-size: 12px;
-                        page-break-inside: avoid;
-                    }
+                    @page { margin: 10mm; }
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    table { page-break-inside: auto; }
+                    tr { page-break-inside: avoid; page-break-after: auto; }
+                    thead { display: table-header-group; }
                 }
             `}</style>
         </div>
