@@ -84,6 +84,8 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openBulkDeleteDialog, setOpenBulkDeleteDialog] = useState(false);
+    const [openBulkStatusDialog, setOpenBulkStatusDialog] = useState(false);
+    const [pendingBulkStatus, setPendingBulkStatus] = useState<boolean | null>(null);
 
     const handleClickDelete = (id: number) => {
         setDeleteId(id);
@@ -210,25 +212,29 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
     };
 
     const handleBulkAction = (status: boolean) => {
-        const action = status ? 'activate' : 'deactivate';
-        const target = selectedIds.length > 0 ? `${selectedIds.length} selected voters` : 'ALL matching voters';
+        setPendingBulkStatus(status);
+        setOpenBulkStatusDialog(true);
+    };
 
-        if (confirm(`Are you sure you want to ${action} ${target}?`)) {
-            router.post(voter.bulkStatus().url, {
-                status: status,
-                ids: selectedIds.length > 0 ? selectedIds : undefined,
-                search: search,
-                event_id: eventId,
-                year_level_id: yearLevelId,
-                year_section_id: yearSectionId,
-            }, {
-                preserveScroll: true,
-                onSuccess: (response: { props: FlashProps }) => {
-                    setSelectedIds([]);
-                    toast.success(response.props.flash?.success);
-                }
-            });
-        }
+    const confirmBulkStatusChange = () => {
+        if (pendingBulkStatus === null) return;
+
+        router.post(voter.bulkStatus().url, {
+            status: pendingBulkStatus,
+            ids: selectedIds.length > 0 ? selectedIds : undefined,
+            search: search,
+            event_id: eventId,
+            year_level_id: yearLevelId,
+            year_section_id: yearSectionId,
+        }, {
+            preserveScroll: true,
+            onSuccess: (response: { props: FlashProps }) => {
+                setSelectedIds([]);
+                toast.success(response.props.flash?.success);
+                setOpenBulkStatusDialog(false);
+                setPendingBulkStatus(null);
+            }
+        });
     };
 
     const handleBulkDelete = () => {
@@ -508,6 +514,30 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={confirmBulkDelete} className="bg-red-600 hover:bg-red-700">
                             Delete {selectedIds.length > 0 ? 'Selected' : 'All'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={openBulkStatusDialog} onOpenChange={setOpenBulkStatusDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm {pendingBulkStatus ? 'Activation' : 'Deactivation'}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to <strong>{pendingBulkStatus ? 'ACTIVATE' : 'DEACTIVATE'}</strong> <strong>{selectedIds.length > 0 ? `${selectedIds.length} selected` : 'ALL matching'}</strong> voters?
+                            <br /><br />
+                            {pendingBulkStatus
+                                ? "These voters will be able to log in and cast their votes."
+                                : "These voters will be prevented from logging in or voting."}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setPendingBulkStatus(null)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmBulkStatusChange}
+                            className={pendingBulkStatus ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"}
+                        >
+                            Confirm {pendingBulkStatus ? 'Activation' : 'Deactivation'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
