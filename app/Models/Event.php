@@ -13,12 +13,14 @@ class Event extends Model
         'location',
         'description',
         'is_active',
+        'show_winner',
     ];
 
     protected $casts = [
         'dateTime_start' => 'datetime',
         'dateTime_end' => 'datetime',
         'is_active' => 'boolean',
+        'show_winner' => 'boolean',
     ];
 
     public function positions()

@@ -66,4 +66,11 @@ class EventController extends Controller
 
         return redirect()->back()->with('success', 'Event deleted successfully');
     }
+
+    public function toggleShowWinner(Event $event)
+    {
+        $event->update(['show_winner' => !$event->show_winner]);
+
+        return redirect()->back()->with('success', 'Show winner status updated successfully');
+    }
 }

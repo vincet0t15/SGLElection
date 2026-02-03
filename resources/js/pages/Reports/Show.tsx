@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Users, User, Trophy, Calendar, MapPin, ArrowLeft, ChevronLeft, ChevronRight, Search, BarChart3, Monitor, ShieldCheck, Printer, FileSpreadsheet, FileText } from 'lucide-react';
+import { Users, User, Trophy, Calendar, MapPin, ArrowLeft, ChevronLeft, ChevronRight, Search, BarChart3, Monitor, ShieldCheck, Printer, FileSpreadsheet, FileText, Eye, EyeOff } from 'lucide-react';
 import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { cn } from "@/lib/utils";
@@ -197,6 +197,23 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                         </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
+                        <Button
+                            variant="outline"
+                            className="gap-2"
+                            onClick={() => router.put(`/event/${event.id}/toggle-show-winner`)}
+                        >
+                            {event.show_winner ? (
+                                <>
+                                    <EyeOff className="h-4 w-4" />
+                                    Hide Winners Early
+                                </>
+                            ) : (
+                                <>
+                                    <Eye className="h-4 w-4" />
+                                    Show Winners Early
+                                </>
+                            )}
+                        </Button>
                         {event.is_active ? (
                             <Button asChild variant="outline" className="gap-2 bg-rose-600 text-white hover:bg-rose-700 hover:text-white border-rose-600">
                                 <Link href={`/reports/live/${event.id}`}>

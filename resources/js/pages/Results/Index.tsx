@@ -51,6 +51,7 @@ interface Event {
     name: string;
     is_active: boolean;
     dateTime_end: string;
+    show_winner: boolean;
 }
 
 interface Props {
@@ -156,7 +157,7 @@ export default function ResultsIndex({ event, positions }: Props) {
 
 
     const isTimeUp = timeLeft?.days === 0 && timeLeft?.hours === 0 && timeLeft?.minutes === 0 && timeLeft?.seconds === 0;
-    const showResults = !event?.is_active || isTimeUp;
+    const showResults = !event?.is_active || isTimeUp || event?.show_winner;
 
     return (
         <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/50 text-foreground pb-20">

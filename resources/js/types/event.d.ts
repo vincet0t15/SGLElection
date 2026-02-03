@@ -8,6 +8,7 @@ export interface EventProps {
     location: string;
     description: string;
     is_active: boolean;
+    show_winner: boolean;
     positions: PositionProps[];
 }
 
@@ -18,4 +19,5 @@ export type EventType = {
     location: string;
     description: string;
     is_active: boolean;
+    show_winner: boolean;
 }
