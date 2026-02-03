@@ -60,7 +60,7 @@ export default function ReportsPrintAudit({ event, logs, signatories }: Props) {
     };
 
     return (
-        <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[300mm] mx-auto font-sans">
+        <div className="bg-white text-black min-h-screen p-8 print:p-0 max-w-[216mm] mx-auto font-sans text-[11px] leading-[1.3]">
             <Head title={`Audit Log - ${event.name}`} />
 
 
@@ -70,7 +70,7 @@ export default function ReportsPrintAudit({ event, logs, signatories }: Props) {
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                    Print Now
+                    Print / Save as PDF
                 </button>
             </div>
 
@@ -86,46 +86,65 @@ export default function ReportsPrintAudit({ event, logs, signatories }: Props) {
                     <tbody>
                         <tr>
                             <td>
-
-                                <div className="flex items-start gap-4 mb-8">
-                                    <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
-                                        {system_settings.logo ? (
-                                            <img src={system_settings.logo} alt="Logo" className="w-full h-full object-contain" />
-                                        ) : (
-                                            <div className="w-full h-full bg-emerald-600 flex items-center justify-center rounded-full text-white">
-                                                <AppLogoIcon className="w-10 h-10 fill-current" />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 pt-1">
-                                        <h1 className="text-xl font-serif font-bold uppercase tracking-wide leading-tight">
-                                            {system_settings.name || 'Voting System'}
-                                        </h1>
-                                        <h2 className="text-lg font-serif uppercase tracking-wide text-gray-800">
-                                            OFFICIAL AUDIT LOG REPORT
-                                        </h2>
-                                        <p className="text-sm font-bold uppercase mt-1 text-gray-600">
-                                            {event.name}
-                                        </p>
-                                    </div>
-                                    <div className="text-right pt-2">
-                                        <p className="text-xs text-gray-500">Ref: {event.id}-{new Date().getFullYear()}</p>
-                                    </div>
+                                <div className="mb-6 flex justify-center border-b-2 border-black pb-2">
+                                    <table className="border-collapse border-none">
+                                        <tbody>
+                                            <tr>
+                                                <td className="align-top pr-4 border-none !p-0">
+                                                    {system_settings.logo ? (
+                                                        <img
+                                                            src={system_settings.logo}
+                                                            alt="Logo"
+                                                            className="h-20 w-auto object-contain"
+                                                            onError={(e) => {
+                                                                const target = e.target as HTMLImageElement;
+                                                                if (target.src !== system_settings.logo) {
+                                                                    target.src = system_settings.logo || '';
+                                                                } else {
+                                                                    target.style.display = 'none';
+                                                                }
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-20 h-20 bg-emerald-600 flex items-center justify-center rounded-full text-white">
+                                                            <AppLogoIcon className="w-10 h-10 fill-current" />
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td className="align-middle text-center border-none !p-0">
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>REPUBLIC OF THE PHILIPPINES</div>
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>DEPARTMENT OF EDUCATION</div>
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>MIMAROPA Region</div>
+                                                    <div className="font-serif text-[13px]" style={{ fontFamily: '"Times New Roman", serif' }}>Schools Division of Palawan</div>
+                                                    <div className="font-serif text-[16px] font-bold text-[#006400] uppercase my-1" style={{ fontFamily: '"Times New Roman", serif' }}>
+                                                        {system_settings?.name || 'SAN VICENTE NATIONAL HIGH SCHOOL'}
+                                                    </div>
+                                                    <div className="font-serif text-[12px] italic" style={{ fontFamily: '"Times New Roman", serif' }}>Poblacion, San Vicente, Palawan</div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
 
-
-                                <div className="mb-8 text-sm leading-relaxed font-medium text-gray-800">
-                                    <div className="grid grid-cols-[100px_1fr] gap-1">
-                                        <div>Period:</div>
-                                        <div>{formatDate(event.dateTime_start)} - {formatDate(event.dateTime_end)}</div>
-                                        <div>Total Records:</div>
-                                        <div>{logs.length.toLocaleString()}</div>
-                                    </div>
+                                <div className="text-center mb-5">
+                                    <h2 className="m-0 text-[16px] font-bold uppercase" style={{ fontFamily: '"Old English Text MT", "Times New Roman", serif' }}>OFFICIAL AUDIT LOG REPORT</h2>
+                                    <p className="m-[5px_0] text-[12px]">{event.name}</p>
+                                    <p className="m-0 text-[12px]">Date of Election: {formatDate(event.dateTime_start)}</p>
                                 </div>
+
+                                <table className="w-full mb-5 border-collapse">
+                                    <tbody>
+                                        <tr>
+                                            <td className="p-1 font-bold">Total Records: {logs.length.toLocaleString()}</td>
+                                            <td className="p-1 font-bold"></td>
+                                            <td className="p-1 font-bold"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
 
                                 <div className="mb-8">
-                                    <table className="w-full text-xs border-collapse border border-black">
+                                    <table className="w-full border-collapse border border-black table-fixed -mt-[1px]">
                                         <thead>
                                             <tr className="bg-gray-100">
                                                 <th className="border border-black px-2 py-1 text-left w-32">Timestamp</th>
