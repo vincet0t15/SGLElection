@@ -62,7 +62,11 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                 event={event}
                                 positions={positions}
                                 signatories={signatories}
-                                stats={stats}
+                                stats={{
+                                    total_voters: stats.actual_voters,
+                                    total_assigned_voters: stats.registered_voters,
+                                    voted_count: stats.actual_voters
+                                }}
                                 system_settings={system_settings}
                                 type={type as "official" | "winners" | undefined}
                             />
