@@ -88,6 +88,7 @@ class CandidateController extends Controller
             'position_id' => 'required|exists:positions,id',
             'partylist_id' => 'nullable|exists:partylists,id',
             'platform' => 'nullable|string',
+            'notes' => 'nullable|string',
             'photo' => 'nullable|image|max:5120',
             'voter_id' => 'nullable|exists:voters,id',
         ]);

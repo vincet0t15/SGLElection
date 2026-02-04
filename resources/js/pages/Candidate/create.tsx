@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useForm, Head, router, Link } from '@inertiajs/react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import CustomSelect from "@/components/custom-select";
 import AsyncVoterSelect from "@/components/async-voter-select";
@@ -52,6 +53,7 @@ type CandidateForm = {
     platform?: string | null;
     photo?: File | null;
     voter_id?: number | null;
+    is_linked_to_voter: boolean;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -80,6 +82,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
         platform: '',
         photo: null,
         voter_id: null,
+        is_linked_to_voter: true,
     });
 
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -298,40 +301,114 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
 
 
                                 <div className="space-y-6">
+                                    {/* Event Selection at the top */}
+                                    <div>
+                                        <h3 className="text-lg font-medium">Event Selection</h3>
+                                        <Separator className="my-2" />
+                                        <div className="grid gap-4 mt-4">
+                                            <div className="grid gap-2">
+                                                <Label>Event</Label>
+                                                <CustomSelect
+                                                    options={eventOptions}
+                                                    value={data.event_id ? String(data.event_id) : '0'}
+                                                    onChange={onChangeEvent}
+                                                    placeholder="Select Event"
+                                                />
+                                                <InputError message={errors.event_id} />
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div>
                                         <h3 className="text-lg font-medium">Personal Information</h3>
                                         <Separator className="my-2" />
                                         <div className="grid gap-4 mt-4">
-                                            {/* Link to Voter */}
-                                            <div className="grid gap-2">
-                                                <Label>Link to Voter (Optional)</Label>
-                                                <AsyncVoterSelect
-                                                    eventId={data.event_id}
-                                                    value={data.voter_id}
-                                                    onChange={onChangeVoter}
-                                                    placeholder={data.event_id ? "Select Voter" : "Select Event first to load voters"}
-                                                    disabled={!data.event_id}
-                                                    initialVoterName={data.name}
+                                            {/* Link to Voter Toggle */}
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id="is_linked_to_voter"
+                                                    checked={data.is_linked_to_voter}
+                                                    onCheckedChange={(checked) => {
+                                                        setData(prev => ({
+                                                            ...prev,
+                                                            is_linked_to_voter: checked as boolean,
+                                                            voter_id: null, // Reset voter selection when toggling
+                                                            name: checked ? '' : prev.name, // Clear name if enabling link (to force select), or keep if disabling
+                                                            year_level_id: checked ? 0 : prev.year_level_id,
+                                                            year_section_id: checked ? 0 : prev.year_section_id,
+                                                        }));
+                                                    }}
                                                 />
-                                                {!data.event_id && (
-                                                    <p className="text-[0.8rem] text-muted-foreground">
-                                                        Select an event below to search for existing voters.
-                                                    </p>
-                                                )}
+                                                <Label htmlFor="is_linked_to_voter" className="font-medium cursor-pointer">
+                                                    Link to existing voter account
+                                                </Label>
                                             </div>
+                                            <p className="text-[0.8rem] text-muted-foreground ml-6">
+                                                Enable this to select a registered voter. Disable to manually create a candidate profile without linking to a voter.
+                                            </p>
 
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="name">Full Name</Label>
-                                                <Input
-                                                    id="name"
-                                                    name="name"
-                                                    value={data.name}
-                                                    onChange={handleChange}
-                                                    placeholder="e.g. Juan Dela Cruz"
-                                                    disabled={!!data.voter_id}
-                                                />
-                                                <InputError message={errors.name} />
-                                            </div>
+                                            {/* Link to Voter Select */}
+                                            {data.is_linked_to_voter && (
+                                                <div className="grid gap-2">
+                                                    <Label>Search Voter</Label>
+                                                    <AsyncVoterSelect
+                                                        eventId={data.event_id}
+                                                        value={data.voter_id}
+                                                        onChange={onChangeVoter}
+                                                        placeholder={data.event_id ? "Select Voter" : "Select Event first to load voters"}
+                                                        disabled={!data.event_id}
+                                                        initialVoterName={data.name}
+                                                    />
+                                                    {!data.event_id && (
+                                                        <p className="text-[0.8rem] text-muted-foreground">
+                                                            Select an event below to search for existing voters.
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {!data.is_linked_to_voter && (
+                                                <div className="grid gap-4">
+                                                    <div className="grid gap-2">
+                                                        <Label htmlFor="name">Full Name</Label>
+                                                        <Input
+                                                            id="name"
+                                                            name="name"
+                                                            value={data.name}
+                                                            onChange={handleChange}
+                                                            placeholder="e.g. Juan Dela Cruz"
+                                                        />
+                                                        <InputError message={errors.name} />
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div className="grid gap-2">
+                                                            <Label>Year Level</Label>
+                                                            <CustomSelect
+                                                                options={yearLevelOptions}
+                                                                value={data.year_level_id ? String(data.year_level_id) : '0'}
+                                                                onChange={onChangeYearLevel}
+                                                                placeholder="Select Year Level"
+                                                            />
+                                                            <InputError message={errors.year_level_id} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <Label>Section</Label>
+                                                            <CustomSelect
+                                                                options={yearSectionOptions}
+                                                                value={data.year_section_id ? String(data.year_section_id) : '0'}
+                                                                onChange={onChangeYearSection}
+                                                                placeholder="Select Section"
+                                                                disabled={!data.year_level_id}
+                                                            />
+                                                            <InputError message={errors.year_section_id} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <Separator className="my-2" />
 
                                             <div className="grid gap-2">
                                                 <Label htmlFor="platform">Platform / Description (Optional)</Label>
@@ -345,32 +422,6 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                                                 />
                                                 <InputError message={errors.platform} />
                                             </div>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div className="grid gap-2">
-                                                    <Label>Year Level</Label>
-                                                    <CustomSelect
-                                                        options={yearLevelOptions}
-                                                        value={data.year_level_id ? String(data.year_level_id) : '0'}
-                                                        onChange={onChangeYearLevel}
-                                                        placeholder="Select Year Level"
-                                                        disabled={!!data.voter_id}
-                                                    />
-                                                    <InputError message={errors.year_level_id} />
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <Label>Section</Label>
-                                                    <CustomSelect
-                                                        options={yearSectionOptions}
-                                                        value={data.year_section_id ? String(data.year_section_id) : '0'}
-                                                        onChange={onChangeYearSection}
-                                                        placeholder="Select Section"
-                                                        disabled={!data.year_level_id || !!data.voter_id}
-                                                    />
-                                                    <InputError message={errors.year_section_id} />
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
@@ -378,18 +429,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                                         <h3 className="text-lg font-medium">Candidacy Details</h3>
                                         <Separator className="my-2" />
                                         <div className="grid gap-4 mt-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div className="grid gap-2">
-                                                    <Label>Event</Label>
-                                                    <CustomSelect
-                                                        options={eventOptions}
-                                                        value={data.event_id ? String(data.event_id) : '0'}
-                                                        onChange={onChangeEvent}
-                                                        placeholder="Select Event"
-                                                    />
-                                                    <InputError message={errors.event_id} />
-                                                </div>
-
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-2">
                                                     <Label>Position</Label>
                                                     <CustomSelect
