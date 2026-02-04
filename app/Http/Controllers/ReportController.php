@@ -529,4 +529,51 @@ class ReportController extends Controller
 
         return Inertia::render('Reports/Comelec', $data);
     }
+
+    public function exportComelecPdf(Event $event)
+    {
+        $totalRegisteredVoters = \App\Models\Voter::where('event_id', $event->id)->count();
+        $totalVotesCast = Vote::where('event_id', $event->id)->distinct('voter_id')->count();
+        $voterTurnout = $totalRegisteredVoters > 0 ? round(($totalVotesCast / $totalRegisteredVoters) * 100, 2) : 0;
+
+        $positions = Position::where('event_id', $event->id)
+            ->orderBy('id')
+            ->with(['candidates' => function ($query) use ($event) {
+                $query->with(['voter.yearLevel', 'voter.yearSection', 'partylist'])
+                    ->withCount(['votes' => function ($q) use ($event) {
+                        $q->where('event_id', $event->id);
+                    }])->orderBy('votes_count', 'desc')
+                    ->orderBy('is_tie_breaker_winner', 'desc');
+            }])
+            ->get();
+
+        $partylists = Partylist::where('event_id', $event->id)->get();
+
+        $signatories = Signatory::where('is_active', true)
+            ->where(function ($query) use ($event) {
+                $query->where('event_id', $event->id)
+                    ->orWhereNull('event_id');
+            })
+            ->orderBy('order')
+            ->get();
+
+        $system_settings = \App\Models\SystemSetting::first();
+
+        $data = [
+            'event' => $event,
+            'positions' => $positions,
+            'partylists' => $partylists,
+            'signatories' => $signatories,
+            'totalRegisteredVoters' => $totalRegisteredVoters,
+            'totalVotesCast' => $totalVotesCast,
+            'voterTurnout' => $voterTurnout,
+            'date' => Carbon::parse($event->start_date)->format('F d, Y'),
+            'system_settings' => $system_settings,
+        ];
+
+        $pdf = Pdf::loadView('reports.comelec_pdf', $data);
+        $pdf->setPaper('legal', 'portrait');
+
+        return $pdf->download("comelec_form_{$event->id}.pdf");
+    }
 }

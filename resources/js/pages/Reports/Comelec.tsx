@@ -4,7 +4,7 @@ import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { SharedData } from '@/types';
 import AppLogoIcon from '@/components/app-logo-icon';
-import { Printer } from 'lucide-react';
+import { Printer, Download } from 'lucide-react';
 
 interface Signatory {
     id: number;
@@ -56,8 +56,16 @@ export default function ReportsComelec({
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"
                 >
                     <Printer className="w-4 h-4" />
-                    Print / Save as PDF
+                    Print
                 </button>
+                <a
+                    href={`/reports/comelec/${event.id}/pdf`}
+                    target="_blank"
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition-colors shadow-sm"
+                >
+                    <Download className="w-4 h-4" />
+                    Export PDF
+                </a>
             </div>
 
             <div className="relative z-10 print:w-full">
