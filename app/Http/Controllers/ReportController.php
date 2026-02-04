@@ -499,7 +499,8 @@ class ReportController extends Controller
                 $query->with(['voter.yearLevel', 'voter.yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
-                    }])->orderBy('votes_count', 'desc');
+                    }])->orderBy('votes_count', 'desc')
+                    ->orderBy('is_tie_breaker_winner', 'desc');
             }])
             ->get();
 

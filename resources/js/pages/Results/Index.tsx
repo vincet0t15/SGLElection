@@ -37,6 +37,7 @@ interface Candidate {
     year_section: YearSection;
     partylist: Partylist | null;
     votes_count: number;
+    is_tie_breaker_winner?: boolean;
 }
 
 interface Position {
@@ -249,7 +250,15 @@ export default function ResultsIndex({ event, positions }: Props) {
                             const totalVotes = getTotalVotes(position.candidates);
 
 
-                            const sortedCandidates = [...position.candidates].sort((a, b) => b.votes_count - a.votes_count);
+                            const sortedCandidates = [...position.candidates].sort((a, b) => {
+                                if (b.votes_count !== a.votes_count) {
+                                    return b.votes_count - a.votes_count;
+                                }
+                                // If votes are equal, prioritize tie breaker winner
+                                const aTie = a.is_tie_breaker_winner ? 1 : 0;
+                                const bTie = b.is_tie_breaker_winner ? 1 : 0;
+                                return bTie - aTie;
+                            });
 
                             return (
                                 <Card key={position.id} className="overflow-hidden border-none shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
