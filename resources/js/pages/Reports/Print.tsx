@@ -47,7 +47,17 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
             <Head title={`Official Result - ${event.name}`} />
 
 
-            <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4 gap-2">
+            <div className="print:hidden mb-8 flex justify-end items-center border-b pb-4 gap-4">
+                <span className="text-xs text-gray-500 italic hidden sm:inline-block">
+                    Tip: Select "Save as PDF" in the print settings to export.
+                </span>
+                <a
+                    href={`/results/${event.id}/download-pdf${type ? `?type=${type}` : ''}`}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition-colors shadow-sm"
+                >
+                    <Download className="w-4 h-4" />
+                    Download PDF
+                </a>
                 <button
                     onClick={() => window.print()}
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"

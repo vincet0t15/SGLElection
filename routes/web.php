@@ -40,6 +40,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('vote-logs', [VoteLogController::class, 'index'])->name('vote-logs');
     Route::get('results', [ResultController::class, 'index'])->name('results.index');
     Route::get('results/{event}/print', [ResultController::class, 'exportPdf'])->name('results.print');
+    Route::get('results/{event}/download-pdf', [ResultController::class, 'downloadPdf'])->name('results.download-pdf');
 
     // Reports
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
