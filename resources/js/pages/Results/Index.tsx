@@ -174,7 +174,7 @@ export default function ResultsIndex({ event, positions }: Props) {
                             {event ? `Live updates for ${event.name}` : 'No active event found'}
                         </p>
                     </div>
-                    {event && (
+                    {event && showResults && (
                         <a
                             href={`/results/${event.id}/print`}
                             target="_blank"
