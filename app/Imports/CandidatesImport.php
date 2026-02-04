@@ -8,6 +8,7 @@ use App\Models\YearLevel;
 use App\Models\YearSection;
 use App\Models\Position;
 use App\Models\Partylist;
+use App\Models\Voter;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
@@ -73,7 +74,36 @@ class CandidatesImport implements ToModel, WithHeadingRow, WithValidation
         }
 
 
-        $exists = Candidate::where('name', trim($row['name']))
+        // Find or Create Voter
+        $voter = Voter::where('name', trim($row['name']))
+            ->where('event_id', $eventId)
+            ->first();
+
+        if (!$voter) {
+            $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', trim($row['name']))) . rand(100, 999);
+            while (Voter::where('username', $username)->exists()) {
+                $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', trim($row['name']))) . rand(100, 999);
+            }
+
+            $voter = Voter::create([
+                'name' => trim($row['name']),
+                'year_level_id' => $yearLevelId,
+                'year_section_id' => $sectionId,
+                'event_id' => $eventId,
+                'username' => $username,
+                'password' => 'password',
+                'is_active' => true,
+            ]);
+        } else {
+            // Update existing voter details to match import
+            $voter->update([
+                'year_level_id' => $yearLevelId,
+                'year_section_id' => $sectionId,
+            ]);
+        }
+
+
+        $exists = Candidate::where('voter_id', $voter->id)
             ->where('event_id', $eventId)
             ->where('position_id', $positionId)
             ->exists();
@@ -84,13 +114,11 @@ class CandidatesImport implements ToModel, WithHeadingRow, WithValidation
 
 
         return new Candidate([
-            'name'            => trim($row['name']),
             'event_id'        => $eventId,
             'position_id'     => $positionId,
-            'year_level_id'   => $yearLevelId,
-            'year_section_id' => $sectionId,
             'partylist_id'    => $partylistId,
             'platform'        => $row['platform'] ?? null,
+            'voter_id'        => $voter->id,
         ]);
     }
 

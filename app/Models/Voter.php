@@ -38,6 +38,11 @@ class Voter extends Authenticatable
         return $this->belongsTo(Event::class);
     }
 
+    public function candidate()
+    {
+        return $this->hasOne(Candidate::class);
+    }
+
     public function votes()
     {
         return $this->hasMany(Vote::class);

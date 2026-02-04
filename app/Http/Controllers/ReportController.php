@@ -33,7 +33,7 @@ class ReportController extends Controller
         $positions = $event->positions()
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->with(['candidatePhotos', 'yearLevel', 'yearSection', 'partylist'])
+                $query->with(['candidatePhotos', 'voter.yearLevel', 'voter.yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
                     }])
@@ -104,7 +104,7 @@ class ReportController extends Controller
         $positions = $event->positions()
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->with(['candidatePhotos', 'yearLevel', 'yearSection', 'partylist'])
+                $query->with(['candidatePhotos', 'voter.yearLevel', 'voter.yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
                     }])
@@ -170,7 +170,7 @@ class ReportController extends Controller
         $positions = $event->positions()
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->with(['candidatePhotos', 'yearLevel', 'yearSection', 'partylist'])
+                $query->with(['candidatePhotos', 'voter.yearLevel', 'voter.yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
                     }])
@@ -237,7 +237,7 @@ class ReportController extends Controller
     {
         $votes = \App\Models\Vote::where('event_id', $event->id)
             ->where('voter_id', $voter->id)
-            ->with(['candidate.partylist', 'position'])
+            ->with(['candidate.partylist', 'candidate.voter.yearLevel', 'candidate.voter.yearSection', 'position'])
             ->get()
             ->map(function ($vote) {
                 return [
@@ -309,7 +309,7 @@ class ReportController extends Controller
 
 
         $candidates = \App\Models\Candidate::where('event_id', $event->id)
-            ->with(['position', 'partylist'])
+            ->with(['position', 'partylist', 'voter'])
             ->get()
             ->map(function ($candidate) use ($event) {
                 $sectionVotes = \App\Models\Vote::where('candidate_id', $candidate->id)
@@ -456,7 +456,7 @@ class ReportController extends Controller
 
         $votes = Vote::where('event_id', $event->id)
             ->where('voter_id', $voter->id)
-            ->with(['candidate.position', 'candidate.partylist'])
+            ->with(['candidate.position', 'candidate.partylist', 'candidate.voter.yearLevel', 'candidate.voter.yearSection'])
             ->get();
 
         return Inertia::render('Reports/Receipt', [
@@ -496,9 +496,10 @@ class ReportController extends Controller
         $positions = Position::where('event_id', $event->id)
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->withCount(['votes' => function ($q) use ($event) {
-                    $q->where('event_id', $event->id);
-                }])->orderBy('votes_count', 'desc');
+                $query->with(['voter.yearLevel', 'voter.yearSection'])
+                    ->withCount(['votes' => function ($q) use ($event) {
+                        $q->where('event_id', $event->id);
+                    }])->orderBy('votes_count', 'desc');
             }])
             ->get();
 

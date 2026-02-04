@@ -53,7 +53,7 @@ class DashboardController extends Controller
                 $winners = $eventForWinners->positions()
                     ->orderBy('id')
                     ->with(['candidates' => function ($query) use ($eventForWinners) {
-                        $query->with(['candidatePhotos', 'yearLevel', 'yearSection'])
+                        $query->with(['candidatePhotos', 'voter.yearLevel', 'voter.yearSection'])
                             ->withCount(['votes' => function ($q) use ($eventForWinners) {
                                 $q->where('event_id', $eventForWinners->id);
                             }])

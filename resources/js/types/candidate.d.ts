@@ -3,6 +3,7 @@ import { PositionProps } from "./position";
 import { YearLevelProps } from "./yearlevel";
 import { YearSectionProps } from "./section";
 import { PartylistProps } from "./partylist";
+import { VoterProps } from "./voter";
 
 export interface CandidatePhoto {
     id: number;
@@ -27,6 +28,8 @@ export interface CandidateProps {
     year_section?: YearSectionProps;
     votes_count?: number;
     is_tie_breaker_winner?: boolean;
+    voter_id?: number | null;
+    voter?: VoterProps;
 }
 
 export type CandidateCreateProps = Omit<CandidateProps, 'id'>

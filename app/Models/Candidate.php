@@ -8,25 +8,49 @@ class Candidate extends Model
 {
     //
     protected $fillable = [
-        'name',
-        'year_level_id',
-        'year_section_id',
         'event_id',
         'position_id',
         'partylist_id',
         'platform',
         'is_tie_breaker_winner',
+        'voter_id',
     ];
 
-    public function yearLevel()
+    protected $with = ['voter']; // Eager load voter by default since we always need the name
+
+    protected $appends = ['name', 'year_level_id', 'year_section_id', 'year_level', 'year_section'];
+
+    public function getNameAttribute()
     {
-        return $this->belongsTo(YearLevel::class);
+        return $this->voter->name ?? null;
     }
 
-    public function yearSection()
+    public function getYearLevelIdAttribute()
     {
-        return $this->belongsTo(YearSection::class);
+        return $this->voter->year_level_id ?? null;
     }
+
+    public function getYearSectionIdAttribute()
+    {
+        return $this->voter->year_section_id ?? null;
+    }
+
+    public function getYearLevelAttribute()
+    {
+        return $this->voter->yearLevel ?? null;
+    }
+
+    public function getYearSectionAttribute()
+    {
+        return $this->voter->yearSection ?? null;
+    }
+
+    public function voter()
+    {
+        return $this->belongsTo(Voter::class);
+    }
+
+    // Removed direct yearLevel/yearSection relationships as they are now on Voter
 
     public function event()
     {

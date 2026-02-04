@@ -99,6 +99,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
 
     // VOTER
     Route::get('voter', [VoterController::class, 'index'])->name('voter.index');
+    Route::get('voter/search', [VoterController::class, 'search'])->name('voter.search');
     Route::get('voter/import', [VoterController::class, 'importView'])->name('voter.import.view');
     Route::post('voter/import', [VoterController::class, 'import'])->name('voter.import');
     Route::get('voter/template', [VoterController::class, 'downloadTemplate'])->name('voter.template');

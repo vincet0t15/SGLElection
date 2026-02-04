@@ -15,6 +15,28 @@ use Inertia\Inertia;
 
 class VoterController extends Controller
 {
+    public function search(Request $request)
+    {
+        $search = $request->query('search');
+        $eventId = $request->query('event_id');
+
+        $voters = Voter::query()
+            ->when($eventId, function ($query, $eventId) {
+                $query->where('event_id', $eventId);
+            })
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%");
+                });
+            })
+            ->with(['yearLevel', 'yearSection']) // Eager load relationships if needed
+            ->orderBy('name', 'asc')
+            ->paginate(20);
+
+        return response()->json($voters);
+    }
+
     public function index(Request $request)
     {
         $search = $request->query('search');

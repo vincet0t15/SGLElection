@@ -27,7 +27,7 @@ class ResultController extends Controller
         $positions = $event->positions()
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->with(['candidatePhotos', 'yearLevel', 'yearSection', 'partylist'])
+                $query->with(['candidatePhotos', 'voter.yearLevel', 'voter.yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
                     }])
@@ -101,7 +101,7 @@ class ResultController extends Controller
         $positions = $event->positions()
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->with(['candidatePhotos', 'yearLevel', 'yearSection', 'partylist'])
+                $query->with(['candidatePhotos', 'voter.yearLevel', 'voter.yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
                     }])

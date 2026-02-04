@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import CustomSelect from "@/components/custom-select";
+import AsyncVoterSelect from "@/components/async-voter-select";
 import InputError from "@/components/input-error";
 import { ChangeEventHandler, SubmitEventHandler, useMemo, useState } from "react";
 import { LoaderCircle, ChevronLeft, Upload, ImagePlus } from "lucide-react";
@@ -42,6 +43,7 @@ type CandidateForm = {
     partylist_id: number | null;
     platform?: string | null;
     photo?: File | null;
+    voter_id?: number | null;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -69,6 +71,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
         partylist_id: candidate.partylist_id ?? null,
         platform: candidate.platform ?? '',
         photo: null,
+        voter_id: candidate.voter?.id ?? null,
     });
 
     const [previewUrl, setPreviewUrl] = useState<string | null>(
@@ -76,6 +79,26 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
             ? `/storage/${candidate.candidate_photos[0].path}`
             : null
     );
+
+    const onChangeVoter = (voter: any) => {
+        if (voter) {
+            setData(prev => ({
+                ...prev,
+                voter_id: voter.id,
+                name: voter.name,
+                year_level_id: voter.year_level_id,
+                year_section_id: voter.year_section_id,
+            }));
+        } else {
+            setData(prev => ({
+                ...prev,
+                voter_id: null,
+                name: '',
+                year_level_id: 0,
+                year_section_id: 0,
+            }));
+        }
+    }
 
     const yearLevelOptions = useMemo(() => yearLevels.map((yl) => ({
         value: String(yl.id),
@@ -253,6 +276,24 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                                         <h3 className="text-lg font-medium">Personal Information</h3>
                                         <Separator className="my-2" />
                                         <div className="grid gap-4 mt-4">
+                                            {/* Link to Voter */}
+                                            <div className="grid gap-2">
+                                                <Label>Link to Voter (Optional)</Label>
+                                                <AsyncVoterSelect
+                                                    eventId={data.event_id}
+                                                    value={data.voter_id}
+                                                    onChange={onChangeVoter}
+                                                    placeholder={data.event_id ? "Select Voter" : "Select Event first to load voters"}
+                                                    disabled={!data.event_id}
+                                                    initialVoterName={data.name}
+                                                />
+                                                {!data.event_id && (
+                                                    <p className="text-[0.8rem] text-muted-foreground">
+                                                        Select an event below to search for existing voters.
+                                                    </p>
+                                                )}
+                                            </div>
+
                                             <div className="grid gap-2">
                                                 <Label htmlFor="name">Full Name</Label>
                                                 <Input
@@ -261,6 +302,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                                                     value={data.name}
                                                     onChange={handleChange}
                                                     placeholder="e.g. Juan Dela Cruz"
+                                                    disabled={!!data.voter_id}
                                                 />
                                                 <InputError message={errors.name} />
                                             </div>
@@ -286,6 +328,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                                                         value={data.year_level_id ? String(data.year_level_id) : '0'}
                                                         onChange={onChangeYearLevel}
                                                         placeholder="Select Year Level"
+                                                        disabled={!!data.voter_id}
                                                     />
                                                     <InputError message={errors.year_level_id} />
                                                 </div>
@@ -297,7 +340,7 @@ export default function CandidateEdit({ candidate, events, yearLevels, positions
                                                         value={data.year_section_id ? String(data.year_section_id) : '0'}
                                                         onChange={onChangeYearSection}
                                                         placeholder="Select Section"
-                                                        disabled={!data.year_level_id}
+                                                        disabled={!data.year_level_id || !!data.voter_id}
                                                     />
                                                     <InputError message={errors.year_section_id} />
                                                 </div>

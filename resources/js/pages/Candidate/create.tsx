@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import CustomSelect from "@/components/custom-select";
+import AsyncVoterSelect from "@/components/async-voter-select";
 import InputError from "@/components/input-error";
 import { ChangeEventHandler, FormEventHandler, SubmitEventHandler, useMemo, useState } from "react";
 import { LoaderCircle, ChevronLeft, Upload, ImagePlus } from "lucide-react";
@@ -25,11 +26,19 @@ interface Position {
     event_id: number;
 }
 
+interface Voter {
+    id: number;
+    name: string;
+    year_level_id: number;
+    year_section_id: number;
+}
+
 interface Props {
     events: EventProps[];
     yearLevels: YearLevelProps[];
     positions: Position[];
     partylists: PartylistProps[];
+    voters?: Voter[];
     event_id?: string;
 }
 
@@ -42,6 +51,7 @@ type CandidateForm = {
     partylist_id: number | null;
     platform?: string | null;
     photo?: File | null;
+    voter_id?: number | null;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -59,7 +69,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function CandidateCreate({ events, yearLevels, positions, partylists, event_id }: Props) {
+export default function CandidateCreate({ events, yearLevels, positions, partylists, voters = [], event_id }: Props) {
     const { data, setData, post, reset, processing, errors } = useForm<CandidateForm>({
         name: '',
         year_level_id: 0,
@@ -69,6 +79,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
         partylist_id: null,
         platform: '',
         photo: null,
+        voter_id: null,
     });
 
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -107,6 +118,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
     }
 
     const onChangeYearLevel = (yearLevelId: string) => {
+        if (data.voter_id) return; // Prevent change if linked to voter
         setData(prev => ({
             ...prev,
             year_level_id: Number(yearLevelId),
@@ -115,6 +127,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
     }
 
     const onChangeYearSection = (yearSectionId: string) => {
+        if (data.voter_id) return; // Prevent change if linked to voter
         setData('year_section_id', Number(yearSectionId));
     }
 
@@ -123,13 +136,14 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
             ...prev,
             event_id: Number(eventId),
             position_id: 0,
+            voter_id: null,
         }));
 
 
         router.get('/candidate/create', { event_id: eventId }, {
             preserveState: true,
             preserveScroll: true,
-            only: ['positions', 'partylists', 'event_id'],
+            only: ['positions', 'partylists', 'voters', 'event_id'],
             replace: true,
 
         });
@@ -141,6 +155,26 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
 
     const onChangePartylist = (partylistId: string) => {
         setData('partylist_id', Number(partylistId));
+    }
+
+    const onChangeVoter = (voter: any) => {
+        if (voter) {
+            setData(prev => ({
+                ...prev,
+                voter_id: voter.id,
+                name: voter.name,
+                year_level_id: voter.year_level_id,
+                year_section_id: voter.year_section_id,
+            }));
+        } else {
+            setData(prev => ({
+                ...prev,
+                voter_id: null,
+                name: '',
+                year_level_id: 0,
+                year_section_id: 0,
+            }));
+        }
     }
 
 
@@ -268,6 +302,24 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                                         <h3 className="text-lg font-medium">Personal Information</h3>
                                         <Separator className="my-2" />
                                         <div className="grid gap-4 mt-4">
+                                            {/* Link to Voter */}
+                                            <div className="grid gap-2">
+                                                <Label>Link to Voter (Optional)</Label>
+                                                <AsyncVoterSelect
+                                                    eventId={data.event_id}
+                                                    value={data.voter_id}
+                                                    onChange={onChangeVoter}
+                                                    placeholder={data.event_id ? "Select Voter" : "Select Event first to load voters"}
+                                                    disabled={!data.event_id}
+                                                    initialVoterName={data.name}
+                                                />
+                                                {!data.event_id && (
+                                                    <p className="text-[0.8rem] text-muted-foreground">
+                                                        Select an event below to search for existing voters.
+                                                    </p>
+                                                )}
+                                            </div>
+
                                             <div className="grid gap-2">
                                                 <Label htmlFor="name">Full Name</Label>
                                                 <Input
@@ -276,6 +328,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                                                     value={data.name}
                                                     onChange={handleChange}
                                                     placeholder="e.g. Juan Dela Cruz"
+                                                    disabled={!!data.voter_id}
                                                 />
                                                 <InputError message={errors.name} />
                                             </div>
@@ -301,6 +354,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                                                         value={data.year_level_id ? String(data.year_level_id) : '0'}
                                                         onChange={onChangeYearLevel}
                                                         placeholder="Select Year Level"
+                                                        disabled={!!data.voter_id}
                                                     />
                                                     <InputError message={errors.year_level_id} />
                                                 </div>
@@ -312,7 +366,7 @@ export default function CandidateCreate({ events, yearLevels, positions, partyli
                                                         value={data.year_section_id ? String(data.year_section_id) : '0'}
                                                         onChange={onChangeYearSection}
                                                         placeholder="Select Section"
-                                                        disabled={!data.year_level_id}
+                                                        disabled={!data.year_level_id || !!data.voter_id}
                                                     />
                                                     <InputError message={errors.year_section_id} />
                                                 </div>

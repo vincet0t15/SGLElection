@@ -9,6 +9,7 @@ use App\Models\Partylist;
 use App\Models\Position;
 use App\Models\YearLevel;
 use App\Models\YearSection;
+use App\Models\Voter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -27,18 +28,24 @@ class CandidateController extends Controller
         $partylistId = $request->input('partylist_id');
 
         $candidates = Candidate::query()
-            ->with(['event', 'position', 'partylist', 'yearLevel', 'yearSection', 'candidatePhotos'])
+            ->with(['event', 'position', 'partylist', 'candidatePhotos', 'voter.yearLevel', 'voter.yearSection'])
             ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%");
+                $query->whereHas('voter', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
             })
             ->when($eventId, function ($query) use ($eventId) {
                 $query->where('event_id', $eventId);
             })
             ->when($yearLevelId, function ($query) use ($yearLevelId) {
-                $query->where('year_level_id', $yearLevelId);
+                $query->whereHas('voter', function ($q) use ($yearLevelId) {
+                    $q->where('year_level_id', $yearLevelId);
+                });
             })
             ->when($yearSectionId, function ($query) use ($yearSectionId) {
-                $query->where('year_section_id', $yearSectionId);
+                $query->whereHas('voter', function ($q) use ($yearSectionId) {
+                    $q->where('year_section_id', $yearSectionId);
+                });
             })
             ->when($partylistId, function ($query) use ($partylistId) {
                 $query->where('partylist_id', $partylistId);
@@ -80,16 +87,37 @@ class CandidateController extends Controller
             'partylist_id' => 'nullable|exists:partylists,id',
             'platform' => 'nullable|string',
             'photo' => 'nullable|image|max:5120',
+            'voter_id' => 'nullable|exists:voters,id',
         ]);
 
+        $voterId = $validated['voter_id'] ?? null;
+
+        if (!$voterId) {
+            // Create new voter
+            $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $validated['name'])) . rand(100, 999);
+            // Ensure uniqueness (simple check)
+            while (Voter::where('username', $username)->exists()) {
+                $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $validated['name'])) . rand(100, 999);
+            }
+
+            $voter = Voter::create([
+                'name' => $validated['name'],
+                'year_level_id' => $validated['year_level_id'],
+                'year_section_id' => $validated['year_section_id'],
+                'event_id' => $validated['event_id'],
+                'username' => $username,
+                'password' => 'password', // Default password
+                'is_active' => true,
+            ]);
+            $voterId = $voter->id;
+        }
+
         $candidate = Candidate::create([
-            'name' => $validated['name'],
-            'year_level_id' => $validated['year_level_id'],
-            'year_section_id' => $validated['year_section_id'],
             'event_id' => $validated['event_id'],
             'position_id' => $validated['position_id'],
             'partylist_id' => $validated['partylist_id'] ?? null,
             'platform' => $validated['platform'] ?? null,
+            'voter_id' => $voterId,
         ]);
 
         if ($request->hasFile('photo')) {
@@ -116,9 +144,12 @@ class CandidateController extends Controller
 
         $positions = [];
         $partylists = [];
+        $voters = [];
+
         if ($request->has('event_id')) {
             $positions = Position::where('event_id', $request->event_id)->get();
             $partylists = Partylist::where('event_id', $request->event_id)->get();
+            // $voters = Voter::where('event_id', $request->event_id)->orderBy('name')->get(); // Removed to optimize
         }
 
         return Inertia::render('Candidate/create', [
@@ -126,13 +157,14 @@ class CandidateController extends Controller
             'yearLevels' => $yearLevels,
             'positions' => $positions,
             'partylists' => $partylists,
+            'voters' => [], // Empty array as we use async select
             'event_id' => $request->event_id,
         ]);
     }
 
     public function edit(Candidate $candidate)
     {
-        $candidate->load(['candidatePhotos', 'event', 'position', 'yearLevel', 'yearSection', 'partylist']);
+        $candidate->load(['candidatePhotos', 'event', 'position', 'partylist', 'voter']);
 
         $events = Event::query()->where('is_active', true)->get();
         $yearLevels = YearLevel::query()->with('section')->orderBy('name', 'asc')->get();
@@ -159,16 +191,36 @@ class CandidateController extends Controller
             'partylist_id' => 'nullable|exists:partylists,id',
             'platform' => 'nullable|string',
             'photo' => 'nullable|image|max:5120',
+            'voter_id' => 'nullable|exists:voters,id',
         ]);
 
+        $voterId = $validated['voter_id'] ?? null;
+
+        if (!$voterId) {
+            // Create new voter if one isn't selected
+            $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $validated['name'])) . rand(100, 999);
+            while (Voter::where('username', $username)->exists()) {
+                $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $validated['name'])) . rand(100, 999);
+            }
+
+            $voter = Voter::create([
+                'name' => $validated['name'],
+                'username' => $username,
+                'password' => bcrypt('password'),
+                'year_level_id' => $validated['year_level_id'],
+                'year_section_id' => $validated['year_section_id'],
+                'event_id' => $validated['event_id'],
+            ]);
+            $voterId = $voter->id;
+        }
+
+        // Update Candidate
         $candidate->update([
-            'name' => $validated['name'],
-            'year_level_id' => $validated['year_level_id'],
-            'year_section_id' => $validated['year_section_id'],
             'event_id' => $validated['event_id'],
             'position_id' => $validated['position_id'],
             'partylist_id' => $validated['partylist_id'] ?? null,
             'platform' => $validated['platform'] ?? null,
+            'voter_id' => $voterId,
         ]);
 
         if ($request->hasFile('photo')) {
@@ -219,36 +271,8 @@ class CandidateController extends Controller
         try {
             Excel::import(new CandidatesImport, $request->file('file'));
             return redirect()->back()->with('success', 'Candidates imported successfully.');
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            $failures = $e->failures();
-            $messages = [];
-            foreach ($failures as $failure) {
-                $messages[] = 'Row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
-            }
-            return redirect()->back()->withErrors(['file' => implode(' | ', $messages)]);
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['file' => 'Error importing file: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Error importing candidates: ' . $e->getMessage()]);
         }
-    }
-
-    public function template()
-    {
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="candidates_template.csv"',
-        ];
-
-        $columns = ['name', 'event', 'position', 'year_level', 'section', 'partylist', 'platform'];
-
-        $callback = function () use ($columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
-
-            fputcsv($file, ['John Doe', 'SSG Election 2024', 'President', 'Grade 7', 'Section A', 'Blue Party', 'My platform...']);
-
-            fclose($file);
-        };
-
-        return new StreamedResponse($callback, 200, $headers);
     }
 }
