@@ -15,7 +15,6 @@ use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\VoterReceiptExport;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
@@ -86,9 +85,18 @@ class ReportController extends Controller
 
         $totalAssignedVoters = \App\Models\Voter::where('event_id', $event->id)->count();
 
+        $signatories = Signatory::where('is_active', true)
+            ->where(function ($query) use ($event) {
+                $query->where('event_id', $event->id)
+                    ->orWhereNull('event_id');
+            })
+            ->orderBy('order')
+            ->get();
+
         return Inertia::render('Reports/Show', [
             'event' => $event,
             'positions' => $positions,
+            'signatories' => $signatories,
             'stats' => [
                 'total_voters' => $totalVoters,
                 'total_assigned_voters' => $totalAssignedVoters,

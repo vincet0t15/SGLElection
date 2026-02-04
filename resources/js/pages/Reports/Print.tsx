@@ -1,10 +1,12 @@
 import { Head, usePage } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { SharedData } from '@/types';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Printer, Download } from 'lucide-react';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import OfficialResultPDF from '@/components/reports/OfficialResultPDF';
 
 interface Signatory {
     id: number;
@@ -28,8 +30,10 @@ interface Props {
 
 export default function ReportsPrint({ event, positions, signatories, stats, type }: Props) {
     const { system_settings } = usePage<SharedData>().props;
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
+        setIsClient(true);
         // Optional: Auto-print when loaded
         // window.print();
     }, []);
@@ -51,13 +55,29 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                 <span className="text-xs text-gray-500 italic hidden sm:inline-block">
                     Tip: Select "Save as PDF" in the print settings to export.
                 </span>
-                <a
-                    href={`/results/${event.id}/download-pdf${type ? `?type=${type}` : ''}`}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition-colors shadow-sm"
-                >
-                    <Download className="w-4 h-4" />
-                    Download PDF
-                </a>
+                {isClient && (
+                    <PDFDownloadLink
+                        document={
+                            <OfficialResultPDF
+                                event={event}
+                                positions={positions}
+                                signatories={signatories}
+                                stats={stats}
+                                system_settings={system_settings}
+                                type={type as "official" | "winners" | undefined}
+                            />
+                        }
+                        fileName={`official_result_${type === 'winners' ? 'winners_' : ''}${event.id}.pdf`}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition-colors shadow-sm"
+                    >
+                        {({ loading }) => (
+                            <>
+                                <Download className="w-4 h-4" />
+                                {loading ? 'Loading...' : 'Download PDF'}
+                            </>
+                        )}
+                    </PDFDownloadLink>
+                )}
                 <button
                     onClick={() => window.print()}
                     className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm"

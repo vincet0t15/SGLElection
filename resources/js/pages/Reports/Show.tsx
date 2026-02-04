@@ -7,6 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import OfficialResultPDF from '@/components/reports/OfficialResultPDF';
+import { SharedData } from '@/types';
 import {
     Dialog,
     DialogContent,
@@ -41,6 +44,13 @@ interface Voter {
     has_voted: boolean;
 }
 
+interface Signatory {
+    id: number;
+    name: string;
+    position: string;
+    description: string | null;
+}
+
 interface Vote {
     id: number;
     position: string;
@@ -67,6 +77,7 @@ interface PaginatedVoters {
 interface Props {
     event: EventProps;
     positions: PositionProps[];
+    signatories: Signatory[];
     stats: {
         total_voters: number;
         total_assigned_voters: number;
@@ -79,8 +90,9 @@ interface Props {
     };
 }
 
-export default function ReportsShow({ event, positions, stats, voters, filters }: Props) {
-    const { url } = usePage();
+export default function ReportsShow({ event, positions, signatories, stats, voters, filters }: Props) {
+    const { url, props } = usePage<SharedData>();
+    const { system_settings } = props;
     const backUrl = url.includes('from=archives') ? '/archives' : '/reports';
 
     const turnoutPercentage = stats.total_assigned_voters > 0
@@ -93,6 +105,11 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
     const [votes, setVotes] = useState<Vote[]>([]);
     const [isLoadingVotes, setIsLoadingVotes] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const [resolveTieDialogOpen, setResolveTieDialogOpen] = useState(false);
     const [selectedTiePosition, setSelectedTiePosition] = useState<{ id: number; name: string; candidates: any[] } | null>(null);
