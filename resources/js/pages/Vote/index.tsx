@@ -165,8 +165,10 @@ export default function VoteIndex({ events }: Props) {
                                 "hidden md:flex shadow-md transition-all",
                                 votedPositions === totalPositions
                                     ? "bg-green-600 hover:bg-green-700 text-white shadow-green-200"
-                                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200"
+                                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200 hidden"
+
                             )}
+
                         >
                             {votedPositions === totalPositions ? 'Submit Vote' : 'Review & Submit'}
                             <ChevronRight className="ml-2 h-4 w-4" />
@@ -378,6 +380,7 @@ export default function VoteIndex({ events }: Props) {
                     )}
                     onClick={handleSubmit}
                     disabled={votedPositions === 0}
+                    hidden={isConfirmOpen}
                 >
                     {votedPositions === totalPositions ? (
                         <>Submit Vote <Check className="ml-2 h-5 w-5" /></>
