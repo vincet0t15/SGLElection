@@ -277,7 +277,7 @@
                     }
                 }
 
-                $isWinner = $index < $position->max_votes || $candidate->is_tie_breaker_winner;
+                $isWinner = ($index < $position->max_votes && $votes > 0) || $candidate->is_tie_breaker_winner;
                 ?>
                 <tr>
                     <td class="uppercase">{{ $index + 1 }}. {{ $candidate->name }}</td>

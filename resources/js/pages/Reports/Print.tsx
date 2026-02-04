@@ -189,7 +189,7 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                                 }
 
                                                                 const rank = position.candidates.findIndex(c => c.votes_count === votes) + 1;
-                                                                const isWinner = index < position.max_votes || candidate.is_tie_breaker_winner;
+                                                                const isWinner = (index < position.max_votes && votes > 0) || candidate.is_tie_breaker_winner;
 
                                                                 return (
                                                                     <tr key={candidate.id} className="border-b border-black last:border-b-0">
