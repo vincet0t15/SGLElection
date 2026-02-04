@@ -16,6 +16,8 @@ use Inertia\Inertia;
 use App\Imports\CandidatesImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Exports\CandidateTemplateExport;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CandidateController extends Controller
 {
@@ -274,5 +276,10 @@ class CandidateController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Error importing candidates: ' . $e->getMessage()]);
         }
+    }
+
+    public function template(): BinaryFileResponse
+    {
+        return Excel::download(new CandidateTemplateExport, 'candidates_template.xlsx');
     }
 }
