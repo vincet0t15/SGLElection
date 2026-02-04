@@ -314,7 +314,7 @@ export default function CandidateIndex({ candidates, events, partylists, yearLev
                                             {group.candidates.map((candidate, index) => (
                                                 <TableRow key={index} className="text-sm">
                                                     <TableCell>
-                                                        <Avatar className="h-10 w-10 border border-green-500">
+                                                        <Avatar className="h-10 w-10 border border-teal-500">
                                                             <AvatarImage
                                                                 src={candidate.candidate_photos?.[0]?.path ? `/storage/${candidate.candidate_photos[0].path}` : ''}
                                                                 alt={candidate.name}

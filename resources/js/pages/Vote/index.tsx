@@ -165,7 +165,7 @@ export default function VoteIndex({ events }: Props) {
                                 "hidden md:flex shadow-md transition-all",
                                 votedPositions === totalPositions
                                     ? "bg-green-600 hover:bg-green-700 text-white shadow-green-200"
-                                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200 hidden"
+                                    : "bg-green-600 hover:bg-green-700 text-white shadow-green-200 hidden"
 
                             )}
 
@@ -178,7 +178,7 @@ export default function VoteIndex({ events }: Props) {
 
                 <div className="md:hidden w-full h-1 bg-slate-100">
                     <div
-                        className="h-full bg-blue-600 transition-all duration-500 ease-out"
+                        className="h-full bg-green-600 transition-all duration-500 ease-out"
                         style={{ width: `${progressPercentage}%` }}
                     />
                 </div>
@@ -187,7 +187,7 @@ export default function VoteIndex({ events }: Props) {
             <main className="container mx-auto max-w-5xl px-4 py-8 space-y-10">
 
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-600 via-emerald-500 to-green-600"></div>
 
                     <div className="mb-6 flex justify-center border-b border-slate-100 pb-6">
                         <table className="border-collapse border-none">
@@ -248,11 +248,11 @@ export default function VoteIndex({ events }: Props) {
 
                                     <div className="flex items-center justify-between mb-6 sticky top-16 z-30 bg-slate-50/95 backdrop-blur py-3 border-b border-slate-200">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-8 w-1 bg-blue-600 rounded-full" />
+                                            <div className="h-8 w-1 bg-green-600 rounded-full" />
                                             <div>
                                                 <h3 className="text-xl font-bold text-slate-900">{position.name}</h3>
                                                 <p className="text-xs text-slate-500 font-medium">
-                                                    Vote for <span className="text-blue-600 font-bold">{position.max_votes}</span>
+                                                    Vote for <span className="text-green-600 font-bold">{position.max_votes}</span>
                                                 </p>
                                             </div>
                                         </div>
@@ -282,13 +282,13 @@ export default function VoteIndex({ events }: Props) {
                                                     className={cn(
                                                         "group relative flex flex-row sm:flex-col bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-200 border",
                                                         selected
-                                                            ? "border-blue-500 ring-1 ring-blue-500 shadow-lg shadow-blue-100 z-10"
-                                                            : "border-slate-200 hover:border-blue-300 hover:shadow-md"
+                                                            ? "border-green-500 ring-1 ring-green-500 shadow-lg shadow-green-100 z-10"
+                                                            : "border-slate-200 hover:border-green-300 hover:shadow-md"
                                                     )}
                                                 >
 
                                                     {selected && (
-                                                        <div className="absolute top-2 right-2 z-20 bg-blue-600 text-white p-1 rounded-full shadow-sm animate-in zoom-in duration-200">
+                                                        <div className="absolute top-2 right-2 z-20 bg-green-600 text-white p-1 rounded-full shadow-sm animate-in zoom-in duration-200">
                                                             <Check className="h-3 w-3 stroke-[4]" />
                                                         </div>
                                                     )}
@@ -326,7 +326,7 @@ export default function VoteIndex({ events }: Props) {
 
                                                         {candidate.partylist && (
                                                             <div className="mb-1 sm:hidden">
-                                                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
+                                                                <span className="text-[10px] font-bold text-green-600 uppercase tracking-wider">
                                                                     {candidate.partylist.name}
                                                                 </span>
                                                             </div>
@@ -334,7 +334,7 @@ export default function VoteIndex({ events }: Props) {
 
                                                         <h4 className={cn(
                                                             "font-bold text-base sm:text-lg leading-tight text-slate-900 mb-1",
-                                                            selected && "text-blue-700"
+                                                            selected && "text-green-700"
                                                         )}>
                                                             {candidate.name}
                                                         </h4>
