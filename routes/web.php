@@ -39,6 +39,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('vote-logs', [VoteLogController::class, 'index'])->name('vote-logs');
     Route::get('results', [ResultController::class, 'index'])->name('results.index');
+    Route::get('results/{event}/print', [ResultController::class, 'exportPdf'])->name('results.print');
 
     // Reports
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');

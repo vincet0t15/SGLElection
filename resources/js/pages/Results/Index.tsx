@@ -3,8 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trophy, Medal, User, AlertCircle, HelpCircle, Clock } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Trophy, Medal, User, AlertCircle, HelpCircle, Clock, Printer } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
 
@@ -174,7 +174,16 @@ export default function ResultsIndex({ event, positions }: Props) {
                             {event ? `Live updates for ${event.name}` : 'No active event found'}
                         </p>
                     </div>
-
+                    {event && (
+                        <a
+                            href={`/results/${event.id}/print`}
+                            target="_blank"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-500 font-medium text-sm shadow-sm border border-emerald-100 dark:border-emerald-900/30 hover:shadow-md hover:bg-emerald-50 dark:hover:bg-slate-700 transition-all duration-300 group"
+                        >
+                            <Printer className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            <span>Print Official Results</span>
+                        </a>
+                    )}
                     {event && event.is_active && !isTimeUp && timeLeft && (
                         <div className="flex flex-col items-center animate-in fade-in zoom-in duration-500">
                             <div className="flex items-center gap-2 mb-2 text-sm font-medium text-emerald-600 uppercase tracking-widest">
