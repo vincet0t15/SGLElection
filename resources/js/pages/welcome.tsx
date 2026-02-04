@@ -1,15 +1,16 @@
 import { Head, Link } from '@inertiajs/react';
-import { 
-    CheckCircle, 
-    ShieldCheck, 
-    Users, 
-    Vote, 
-    ClipboardCheck, 
-    Lock, 
-    Smartphone, 
-    ChevronRight, 
+import {
+    CheckCircle,
+    ShieldCheck,
+    Users,
+    Vote,
+    ClipboardCheck,
+    Lock,
+    Smartphone,
+    ChevronRight,
     BarChart3,
-    FileCheck
+    FileCheck,
+    Fingerprint
 } from 'lucide-react';
 import { login } from '@/routes';
 import { login as voterLogin } from '@/routes/voter';
@@ -25,16 +26,23 @@ export default function Welcome() {
                     <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="bg-emerald-600 p-2.5 rounded-xl text-white shadow-lg shadow-emerald-600/20">
-                                <Vote className="h-6 w-6" />
+                                <Fingerprint className="h-6 w-6" />
                             </div>
-                            <div>
-                                <span className="block text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">SGLL</span>
-                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 tracking-wider uppercase">Voting System</span>
+                            <div className="flex-1 flex flex-col items-center justify-center text-center ">
+                                <span className="text-2xl font-bold bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 bg-clip-text text-transparent tracking-widest mb-[-0.5rem]">
+                                    SVNHS
+                                </span>
+                                <span className="text-[12px] text-primary tracking-wide mb-[-0.2rem]">
+                                    Electronic Voting and
+                                </span>
+                                <span className="text-[12px] text-primary tracking-wide mb-[-0.5rem]">
+                                    Tallying System <span className='font-bold'>(eVote)</span>
+                                </span>
                             </div>
                         </div>
                         <nav className="flex gap-4">
-                            <Link 
-                                href={login().url} 
+                            <Link
+                                href={login().url}
                                 className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors px-4 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
                             >
                                 <ShieldCheck className="h-4 w-4" />
@@ -52,14 +60,14 @@ export default function Welcome() {
                                 <span className="flex h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span>
                                 Secure Digital Election Platform
                             </div>
-                            
+
                             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-8 leading-tight">
                                 Democracy made <br className="hidden md:block" />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">Simple & Secure</span>
                             </h1>
-                            
+
                             <p className="mt-6 text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-12 leading-relaxed">
-                                Empowering institutions with a transparent, tamper-proof, and efficient voting infrastructure. 
+                                Empowering institutions with a transparent, tamper-proof, and efficient voting infrastructure.
                                 Experience the future of elections today.
                             </p>
 
@@ -128,20 +136,20 @@ export default function Welcome() {
 
                                 {/* Steps */}
                                 {[
-                                    { 
-                                        title: "Login Securely", 
+                                    {
+                                        title: "Login Securely",
                                         desc: "Access the platform using your unique voter credentials.",
                                         icon: Lock,
                                         step: "01"
                                     },
-                                    { 
-                                        title: "Cast Your Vote", 
+                                    {
+                                        title: "Cast Your Vote",
                                         desc: "Select your preferred candidates for each position easily.",
                                         icon: Vote,
                                         step: "02"
                                     },
-                                    { 
-                                        title: "Verify Receipt", 
+                                    {
+                                        title: "Verify Receipt",
                                         desc: "Review your choices and receive a digital confirmation.",
                                         icon: ClipboardCheck,
                                         step: "03"
@@ -212,7 +220,7 @@ export default function Welcome() {
                             </div>
                             <span className="font-bold text-slate-900 dark:text-white">SGLL Voting System</span>
                         </div>
-                        
+
                         <div className="text-slate-500 dark:text-slate-400 text-sm">
                             &copy; {new Date().getFullYear()} SGLL Voting System. All rights reserved.
                         </div>
