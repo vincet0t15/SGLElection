@@ -36,11 +36,9 @@ export default function PrintCards({ voters, filters }: Props) {
                 </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-0 border-t border-l border-gray-300 print:w-full">
+            <div className="grid grid-cols-5 gap-0 border-t border-l border-gray-300 print:w-full">
                 {voters.map((voter) => (
-                    <div key={voter.id} className="border-b border-r border-gray-300 p-3 break-inside-avoid relative page-break-inside-avoid h-[60mm] flex flex-col justify-between">
-
-
+                    <div key={voter.id} className="border-b border-r border-gray-300 p-3 break-inside-avoid relative page-break-inside-avoid h-[40mm] flex flex-col justify-between">
                         <div className="absolute top-0 right-0 p-1 opacity-20 print:opacity-10">
                             <Scissors size={10} />
                         </div>
@@ -72,18 +70,18 @@ export default function PrintCards({ voters, filters }: Props) {
 
                             <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                    <div className="text-[9px] text-gray-500 uppercase tracking-wider">Username</div>
+                                    <div className="text-[9px] text-gray-900 uppercase tracking-wider">Username</div>
                                     <div className="font-mono font-bold bg-gray-50 px-1 rounded inline-block">{voter.username}</div>
                                 </div>
                                 <div>
-                                    <div className="text-[9px] text-gray-500 uppercase tracking-wider">Password</div>
+                                    <div className="text-[9px] text-gray-900 uppercase tracking-wider">Password</div>
                                     <div className="font-mono font-bold bg-gray-50 px-1 rounded inline-block">{voter.username}</div>
                                 </div>
                             </div>
                         </div>
 
 
-                        <div className="mt-2 pt-1 text-[9px] text-gray-400 flex justify-between items-center border-t border-gray-100">
+                        <div className="mt-2 pt-1 text-[9px] text-gray-900 flex justify-between items-center border-t border-gray-100">
                             <span className="truncate max-w-[60%]">{voter.year_level?.name} - {voter.year_section?.name}</span>
                             <span className="font-mono">{voter.lrn_number}</span>
                         </div>
@@ -94,14 +92,17 @@ export default function PrintCards({ voters, filters }: Props) {
                 @media print {
                     @page {
                         size: landscape;
-                        margin: 0.5cm;
+                        margin: 1mm;
                     }
                     body {
                         -webkit-print-color-adjust: exact;
                     }
                     .page-break-inside-avoid {
                         break-inside: avoid;
+                         page-break-after: auto;
                     }
+
+                     
                 }
             `}</style>
         </div>
