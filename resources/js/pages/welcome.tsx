@@ -18,7 +18,7 @@ import { login as voterLogin } from '@/routes/voter';
 export default function Welcome() {
     return (
         <>
-            <Head title="Welcome - SGLL Voting System" />
+            <Head title="Welcome - SVNHS Voting System" />
 
             <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans selection:bg-emerald-500 selection:text-white">
                 {/* Header/Nav */}
