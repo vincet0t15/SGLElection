@@ -14,6 +14,9 @@ class VoteLogController extends Controller
         $search = $request->query('search');
 
         $logs = \App\Models\VoteActivityLog::with('voter')
+            ->whereHas('event', function ($query) {
+                $query->where('is_archived', false);
+            })
             ->when($search, function ($query, $search) {
                 $query->whereHas('voter', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")

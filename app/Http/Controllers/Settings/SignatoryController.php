@@ -12,8 +12,19 @@ class SignatoryController extends Controller
 {
     public function index()
     {
-        $signatories = Signatory::with('event')->orderBy('order')->orderBy('created_at')->get();
-        $events = Event::select('id', 'name')->orderBy('created_at', 'desc')->get();
+        $signatories = Signatory::with('event')
+            ->where(function ($q) {
+                $q->whereHas('event', fn($sq) => $sq->where('is_archived', false))
+                    ->orWhereNull('event_id');
+            })
+            ->orderBy('order')
+            ->orderBy('created_at')
+            ->get();
+
+        $events = Event::select('id', 'name')
+            ->where('is_archived', false)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return Inertia::render('settings/Signatories/Index', [
             'signatories' => $signatories,

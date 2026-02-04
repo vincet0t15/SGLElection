@@ -44,13 +44,16 @@ class VoterController extends Controller
         $yearLevelId = request()->input('year_level_id');
         $yearSectionId = request()->input('year_section_id');
 
-        $events = Event::all();
+        $events = Event::where('is_archived', false)->get();
         $yearLevels = \App\Models\YearLevel::orderBy('id', 'asc')
             ->get();
         $yearSections = \App\Models\YearSection::orderBy('name', 'asc')
             ->get();
 
         $voters = Voter::query()
+            ->whereHas('event', function ($query) {
+                $query->where('is_archived', false);
+            })
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -86,14 +89,14 @@ class VoterController extends Controller
         return Inertia::render('Voter/create', [
             'yearLevels' => \App\Models\YearLevel::all(),
             'yearSections' => \App\Models\YearSection::all(),
-            'events' => Event::where('is_active', true)->get(),
+            'events' => Event::where('is_active', true)->where('is_archived', false)->get(),
         ]);
     }
 
     public function importView()
     {
         return Inertia::render('Voter/import', [
-            'events' => Event::where('is_active', true)->get(),
+            'events' => Event::where('is_active', true)->where('is_archived', false)->get(),
         ]);
     }
 

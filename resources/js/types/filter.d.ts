@@ -6,6 +6,7 @@ export interface FilterProps {
     year_level_id: number;
     year_section_id: number;
     partylist_id: number;
+    archived?: string;
 }
 
 interface MyPageProps extends InertiaPageProps {

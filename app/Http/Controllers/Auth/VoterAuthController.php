@@ -62,6 +62,15 @@ class VoterAuthController extends Controller
                 ]);
             }
 
+            // Check if event is archived
+            if ($event->is_archived) {
+                Auth::guard('voter')->logout();
+                $request->session()->invalidate();
+                throw ValidationException::withMessages([
+                    'username' => 'The election event has been archived.',
+                ]);
+            }
+
             // Check if event has started
             if ($event->dateTime_start && now()->lt($event->dateTime_start)) {
                 Auth::guard('voter')->logout();

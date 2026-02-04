@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BarChart3Icon, BookOpen, Calendar1Icon, CheckIcon, File, FileText, FingerprintIcon, FlagIcon, Layers3Icon, LayoutGrid, UserCheck2, Users, Vote } from 'lucide-react';
+import { Archive, BarChart3Icon, BookOpen, Calendar1Icon, CheckIcon, File, FileText, FingerprintIcon, FlagIcon, Layers3Icon, LayoutGrid, UserCheck2, Users, Vote } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -23,6 +23,7 @@ import reports from '@/routes/reports';
 import voter from '@/routes/voter';
 import partylist from '@/routes/partylist';
 import signatories from '@/routes/signatories';
+import archives from '@/routes/archives';
 import { dashboard, voteLogs } from '@/routes';
 
 const mainNavItems: NavItem[] = [
@@ -50,6 +51,7 @@ const mainNavItems: NavItem[] = [
         name: 'Election Management',
         items: [
             { title: 'Events', href: event.index().url, icon: Calendar1Icon },
+            { title: 'Archives', href: archives.index().url, icon: Archive },
             { title: 'Positions', href: position.index().url, icon: Vote },
             { title: 'Partylists', href: partylist.index().url, icon: FlagIcon },
             { title: 'Candidates', href: candidate.index().url, icon: UserCheck2 },

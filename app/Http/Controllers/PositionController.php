@@ -18,10 +18,14 @@ class PositionController extends Controller
 
         $events = Event::query()
             ->where('is_active', true)
+            ->where('is_archived', false)
             ->orderBy('name', 'asc')
             ->get();
 
         $positions = Position::query()
+            ->whereHas('event', function ($query) {
+                $query->where('is_archived', false);
+            })
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             })

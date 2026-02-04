@@ -17,13 +17,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $activeEvent = Event::where('is_active', true)->first();
+        $activeEvent = Event::where('is_active', true)->where('is_archived', false)->first();
 
         $stats = [
-            'total_voters' => Voter::count(),
-            'total_candidates' => Candidate::count(),
-            'total_partylists' => Partylist::count(),
-            'total_positions' => Position::count(),
+            'total_voters' => Voter::whereHas('event', fn($q) => $q->where('is_archived', false))->count(),
+            'total_candidates' => Candidate::whereHas('event', fn($q) => $q->where('is_archived', false))->count(),
+            'total_partylists' => Partylist::whereHas('event', fn($q) => $q->where('is_archived', false))->count(),
+            'total_positions' => Position::whereHas('event', fn($q) => $q->where('is_archived', false))->count(),
             'active_event' => $activeEvent,
             'votes_cast' => 0,
             'turnout_percentage' => 0,

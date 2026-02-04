@@ -31,6 +31,9 @@ class CandidateController extends Controller
 
         $candidates = Candidate::query()
             ->with(['event', 'position', 'partylist', 'candidatePhotos', 'voter.yearLevel', 'voter.yearSection'])
+            ->whereHas('event', function ($query) {
+                $query->where('is_archived', false);
+            })
             ->when($search, function ($query) use ($search) {
                 $query->whereHas('voter', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
@@ -57,7 +60,7 @@ class CandidateController extends Controller
             ->paginate(100)
             ->withQueryString();
 
-        $events = Event::query()->where('is_active', true)->get();
+        $events = Event::query()->where('is_active', true)->where('is_archived', false)->get();
 
         $partylists = Partylist::all();
 

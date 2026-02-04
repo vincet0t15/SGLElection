@@ -21,7 +21,7 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $events = Event::orderBy('created_at', 'desc')->get();
+        $events = Event::where('is_archived', false)->orderBy('created_at', 'desc')->get();
 
         return Inertia::render('Reports/Index', [
             'events' => $events

@@ -28,6 +28,7 @@ class VoteController extends Controller
 
         $events = Event::query()
             ->where('is_active', true)
+            ->where('is_archived', false)
             ->with([
                 'positions' => function ($q) use ($voter) {
                     $q->where(function ($query) use ($voter) {

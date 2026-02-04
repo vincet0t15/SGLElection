@@ -15,7 +15,7 @@ class ResultController extends Controller
 {
     public function index()
     {
-        $event = Event::where('is_active', true)->latest()->first() ?? Event::latest()->first();
+        $event = Event::where('is_active', true)->where('is_archived', false)->latest()->first() ?? Event::where('is_archived', false)->latest()->first();
 
         if (!$event) {
             return Inertia::render('Results/Index', [

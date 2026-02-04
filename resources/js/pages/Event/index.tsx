@@ -54,6 +54,13 @@ export default function Event({ events, filters }: Props) {
         setOpenDeleteDialog(true);
     }
 
+    const handleToggleArchive = (ev: EventProps) => {
+        router.put(event.toggleArchive(ev.id).url, {}, {
+            preserveState: true,
+            preserveScroll: true,
+        })
+    }
+
     const handleToggleActive = (ev: EventProps) => {
         console.log(ev)
         router.put(event.update(ev.id).url, {
@@ -174,10 +181,16 @@ export default function Event({ events, filters }: Props) {
                                                 Delete
                                             </span>
                                             <span
-                                                className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline w-25"
+                                                className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline"
                                                 onClick={() => handleToggleActive(event)}
                                             >
                                                 {event.is_active ? 'Deactivate' : 'Activate'}
+                                            </span>
+                                            <span
+                                                className="text-orange-500 cursor-pointer hover:text-orange-700 hover:underline"
+                                                onClick={() => handleToggleArchive(event)}
+                                            >
+                                                Archive
                                             </span>
 
                                         </TableCell>

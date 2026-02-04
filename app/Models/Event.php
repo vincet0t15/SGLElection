@@ -14,6 +14,7 @@ class Event extends Model
         'description',
         'is_active',
         'show_winner',
+        'is_archived',
     ];
 
     protected $casts = [
@@ -21,6 +22,7 @@ class Event extends Model
         'dateTime_end' => 'datetime',
         'is_active' => 'boolean',
         'show_winner' => 'boolean',
+        'is_archived' => 'boolean',
     ];
 
     public function positions()

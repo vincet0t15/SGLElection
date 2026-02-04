@@ -18,11 +18,31 @@ class EventController extends Controller
             ->when($search, function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%");
             })
+            ->where('is_archived', false)
             ->orderBy('dateTime_start', 'asc')
             ->paginate(20)
             ->withQueryString();
 
         return Inertia::render('Event/index', [
+            'filters' => $request->only('search'),
+            'events' => $events,
+        ]);
+    }
+
+    public function archives(Request $request)
+    {
+        $search = $request->query('search');
+
+        $events = Event::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->where('is_archived', true)
+            ->orderBy('dateTime_start', 'desc')
+            ->paginate(20)
+            ->withQueryString();
+
+        return Inertia::render('Archive/index', [
             'filters' => $request->only('search'),
             'events' => $events,
         ]);
@@ -72,5 +92,13 @@ class EventController extends Controller
         $event->update(['show_winner' => !$event->show_winner]);
 
         return redirect()->back()->with('success', 'Show winner status updated successfully');
+    }
+
+    public function toggleArchive(Event $event)
+    {
+        $event->update(['is_archived' => !$event->is_archived]);
+
+        $status = $event->is_archived ? 'archived' : 'unarchived';
+        return redirect()->back()->with('success', "Event {$status} successfully");
     }
 }

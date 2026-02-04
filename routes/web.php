@@ -70,10 +70,12 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
 
     // EVENT
     Route::get('event', [EventController::class, 'index'])->name('event.index');
+    Route::get('archives', [EventController::class, 'archives'])->name('archives.index');
     Route::post('event', [EventController::class, 'store'])->name('event.store');
     Route::put('event/{event}', [EventController::class, 'update'])->name('event.update');
     Route::delete('event/{event}', [EventController::class, 'destroy'])->name('event.destroy');
     Route::put('event/{event}/toggle-show-winner', [EventController::class, 'toggleShowWinner'])->name('event.toggle-show-winner');
+    Route::put('event/{event}/toggle-archive', [EventController::class, 'toggleArchive'])->name('event.toggle-archive');
 
     // POSITION
     Route::get('position', [PositionController::class, 'index'])->name('position.index');

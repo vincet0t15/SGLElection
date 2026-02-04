@@ -9,6 +9,7 @@ export interface EventProps {
     description: string;
     is_active: boolean;
     show_winner: boolean;
+    is_archived: boolean;
     positions: PositionProps[];
 }
 
@@ -20,4 +21,5 @@ export type EventType = {
     description: string;
     is_active: boolean;
     show_winner: boolean;
+    is_archived: boolean;
 }
