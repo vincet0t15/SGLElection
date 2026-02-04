@@ -43,10 +43,10 @@ export default function Welcome() {
                         <nav className="flex gap-4">
                             <Link
                                 href={login().url}
-                                className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors px-4 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
+                                className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors px-4 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
                             >
                                 <ShieldCheck className="h-4 w-4" />
-                                Admin Portal
+                                <span className="hidden md:inline">Admin Portal</span>
                             </Link>
                         </nav>
                     </div>
@@ -58,36 +58,31 @@ export default function Welcome() {
                         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 text-center">
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 text-sm font-semibold mb-8 border border-emerald-100 dark:border-emerald-900/50 animate-fade-in-up">
                                 <span className="flex h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span>
-                                Secure Digital Election Platform
+                                Official Voting Portal
                             </div>
 
                             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-8 leading-tight">
-                                Democracy made <br className="hidden md:block" />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">Simple & Secure</span>
+                                Your Voice, <br className="hidden md:block" />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">Your Future</span>
                             </h1>
 
                             <p className="mt-6 text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-12 leading-relaxed">
-                                Empowering institutions with a transparent, tamper-proof, and efficient voting infrastructure.
-                                Experience the future of elections today.
+                                Welcome to the official voting platform. Securely cast your vote and participate in shaping the future of our community.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
                                 <Link
                                     href={voterLogin().url}
-                                    className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3"
+                                    className="w-full sm:w-auto px-10 py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-xl shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3"
                                 >
-                                    <Users className="h-5 w-5" />
-                                    <span>Voter Login</span>
-                                    <ChevronRight className="h-4 w-4 opacity-70" />
-                                </Link>
-                                <Link
-                                    href={login().url}
-                                    className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 text-slate-900 dark:text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-3 group"
-                                >
-                                    <ShieldCheck className="h-5 w-5 group-hover:text-emerald-600 transition-colors" />
-                                    <span>Admin Access</span>
+                                    <Vote className="h-6 w-6" />
+                                    <span>Vote Now</span>
+                                    <ChevronRight className="h-5 w-5 opacity-70" />
                                 </Link>
                             </div>
+                            <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
+                                Need help? <span className="text-emerald-600 font-medium cursor-pointer hover:underline">Contact Support</span>
+                            </p>
                         </div>
 
                         {/* Abstract Background */}
@@ -123,10 +118,10 @@ export default function Welcome() {
                         <div className="max-w-7xl mx-auto px-6 lg:px-8">
                             <div className="text-center mb-16">
                                 <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl mb-4">
-                                    How It Works
+                                    Simple Voting Process
                                 </h2>
                                 <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                                    A simple, secure, and streamlined process designed for efficiency and ease of use.
+                                    Cast your vote in three easy steps.
                                 </p>
                             </div>
 
@@ -137,20 +132,20 @@ export default function Welcome() {
                                 {/* Steps */}
                                 {[
                                     {
-                                        title: "Login Securely",
-                                        desc: "Access the platform using your unique voter credentials.",
+                                        title: "Login",
+                                        desc: "Enter your secure voter credentials to access your ballot.",
                                         icon: Lock,
                                         step: "01"
                                     },
                                     {
-                                        title: "Cast Your Vote",
-                                        desc: "Select your preferred candidates for each position easily.",
+                                        title: "Select Candidates",
+                                        desc: "Choose your preferred candidates for each position.",
                                         icon: Vote,
                                         step: "02"
                                     },
                                     {
-                                        title: "Verify Receipt",
-                                        desc: "Review your choices and receive a digital confirmation.",
+                                        title: "Submit Vote",
+                                        desc: "Review your selections and submit your vote securely.",
                                         icon: ClipboardCheck,
                                         step: "03"
                                     }
@@ -178,18 +173,18 @@ export default function Welcome() {
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {[
                                     {
-                                        title: "Real-time Analytics",
-                                        desc: "Monitor election progress with live dashboards and instant tallying updates.",
+                                        title: "Live Updates",
+                                        desc: "Stay informed with real-time election progress and announcements.",
                                         icon: BarChart3
                                     },
                                     {
-                                        title: "Encrypted Security",
-                                        desc: "State-of-the-art encryption ensures that every vote is tamper-proof and anonymous.",
+                                        title: "Secure & Anonymous",
+                                        desc: "Your vote is encrypted and completely anonymous.",
                                         icon: ShieldCheck
                                     },
                                     {
-                                        title: "Mobile Optimized",
-                                        desc: "Fully responsive design allows voters to participate from any device, anywhere.",
+                                        title: "Vote Anywhere",
+                                        desc: "Access the voting platform from any device, anywhere.",
                                         icon: Smartphone
                                     }
                                 ].map((feature, idx) => (
@@ -210,28 +205,28 @@ export default function Welcome() {
                             </div>
                         </div>
                     </div>
-                </main>
 
-                <footer className="bg-white dark:bg-slate-950 py-12 border-t border-slate-200 dark:border-slate-800">
-                    <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-emerald-600 p-1.5 rounded text-white">
-                                <Vote className="h-4 w-4" />
+                    <footer className="bg-white dark:bg-slate-950 py-12 border-t border-slate-200 dark:border-slate-800">
+                        <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div className="flex items-center gap-2">
+                                <div className="bg-emerald-600 p-1.5 rounded text-white">
+                                    <Vote className="h-4 w-4" />
+                                </div>
+                                <span className="font-bold text-slate-900 dark:text-white">SGLL Voting System</span>
                             </div>
-                            <span className="font-bold text-slate-900 dark:text-white">SGLL Voting System</span>
-                        </div>
 
-                        <div className="text-slate-500 dark:text-slate-400 text-sm">
-                            &copy; {new Date().getFullYear()} SGLL Voting System. All rights reserved.
-                        </div>
+                            <div className="text-slate-500 dark:text-slate-400 text-sm">
+                                &copy; {new Date().getFullYear()} SGLL Voting System. All rights reserved.
+                            </div>
 
-                        <div className="flex gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
-                            <span className="hover:text-emerald-600 cursor-pointer transition-colors">Privacy Policy</span>
-                            <span className="hover:text-emerald-600 cursor-pointer transition-colors">Terms of Service</span>
-                            <span className="hover:text-emerald-600 cursor-pointer transition-colors">Contact Support</span>
+                            <div className="flex gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+                                <span className="hover:text-emerald-600 cursor-pointer transition-colors">Privacy Policy</span>
+                                <span className="hover:text-emerald-600 cursor-pointer transition-colors">Terms of Service</span>
+                                <span className="hover:text-emerald-600 cursor-pointer transition-colors">Contact Support</span>
+                            </div>
                         </div>
-                    </div>
-                </footer>
+                    </footer>
+                </main>
             </div>
         </>
     );
