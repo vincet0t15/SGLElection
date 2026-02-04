@@ -37,12 +37,11 @@ class VoteController extends Controller
                                 $subQuery->where('year_levels.id', $voter->year_level_id);
                             });
                         }
-                    })->orderBy('id', 'asc');
+                    })->orderBy('id', 'asc')
+                    ->with(['candidates' => function ($q) {
+                        $q->with(['candidatePhotos', 'voter.yearLevel', 'voter.yearSection', 'partylist']);
+                    }]);
                 },
-                'positions.candidates.candidatePhotos',
-                'positions.candidates.yearLevel',
-                'positions.candidates.yearSection',
-                'positions.candidates.partylist',
             ])
             ->get();
 
