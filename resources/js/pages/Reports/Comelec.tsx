@@ -1,10 +1,12 @@
 import { Head, usePage } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { EventProps } from '@/types/event';
 import { PositionProps } from '@/types/position';
 import { SharedData } from '@/types';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Printer, Download } from 'lucide-react';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import ComelecPDF from '@/components/reports/ComelecPDF';
 
 interface Signatory {
     id: number;
@@ -32,6 +34,7 @@ interface Props {
 export default function ReportsComelec({
     event,
     positions,
+    partylists,
     signatories,
     totalRegisteredVoters,
     totalVotesCast,
@@ -39,10 +42,10 @@ export default function ReportsComelec({
     date
 }: Props) {
     const { system_settings } = usePage<SharedData>().props;
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
-        // Optional: Auto-print
-        // window.print();
+        setIsClient(true);
     }, []);
 
     return (
@@ -58,14 +61,35 @@ export default function ReportsComelec({
                     <Printer className="w-4 h-4" />
                     Print
                 </button>
-                <a
-                    href={`/reports/comelec/${event.id}/pdf`}
-                    target="_blank"
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition-colors shadow-sm"
-                >
-                    <Download className="w-4 h-4" />
-                    Export PDF
-                </a>
+
+                {isClient && (
+                    <PDFDownloadLink
+                        document={
+                            <ComelecPDF
+                                event={event}
+                                positions={positions}
+                                partylists={partylists}
+                                signatories={signatories}
+                                totalRegisteredVoters={totalRegisteredVoters}
+                                totalVotesCast={totalVotesCast}
+                                voterTurnout={voterTurnout}
+                                date={date}
+                                system_settings={system_settings}
+                            />
+                        }
+                        fileName={`comelec_form_${event.id}.pdf`}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2 transition-colors shadow-sm"
+                    >
+                        {({ blob, url, loading, error }) =>
+                            loading ? 'Loading document...' : (
+                                <>
+                                    <Download className="w-4 h-4" />
+                                    Export PDF
+                                </>
+                            )
+                        }
+                    </PDFDownloadLink>
+                )}
             </div>
 
             <div className="relative z-10 print:w-full">

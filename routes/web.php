@@ -52,7 +52,6 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('reports/print/{event}', [ReportController::class, 'print'])->name('reports.print');
     Route::get('reports/print-pdf/{event}', [ReportController::class, 'exportPrintPdf'])->name('reports.print-pdf');
     Route::get('reports/comelec/{event}', [ReportController::class, 'generateComelecForm'])->name('reports.comelec');
-    Route::get('reports/comelec/{event}/pdf', [ReportController::class, 'exportComelecPdf'])->name('reports.comelec.pdf');
     Route::post('reports/{event}/resolve-tie', [ReportController::class, 'resolveTie'])->name('reports.resolve-tie');
     Route::get('reports/{event}/voters/{voter}/votes', [ReportController::class, 'getVoterVotes'])->name('reports.voter-votes');
     Route::get('reports/{event}/voters/{voter}/receipt', [ReportController::class, 'exportVoterReceipt'])->name('reports.voter-receipt');
