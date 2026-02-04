@@ -496,7 +496,7 @@ class ReportController extends Controller
         $positions = Position::where('event_id', $event->id)
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
-                $query->with(['voter.yearLevel', 'voter.yearSection'])
+                $query->with(['voter.yearLevel', 'voter.yearSection', 'partylist'])
                     ->withCount(['votes' => function ($q) use ($event) {
                         $q->where('event_id', $event->id);
                     }])->orderBy('votes_count', 'desc');

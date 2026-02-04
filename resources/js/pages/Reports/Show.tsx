@@ -1,5 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -80,6 +80,9 @@ interface Props {
 }
 
 export default function ReportsShow({ event, positions, stats, voters, filters }: Props) {
+    const { url } = usePage();
+    const backUrl = url.includes('from=archives') ? '/archives' : '/reports';
+
     const turnoutPercentage = stats.total_assigned_voters > 0
         ? Math.round((stats.voted_count / stats.total_assigned_voters) * 100)
         : 0;
@@ -155,16 +158,23 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
         );
     };
 
-    return (
-        <AppLayout breadcrumbs={[
+    const breadcrumbs = url.includes('from=archives')
+        ? [
+            { title: 'Archives', href: '/archives' },
+            { title: event.name, href: '' },
+        ]
+        : [
             { title: 'Reports', href: '/reports' },
+            { title: event.name, href: '' },
+        ];
 
-        ]}>
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Report - ${event.name}`} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className='flex gap-2 items-center'>
-                    <Link href="/reports" className="text-muted-foreground hover:text-foreground">
+                    <Link href={backUrl} className="text-muted-foreground hover:text-foreground">
                         <ArrowLeft className="h-4 w-4" />
                     </Link>
                     <Heading
@@ -197,35 +207,39 @@ export default function ReportsShow({ event, positions, stats, voters, filters }
                         </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        <Button
-                            variant="outline"
-                            className="gap-2"
-                            onClick={() => router.put(`/event/${event.id}/toggle-show-winner`)}
-                        >
-                            {event.show_winner ? (
-                                <>
-                                    <EyeOff className="h-4 w-4" />
-                                    Hide Winners Early
-                                </>
-                            ) : (
-                                <>
-                                    <Eye className="h-4 w-4" />
-                                    Show Winners Early
-                                </>
-                            )}
-                        </Button>
-                        {event.is_active ? (
-                            <Button asChild variant="outline" className="gap-2 bg-rose-600 text-white hover:bg-rose-700 hover:text-white border-rose-600">
-                                <Link href={`/reports/live/${event.id}`}>
-                                    <Monitor className="h-4 w-4 animate-pulse" />
-                                    Live Monitor
-                                </Link>
-                            </Button>
-                        ) : (
-                            <Button disabled variant="outline" className="gap-2 opacity-50 cursor-not-allowed">
-                                <Monitor className="h-4 w-4" />
-                                Live Monitor
-                            </Button>
+                        {!event.is_archived && (
+                            <>
+                                <Button
+                                    variant="outline"
+                                    className="gap-2"
+                                    onClick={() => router.put(`/event/${event.id}/toggle-show-winner`)}
+                                >
+                                    {event.show_winner ? (
+                                        <>
+                                            <EyeOff className="h-4 w-4" />
+                                            Hide Winners Early
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Eye className="h-4 w-4" />
+                                            Show Winners Early
+                                        </>
+                                    )}
+                                </Button>
+                                {event.is_active ? (
+                                    <Button asChild variant="outline" className="gap-2 bg-rose-600 text-white hover:bg-rose-700 hover:text-white border-rose-600">
+                                        <Link href={`/reports/live/${event.id}`}>
+                                            <Monitor className="h-4 w-4 animate-pulse" />
+                                            Live Monitor
+                                        </Link>
+                                    </Button>
+                                ) : (
+                                    <Button disabled variant="outline" className="gap-2 opacity-50 cursor-not-allowed">
+                                        <Monitor className="h-4 w-4" />
+                                        Live Monitor
+                                    </Button>
+                                )}
+                            </>
                         )}
                         <Button asChild variant="outline" className="gap-2">
                             <Link href={`/reports/audit/${event.id}`}>

@@ -118,7 +118,6 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::patch('voter/{voter}/toggle-status', [VoterController::class, 'toggleStatus'])->name('voter.toggle-status');
     Route::delete('voter/{voter}', [VoterController::class, 'destroy'])->name('voter.destroy');
 
-
     // Signatories
     Route::get('signatories', [SignatoryController::class, 'index'])->name('signatories.index');
     Route::post('signatories', [SignatoryController::class, 'store'])->name('signatories.store');

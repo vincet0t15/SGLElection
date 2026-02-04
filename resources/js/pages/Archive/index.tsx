@@ -1,5 +1,5 @@
-import { Head, router } from '@inertiajs/react';
-import { RotateCcw } from 'lucide-react';
+import { Head, router, Link } from '@inertiajs/react';
+import { RotateCcw, Eye } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -122,6 +122,17 @@ export default function Archive({ events, filters }: Props) {
                                             <span >{ev.description}</span>
                                         </TableCell>
                                         <TableCell className="text-sm gap-2 flex justify-end">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                                                asChild
+                                            >
+                                                <Link href={`/reports/${ev.id}?from=archives`}>
+                                                    <Eye className="h-4 w-4 mr-1" />
+                                                    View
+                                                </Link>
+                                            </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
