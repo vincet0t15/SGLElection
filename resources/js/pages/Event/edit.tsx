@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import { EventProps, EventType } from "@/types/event";
 import event from "@/routes/event";
 import { Textarea } from "@/components/ui/textarea";
+import { DatePickerTime } from "@/components/custom-date-time-picker";
+import { useState } from "react";
 interface Props {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -30,20 +32,32 @@ export function EventEditDialog({ open, setOpen, SelectedEvent }: Props) {
     if (!SelectedEvent) {
         return null;
     }
-    const formatDateTimeForInput = (dateString: string) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toISOString().slice(0, 16);
+    const formatLocalDateTime = (date?: Date) => {
+        if (!date) return '';
+        const pad = (n: number) => String(n).padStart(2, '0');
+        const y = date.getFullYear();
+        const m = pad(date.getMonth() + 1);
+        const d = pad(date.getDate());
+        const hh = pad(date.getHours());
+        const mm = pad(date.getMinutes());
+        return `${y}-${m}-${d}T${hh}:${mm}`;
     };
 
     const { data, setData, put, reset, processing, errors } = useForm<EventType>({
         name: SelectedEvent.name,
-        dateTime_start: formatDateTimeForInput(SelectedEvent.dateTime_start),
-        dateTime_end: formatDateTimeForInput(SelectedEvent.dateTime_end),
+        dateTime_start: formatLocalDateTime(SelectedEvent.dateTime_start ? new Date(SelectedEvent.dateTime_start) : undefined),
+        dateTime_end: formatLocalDateTime(SelectedEvent.dateTime_end ? new Date(SelectedEvent.dateTime_end) : undefined),
         location: SelectedEvent.location,
         description: SelectedEvent.description,
         is_active: SelectedEvent.is_active,
     })
+
+    const [startDate, setStartDate] = useState<Date | undefined>(
+        SelectedEvent.dateTime_start ? new Date(SelectedEvent.dateTime_start) : undefined
+    );
+    const [endDate, setEndDate] = useState<Date | undefined>(
+        SelectedEvent.dateTime_end ? new Date(SelectedEvent.dateTime_end) : undefined
+    );
 
     const handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
         setData({
@@ -84,13 +98,31 @@ export function EventEditDialog({ open, setOpen, SelectedEvent }: Props) {
 
                         <div className="grid gap-3">
                             <Label htmlFor="dateTime_start">Event Start Date and Time</Label>
-                            <Input id="dateTime_start" name="dateTime_start" type="datetime-local" onChange={handleChange} value={data.dateTime_start} />
+                            <DatePickerTime
+                                date={startDate}
+                                setDate={(d) => {
+                                    setStartDate(d);
+                                    setData({
+                                        ...data,
+                                        dateTime_start: formatLocalDateTime(d || undefined),
+                                    });
+                                }}
+                            />
                             <InputError message={errors.dateTime_start} />
                         </div>
 
                         <div className="grid gap-3">
                             <Label htmlFor="dateTime_end">Event End Date and Time</Label>
-                            <Input id="dateTime_end" name="dateTime_end" type="datetime-local" onChange={handleChange} value={data.dateTime_end} />
+                            <DatePickerTime
+                                date={endDate}
+                                setDate={(d) => {
+                                    setEndDate(d);
+                                    setData({
+                                        ...data,
+                                        dateTime_end: formatLocalDateTime(d || undefined),
+                                    });
+                                }}
+                            />
                             <InputError message={errors.dateTime_end} />
                         </div>
 

@@ -20,6 +20,6 @@ export type EventType = {
     location: string;
     description: string;
     is_active: boolean;
-    show_winner: boolean;
-    is_archived: boolean;
+    show_winner?: boolean;
+    is_archived?: boolean;
 }
