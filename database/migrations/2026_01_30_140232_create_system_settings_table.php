@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('system_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('system_name')->default('SGLL Voting System');
+            $table->string('system_name')->default('Voting System');
             $table->string('system_logo')->nullable();
             $table->timestamps();
         });

@@ -313,7 +313,7 @@ export default function Welcome() {
                         </div>
                         <div className="border-t border-blue-900 pt-8 flex flex-col md:flex-row justify-between items-center text-xs">
                             <div>&copy; {new Date().getFullYear()} {appName}. All rights reserved.</div>
-                            <div className="mt-2 md:mt-0">Powered by SGLL Voting System</div>
+                            <div className="mt-2 md:mt-0">Powered by {appName} Voting System</div>
                         </div>
                     </div>
                 </footer>

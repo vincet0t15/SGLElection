@@ -14,7 +14,7 @@ class SystemSettingController extends Controller
     {
         $settings = SystemSetting::firstOrCreate(
             ['id' => 1],
-            ['system_name' => 'SGLL Voting System']
+            ['system_name' => 'Voting System']
         );
 
         return Inertia::render('settings/appearance', [
