@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import {
     CheckCircle,
     ShieldCheck,
@@ -10,92 +10,97 @@ import {
     ChevronRight,
     BarChart3,
     FileCheck,
-    Fingerprint
+    Fingerprint,
+    Globe
 } from 'lucide-react';
 import { login } from '@/routes';
 import { login as voterLogin } from '@/routes/voter';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SharedData } from '@/types';
+import AppLogoIcon from '@/components/app-logo-icon';
 
 export default function Welcome() {
+    const { system_settings } = usePage<SharedData>().props;
+    const appName = system_settings.name || 'Voting System';
+
     return (
         <>
-            <Head title="Welcome - SVNHS Voting System" />
+            <Head title={`Welcome - ${appName}`} />
 
-            <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans selection:bg-emerald-500 selection:text-white">
+            <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground flex flex-col">
                 {/* Header/Nav */}
-                <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
-                    <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
+                <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="bg-emerald-600 p-2.5 rounded-xl text-white shadow-lg shadow-emerald-600/20">
-                                <Fingerprint className="h-6 w-6" />
+                            <div className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                                {system_settings.logo ? (
+                                    <img src={system_settings.logo} alt="Logo" className="aspect-square h-full w-full object-cover" />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                        <AppLogoIcon className="h-5 w-5 fill-current" />
+                                    </div>
+                                )}
                             </div>
-                            <div className="flex-1 flex flex-col items-center justify-center text-center ">
-                                <span className="text-2xl font-bold bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 bg-clip-text text-transparent tracking-widest mb-[-0.5rem]">
-                                    SVNHS
-                                </span>
-                                <span className="text-[12px] text-primary tracking-wide mb-[-0.2rem]">
-                                    Electronic Voting and
-                                </span>
-                                <span className="text-[12px] text-primary tracking-wide mb-[-0.5rem]">
-                                    Tallying System <span className='font-bold'>(eVote)</span>
-                                </span>
+                            <div className="flex flex-col leading-none">
+                                <span className="font-bold text-lg tracking-tight">{appName}</span>
+                                <span className="text-xs text-muted-foreground font-medium">Official Voting Portal</span>
                             </div>
                         </div>
-                        <nav className="flex gap-4">
-                            <Link
-                                href={login().url}
-                                className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors px-4 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
-                            >
-                                <ShieldCheck className="h-4 w-4" />
-                                <span className="hidden md:inline">Admin Portal</span>
+                        <nav className="flex gap-2">
+                            <Link href={login().url}>
+                                <Button variant="ghost" size="sm" className="gap-2">
+                                    <ShieldCheck className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Admin Portal</span>
+                                </Button>
                             </Link>
                         </nav>
                     </div>
                 </header>
 
-                <main>
+                <main className="flex-1">
                     {/* Hero Section */}
-                    <div className="relative overflow-hidden pt-20 pb-32 lg:pt-40 lg:pb-56">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 text-center">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 text-sm font-semibold mb-8 border border-emerald-100 dark:border-emerald-900/50 animate-fade-in-up">
-                                <span className="flex h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span>
-                                Official Voting Portal
+                    <div className="relative overflow-hidden pt-16 pb-24 lg:pt-32 lg:pb-40">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary hover:bg-primary/20 mb-8 animate-fade-in-up">
+                                <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
+                                Secure • Transparent • Real-time
                             </div>
 
-                            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-8 leading-tight">
+                            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground mb-6 leading-tight">
                                 Your Voice, <br className="hidden md:block" />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">Your Future</span>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-teal-500">Your Future</span>
                             </h1>
 
-                            <p className="mt-6 text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-12 leading-relaxed">
-                                Welcome to the official voting platform. Securely cast your vote and participate in shaping the future of our community.
+                            <p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+                                Welcome to the official voting platform. Participate in shaping the future of our community with a secure, anonymous, and easy-to-use digital ballot.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-                                <Link
-                                    href={voterLogin().url}
-                                    className="w-full sm:w-auto px-10 py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-xl shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3"
-                                >
-                                    <Vote className="h-6 w-6" />
-                                    <span>Vote Now</span>
-                                    <ChevronRight className="h-5 w-5 opacity-70" />
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                <Link href={voterLogin().url}>
+                                    <Button size="lg" className="h-12 px-8 text-lg rounded-full shadow-lg hover:shadow-primary/25 transition-all hover:-translate-y-0.5">
+                                        <Vote className="mr-2 h-5 w-5" />
+                                        Vote Now
+                                    </Button>
+                                </Link>
+                                <Link href="#how-it-works">
+                                    <Button variant="outline" size="lg" className="h-12 px-8 text-lg rounded-full">
+                                        Learn More
+                                    </Button>
                                 </Link>
                             </div>
-                            <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
-                                Need help? <span className="text-emerald-600 font-medium cursor-pointer hover:underline">Contact Support</span>
-                            </p>
                         </div>
 
                         {/* Abstract Background */}
-                        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-                            <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-emerald-100/40 dark:bg-emerald-900/10 blur-3xl filter opacity-50"></div>
-                            <div className="absolute top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-teal-100/40 dark:bg-teal-900/10 blur-3xl filter opacity-50"></div>
-                            {/* <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div> */}
+                        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+                            <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-3xl"></div>
+                            <div className="absolute top-[30%] -left-[10%] w-[40%] h-[40%] rounded-full bg-teal-500/5 blur-3xl"></div>
                         </div>
                     </div>
 
                     {/* Stats/Trust Banner */}
-                    <div className="border-y border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+                    <div className="border-y bg-muted/30">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                                 {[
                                     { label: 'Security', value: 'Enterprise Grade', icon: Lock },
@@ -103,10 +108,12 @@ export default function Welcome() {
                                     { label: 'Uptime', value: '99.9% Reliable', icon: CheckCircle },
                                     { label: 'Accessibility', value: 'Any Device', icon: Smartphone },
                                 ].map((stat, i) => (
-                                    <div key={i} className="flex flex-col items-center justify-center text-center gap-2">
-                                        <stat.icon className="h-6 w-6 text-emerald-600 mb-1" />
-                                        <div className="font-bold text-slate-900 dark:text-white">{stat.value}</div>
-                                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">{stat.label}</div>
+                                    <div key={i} className="flex flex-col items-center justify-center text-center gap-2 group">
+                                        <div className="p-2 rounded-full bg-primary/10 text-primary mb-1 group-hover:scale-110 transition-transform">
+                                            <stat.icon className="h-5 w-5" />
+                                        </div>
+                                        <div className="font-bold text-foreground">{stat.value}</div>
+                                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</div>
                                     </div>
                                 ))}
                             </div>
@@ -114,20 +121,20 @@ export default function Welcome() {
                     </div>
 
                     {/* Process Section (How it works) */}
-                    <div className="py-24 bg-white dark:bg-slate-950">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                    <div id="how-it-works" className="py-24 bg-background">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="text-center mb-16">
-                                <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl mb-4">
+                                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
                                     Simple Voting Process
                                 </h2>
-                                <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                                     Cast your vote in three easy steps.
                                 </p>
                             </div>
 
                             <div className="grid md:grid-cols-3 gap-8 relative">
                                 {/* Connecting Line (Desktop) */}
-                                <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-slate-100 dark:bg-slate-800 -z-10"></div>
+                                <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-border -z-10"></div>
 
                                 {/* Steps */}
                                 {[
@@ -150,27 +157,32 @@ export default function Welcome() {
                                         step: "03"
                                     }
                                 ].map((item, idx) => (
-                                    <div key={idx} className="relative flex flex-col items-center text-center p-6 bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-900 shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="w-24 h-24 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-6 border-4 border-white dark:border-slate-950 shadow-sm">
-                                            <item.icon className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
+                                    <Card key={idx} className="relative border-none shadow-none bg-transparent pt-6">
+                                        <div className="flex flex-col items-center text-center">
+                                            <div className="w-24 h-24 rounded-full bg-background border-4 border-muted flex items-center justify-center mb-6 shadow-sm relative z-10">
+                                                <item.icon className="h-10 w-10 text-primary" />
+                                            </div>
+                                            <div className="absolute top-0 right-10 text-6xl font-black text-muted/10 select-none z-0">
+                                                {item.step}
+                                            </div>
+                                            <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                                            <p className="text-muted-foreground leading-relaxed">
+                                                {item.desc}
+                                            </p>
                                         </div>
-                                        <div className="absolute top-6 right-6 text-4xl font-black text-slate-100 dark:text-slate-800 select-none opacity-50">
-                                            {item.step}
-                                        </div>
-                                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{item.title}</h3>
-                                        <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                                            {item.desc}
-                                        </p>
-                                    </div>
+                                    </Card>
                                 ))}
                             </div>
                         </div>
                     </div>
 
                     {/* Features Grid */}
-                    <div className="bg-slate-50 dark:bg-slate-900 py-24 border-t border-slate-200 dark:border-slate-800">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="bg-muted/30 py-24 border-t">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center mb-16">
+                                <h2 className="text-3xl font-bold tracking-tight mb-4">Why use this platform?</h2>
+                            </div>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[
                                     {
                                         title: "Live Updates",
@@ -186,47 +198,62 @@ export default function Welcome() {
                                         title: "Vote Anywhere",
                                         desc: "Access the voting platform from any device, anywhere.",
                                         icon: Smartphone
+                                    },
+                                    {
+                                        title: "Transparent Audit",
+                                        desc: "Every vote is logged and verifiable by the election committee.",
+                                        icon: FileCheck
+                                    },
+                                    {
+                                        title: "Fast Results",
+                                        desc: "Automated tallying provides instant results after election close.",
+                                        icon: CheckCircle
+                                    },
+                                    {
+                                        title: "Eco-Friendly",
+                                        desc: "Paperless voting reduces waste and environmental impact.",
+                                        icon: Globe
                                     }
                                 ].map((feature, idx) => (
-                                    <div key={idx} className="flex gap-4 p-6 bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 transition-colors">
-                                        <div className="flex-shrink-0">
-                                            <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
-                                                <feature.icon className="h-6 w-6" />
+                                    <Card key={idx} className="bg-background border-muted hover:border-primary/50 transition-colors">
+                                        <CardHeader>
+                                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2 text-primary">
+                                                <feature.icon className="h-5 w-5" />
                                             </div>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
-                                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                                            <CardTitle className="text-xl">{feature.title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <CardDescription className="text-base">
                                                 {feature.desc}
-                                            </p>
-                                        </div>
-                                    </div>
+                                            </CardDescription>
+                                        </CardContent>
+                                    </Card>
                                 ))}
                             </div>
                         </div>
                     </div>
-
-                    <footer className="bg-white dark:bg-slate-950 py-12 border-t border-slate-200 dark:border-slate-800">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-emerald-600 p-1.5 rounded text-white">
-                                    <Vote className="h-4 w-4" />
-                                </div>
-                                <span className="font-bold text-slate-900 dark:text-white">SGLL Voting System</span>
-                            </div>
-
-                            <div className="text-slate-500 dark:text-slate-400 text-sm">
-                                &copy; {new Date().getFullYear()} SGLL Voting System. All rights reserved.
-                            </div>
-
-                            <div className="flex gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
-                                <span className="hover:text-emerald-600 cursor-pointer transition-colors">Privacy Policy</span>
-                                <span className="hover:text-emerald-600 cursor-pointer transition-colors">Terms of Service</span>
-                                <span className="hover:text-emerald-600 cursor-pointer transition-colors">Contact Support</span>
-                            </div>
-                        </div>
-                    </footer>
                 </main>
+
+                <footer className="border-t bg-background py-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-2">
+                            <div className="bg-primary p-1 rounded text-primary-foreground">
+                                <Vote className="h-4 w-4" />
+                            </div>
+                            <span className="font-bold text-sm">{appName}</span>
+                        </div>
+
+                        <div className="text-muted-foreground text-sm">
+                            &copy; {new Date().getFullYear()} {appName}. All rights reserved.
+                        </div>
+
+                        <div className="flex gap-6 text-sm font-medium text-muted-foreground">
+                            <span className="hover:text-primary cursor-pointer transition-colors">Privacy</span>
+                            <span className="hover:text-primary cursor-pointer transition-colors">Terms</span>
+                            <span className="hover:text-primary cursor-pointer transition-colors">Contact</span>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </>
     );
