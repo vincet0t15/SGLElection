@@ -19,7 +19,7 @@ export default function AuthSimpleLayout({
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
                 <div className="absolute top-[-10%] right-[-5%] w-[50%] h-[50%] rounded-full bg-emerald-100/40 dark:bg-emerald-900/10 blur-3xl filter opacity-50 animate-pulse"></div>
                 <div className="absolute bottom-[-10%] left-[-5%] w-[50%] h-[50%] rounded-full bg-teal-100/40 dark:bg-teal-900/10 blur-3xl filter opacity-50"></div>
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+                {/* <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div> */}
             </div>
 
             <FlashMessageToaster />
