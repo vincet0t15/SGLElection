@@ -48,6 +48,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('reports/audit/{event}', [ReportController::class, 'audit'])->name('reports.audit');
     Route::get('reports/audit/print/{event}', [ReportController::class, 'printAudit'])->name('reports.audit.print');
     Route::get('reports/live/{event}', [ReportController::class, 'live'])->name('reports.live');
+    Route::get('reports/{event}/voters/print', [ReportController::class, 'printVoters'])->name('reports.voters.print');
     Route::get('reports/print/{event}', [ReportController::class, 'print'])->name('reports.print');
     Route::get('reports/print-pdf/{event}', [ReportController::class, 'exportPrintPdf'])->name('reports.print-pdf');
     Route::get('reports/comelec/{event}', [ReportController::class, 'generateComelecForm'])->name('reports.comelec');

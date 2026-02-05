@@ -588,6 +588,21 @@ export default function ReportsShow({ event, positions, signatories, stats, vote
                                             <SelectItem value="not_voted">Not Voted</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    <Button asChild variant="outline" className="gap-2">
+                                        <a
+                                            href={`/reports/${event.id}/voters/print${(() => {
+                                                const params = new URLSearchParams();
+                                                if (status && status !== 'all') params.append('status', status);
+                                                if (search) params.append('search', search);
+                                                return params.size ? `?${params.toString()}` : '';
+                                            })()}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <Printer className="h-4 w-4" />
+                                            Print List
+                                        </a>
+                                    </Button>
                                 </div>
                             </CardHeader>
 

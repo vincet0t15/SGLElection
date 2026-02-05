@@ -454,6 +454,71 @@ class ReportController extends Controller
         ]);
     }
 
+    public function printVoters(Request $request, Event $event)
+    {
+        $search = $request->query('search');
+        $status = $request->query('status', 'all');
+        $yearLevelId = $request->query('year_level_id');
+        $yearSectionId = $request->query('year_section_id');
+
+        $votersQuery = \App\Models\Voter::where('event_id', $event->id)
+            ->with(['yearLevel', 'yearSection']);
+
+        if ($search) {
+            $votersQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%");
+            });
+        }
+
+        if ($yearLevelId) {
+            $votersQuery->where('year_level_id', $yearLevelId);
+        }
+
+        if ($yearSectionId) {
+            $votersQuery->where('year_section_id', $yearSectionId);
+        }
+
+        if ($status === 'voted') {
+            $votersQuery->whereHas('votes', function ($q) use ($event) {
+                $q->where('event_id', $event->id);
+            });
+        } elseif ($status === 'not_voted') {
+            $votersQuery->whereDoesntHave('votes', function ($q) use ($event) {
+                $q->where('event_id', $event->id);
+            });
+        }
+
+        $voters = $votersQuery
+            ->withExists(['votes as has_voted' => function ($q) use ($event) {
+                $q->where('event_id', $event->id);
+            }])
+            ->orderBy('name', 'asc')
+            ->get();
+
+        $signatories = \App\Models\Signatory::where('is_active', true)
+            ->where(function ($query) use ($event) {
+                $query->where('event_id', $event->id)
+                    ->orWhereNull('event_id');
+            })
+            ->orderBy('order')
+            ->get();
+
+        $filters = [
+            'search' => $search,
+            'status' => $status,
+            'year_level_id' => $yearLevelId,
+            'year_section_id' => $yearSectionId,
+        ];
+
+        return Inertia::render('Reports/PrintVoters', [
+            'event' => $event,
+            'voters' => $voters,
+            'filters' => $filters,
+            'signatories' => $signatories,
+        ]);
+    }
+
     public function exportVoterReceipt(Event $event, Voter $voter, Request $request)
     {
         $type = $request->query('type', 'pdf');
