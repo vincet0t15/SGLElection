@@ -29,6 +29,8 @@ class ReportController extends Controller
 
     public function show(Request $request, Event $event)
     {
+        $yearLevelId = $request->input('year_level_id');
+        $yearSectionId = $request->input('year_section_id');
         $positions = $event->positions()
             ->orderBy('id')
             ->with(['candidates' => function ($query) use ($event) {
@@ -66,6 +68,14 @@ class ReportController extends Controller
             });
         }
 
+        if ($yearLevelId) {
+            $votersQuery->where('year_level_id', $yearLevelId);
+        }
+
+        if ($yearSectionId) {
+            $votersQuery->where('year_section_id', $yearSectionId);
+        }
+
         if ($request->status === 'voted') {
             $votersQuery->whereHas('votes', function ($q) use ($event) {
                 $q->where('event_id', $event->id);
@@ -76,7 +86,7 @@ class ReportController extends Controller
             });
         }
 
-        $voters = $votersQuery->withExists(['votes as has_voted' => function ($q) use ($event) {
+        $voters = $votersQuery->with(['yearLevel', 'yearSection'])->withExists(['votes as has_voted' => function ($q) use ($event) {
             $q->where('event_id', $event->id);
         }])
             ->paginate(10)
@@ -93,6 +103,9 @@ class ReportController extends Controller
             ->orderBy('order')
             ->get();
 
+        $yearLevels = \App\Models\YearLevel::orderBy('name', 'asc')->get();
+        $yearSections = \App\Models\YearSection::orderBy('name', 'asc')->get();
+
         return Inertia::render('Reports/Show', [
             'event' => $event,
             'positions' => $positions,
@@ -103,7 +116,9 @@ class ReportController extends Controller
                 'voted_count' => $totalVoters
             ],
             'voters' => $voters,
-            'filters' => $request->only(['search', 'status']),
+            'filters' => $request->only(['search', 'status', 'year_level_id', 'year_section_id']),
+            'yearLevels' => $yearLevels,
+            'yearSections' => $yearSections,
         ]);
     }
 

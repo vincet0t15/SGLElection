@@ -87,10 +87,14 @@ interface Props {
     filters: {
         search?: string;
         status?: string;
+        year_level_id?: string;
+        year_section_id?: string;
     };
+    yearLevels: { id: number; name: string }[];
+    yearSections: { id: number; name: string; year_level_id: number }[];
 }
 
-export default function ReportsShow({ event, positions, signatories, stats, voters, filters }: Props) {
+export default function ReportsShow({ event, positions, signatories, stats, voters, filters, yearLevels, yearSections }: Props) {
     const { url, props } = usePage<SharedData>();
     const { system_settings } = props;
     const backUrl = url.includes('from=archives') ? '/archives' : '/reports';
@@ -101,6 +105,8 @@ export default function ReportsShow({ event, positions, signatories, stats, vote
 
     const [search, setSearch] = useState(filters.search || '');
     const [status, setStatus] = useState(filters.status || 'all');
+    const [yearLevelId, setYearLevelId] = useState<string>(filters.year_level_id ? String(filters.year_level_id) : 'all');
+    const [yearSectionId, setYearSectionId] = useState<string>(filters.year_section_id ? String(filters.year_section_id) : 'all');
     const [selectedVoter, setSelectedVoter] = useState<Voter | null>(null);
     const [votes, setVotes] = useState<Vote[]>([]);
     const [isLoadingVotes, setIsLoadingVotes] = useState(false);
@@ -170,10 +176,48 @@ export default function ReportsShow({ event, positions, signatories, stats, vote
         setStatus(value);
         router.get(
             `/reports/${event.id}`,
-            { search, status: value === 'all' ? undefined : value },
+            {
+                search,
+                status: value === 'all' ? undefined : value,
+                year_level_id: yearLevelId === 'all' ? undefined : yearLevelId,
+                year_section_id: yearSectionId === 'all' ? undefined : yearSectionId,
+            },
             { preserveState: true, preserveScroll: true }
         );
     };
+
+    const handleYearLevelFilter = (value: string) => {
+        setYearLevelId(value);
+        setYearSectionId('all');
+        router.get(
+            `/reports/${event.id}`,
+            {
+                search,
+                status: status === 'all' ? undefined : status,
+                year_level_id: value === 'all' ? undefined : value,
+                year_section_id: undefined,
+            },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
+
+    const handleYearSectionFilter = (value: string) => {
+        setYearSectionId(value);
+        router.get(
+            `/reports/${event.id}`,
+            {
+                search,
+                status: status === 'all' ? undefined : status,
+                year_level_id: yearLevelId === 'all' ? undefined : yearLevelId,
+                year_section_id: value === 'all' ? undefined : value,
+            },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
+
+    const filteredSections = yearLevelId !== 'all'
+        ? yearSections.filter(section => section.year_level_id.toString() === yearLevelId)
+        : yearSections;
 
     const breadcrumbs = url.includes('from=archives')
         ? [
@@ -588,12 +632,41 @@ export default function ReportsShow({ event, positions, signatories, stats, vote
                                             <SelectItem value="not_voted">Not Voted</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    <Select value={yearLevelId} onValueChange={handleYearLevelFilter}>
+                                        <SelectTrigger className="w-full sm:w-[180px]">
+                                            <SelectValue placeholder="Filter by Year Level" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Year Levels</SelectItem>
+                                            {yearLevels.map((level) => (
+                                                <SelectItem key={level.id} value={String(level.id)}>
+                                                    {level.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+
+                                    <Select value={yearSectionId} onValueChange={handleYearSectionFilter} disabled={yearLevelId === 'all'}>
+                                        <SelectTrigger className="w-full sm:w-[180px]">
+                                            <SelectValue placeholder="Filter by Section" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Sections</SelectItem>
+                                            {filteredSections.map((section) => (
+                                                <SelectItem key={section.id} value={String(section.id)}>
+                                                    {section.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <Button asChild variant="outline" className="gap-2">
                                         <a
                                             href={`/reports/${event.id}/voters/print${(() => {
                                                 const params = new URLSearchParams();
                                                 if (status && status !== 'all') params.append('status', status);
                                                 if (search) params.append('search', search);
+                                                if (yearLevelId !== 'all') params.append('year_level_id', yearLevelId);
+                                                if (yearSectionId !== 'all') params.append('year_section_id', yearSectionId);
                                                 return params.size ? `?${params.toString()}` : '';
                                             })()}`}
                                             target="_blank"
