@@ -229,13 +229,13 @@ export default function ReportsPrint({ event, positions, signatories, stats, typ
                                                                         <td className="py-1 px-4 border border-black w-24 text-center">
                                                                             {percentage}%
                                                                         </td>
-                                                                        <td className="py-1 px-4 border border-black w-24 text-center font-bold text-xs whitespace-nowrap">
-                                                                            {candidate.is_tie_breaker_winner ? (
-                                                                                <span className="text-blue-600">TIE-BREAK WINNER</span>
-                                                                            ) : isWinner ? (
-                                                                                <span className="text-emerald-700">WINNER</span>
+                                                                        <td className="py-1 px-4 border border-black w-24 text-center font-bold text-[10px] leading-tight whitespace-normal break-words">
+                                                                            {isWinner ? (
+                                                                                <span className="text-black inline-block max-w-[6rem]">
+                                                                                    WINNER{candidate.is_tie_breaker_winner ? ' (TIE BREAKER)' : ''}
+                                                                                </span>
                                                                             ) : isTied ? (
-                                                                                <span className="text-red-600">TIE</span>
+                                                                                <span className="text-black inline-block max-w-[6rem]">(TIE)</span>
                                                                             ) : (
                                                                                 <span className="text-transparent">-</span>
                                                                             )}
