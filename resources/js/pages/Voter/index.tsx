@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { PlusIcon, Upload, Download, Printer, ShieldBan, CreditCard, Trash2, Monitor } from 'lucide-react';
+import { PlusIcon, Upload, Download, Printer, ShieldBan, CreditCard, Trash2, Monitor, ArrowRightLeft } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -14,6 +14,14 @@ import { EventProps } from '@/types/event';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -86,6 +94,9 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
     const [openBulkDeleteDialog, setOpenBulkDeleteDialog] = useState(false);
     const [openBulkStatusDialog, setOpenBulkStatusDialog] = useState(false);
     const [pendingBulkStatus, setPendingBulkStatus] = useState<boolean | null>(null);
+    const [openAssignDialog, setOpenAssignDialog] = useState(false);
+    const [targetEventId, setTargetEventId] = useState<string>('');
+    const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
     const handleClickDelete = (id: number) => {
         setDeleteId(id);
@@ -193,8 +204,6 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         });
     };
 
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
-
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
             setSelectedIds(voters.data.map(v => v.id));
@@ -209,6 +218,33 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
         } else {
             setSelectedIds(prev => prev.filter(i => i !== id));
         }
+    };
+
+    const handleAssignEvent = () => {
+        if (!targetEventId) {
+            toast.error("Please select a target event.");
+            return;
+        }
+
+        router.post('/voter/bulk-assign-event', {
+            target_event_id: targetEventId,
+            ids: selectedIds.length > 0 ? selectedIds : undefined,
+            search: search,
+            event_id: eventId,
+            year_level_id: yearLevelId,
+            year_section_id: yearSectionId,
+        }, {
+            preserveScroll: true,
+            onSuccess: (response: { props: FlashProps }) => {
+                setSelectedIds([]);
+                toast.success(response.props.flash?.success);
+                setOpenAssignDialog(false);
+                setTargetEventId('');
+            },
+            onError: (errors) => {
+                 toast.error("Failed to assign voters to event.");
+            }
+        });
     };
 
     const handleBulkAction = (status: boolean) => {
@@ -312,6 +348,14 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                         >
                             <CreditCard className="h-4 w-4" />
                             <span className="rounded-sm lg:inline">Credential Slips</span>
+                        </Button>
+
+                        <Button
+                            className="cursor-pointer bg-violet-600 text-white"
+                            onClick={() => setOpenAssignDialog(true)}
+                        >
+                            <ArrowRightLeft className="h-4 w-4" />
+                            <span className="rounded-sm lg:inline">Assign Event</span>
                         </Button>
 
                         <Button
@@ -549,6 +593,39 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <Dialog open={openAssignDialog} onOpenChange={setOpenAssignDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Assign Voters to Event</DialogTitle>
+                        <DialogDescription>
+                            Select the target event to move the <strong>{selectedIds.length > 0 ? `${selectedIds.length} selected` : 'ALL matching'}</strong> voters to.
+                            <br /><br />
+                            This will update their event assignment, allowing them to participate in the new event.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Select value={targetEventId} onValueChange={setTargetEventId}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Target Event" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {events.map((event) => (
+                                    <SelectItem key={event.id} value={String(event.id)}>
+                                        {event.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setOpenAssignDialog(false)}>Cancel</Button>
+                        <Button onClick={handleAssignEvent} className="bg-violet-600 hover:bg-violet-700 text-white">
+                            Assign Voters
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AppLayout >
     );
 }

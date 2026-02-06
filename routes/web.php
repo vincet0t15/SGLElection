@@ -111,6 +111,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('voter/print-cards', [VoterController::class, 'printCards'])->name('voter.print-cards');
     Route::post('voter/activate-all', [VoterController::class, 'activateAll'])->name('voter.activate-all');
     Route::post('voter/bulk-status', [VoterController::class, 'bulkStatus'])->name('voter.bulk-status');
+    Route::post('voter/bulk-assign-event', [VoterController::class, 'bulkAssignEvent'])->name('voter.bulk-assign-event');
     Route::post('voter/bulk-destroy', [VoterController::class, 'bulkDestroy'])->name('voter.bulk-destroy');
     Route::get('voter/create', [VoterController::class, 'create'])->name('voter.create');
     Route::post('voter', [VoterController::class, 'store'])->name('voter.store');
