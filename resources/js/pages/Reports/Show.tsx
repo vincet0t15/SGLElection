@@ -19,6 +19,16 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -35,6 +45,7 @@ import { cn } from "@/lib/utils";
 import Heading from '@/components/heading';
 import { PaginatedDataResponse } from '@/types/pagination';
 import Pagination from '@/components/paginationData';
+import { toast } from 'sonner';
 
 interface Voter {
     id: number;
@@ -112,6 +123,27 @@ export default function ReportsShow({ event, positions, signatories, stats, vote
     const [isLoadingVotes, setIsLoadingVotes] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isClient, setIsClient] = useState(false);
+
+    const [resetId, setResetId] = useState<number | null>(null);
+    const [openResetDialog, setOpenResetDialog] = useState(false);
+
+    const handleClickReset = (id: number) => {
+        setResetId(id);
+        setOpenResetDialog(true);
+    }
+
+    const handleConfirmReset = () => {
+        if (resetId) {
+            router.post(`/voter/${resetId}/reset-votes`, {}, {
+                preserveScroll: true,
+                onSuccess: (response: { props: FlashProps }) => {
+                    toast.success(response.props.flash?.success);
+                    setOpenResetDialog(false);
+                    setResetId(null);
+                }
+            });
+        }
+    };
 
     useEffect(() => {
         setIsClient(true);
@@ -701,13 +733,22 @@ export default function ReportsShow({ event, positions, signatories, stats, vote
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     {voter.has_voted && (
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => handleViewVotes(voter)}
-                                                        >
-                                                            View Votes
-                                                        </Button>
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => handleViewVotes(voter)}
+                                                            >
+                                                                View Votes
+                                                            </Button>
+                                                            <Button
+                                                                className="bg-amber-600 hover:bg-amber-700 text-white"
+                                                                size="sm"
+                                                                onClick={() => handleClickReset(voter.id)}
+                                                            >
+                                                                Reset
+                                                            </Button>
+                                                        </div>
                                                     )}
                                                 </TableCell>
                                             </TableRow>
@@ -852,6 +893,24 @@ export default function ReportsShow({ event, positions, signatories, stats, vote
                     )}
                 </DialogContent>
             </Dialog>
+            <AlertDialog open={openResetDialog} onOpenChange={setOpenResetDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Reset Vote?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will <strong>DELETE</strong> all votes cast by this voter and <strong>REACTIVATE</strong> their account so they can vote again.
+                            <br /><br />
+                            This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmReset} className="bg-amber-600 hover:bg-amber-700">
+                            Reset Vote
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }

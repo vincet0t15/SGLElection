@@ -33,6 +33,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\Settings\SignatoryController;
 use App\Http\Controllers\VoterController;
+use App\Http\Controllers\OnlineVoterController;
 
 // Admin Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
@@ -115,8 +116,13 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::post('voter', [VoterController::class, 'store'])->name('voter.store');
     Route::get('voter/{voter}/edit', [VoterController::class, 'edit'])->name('voter.edit');
     Route::put('voter/{voter}', [VoterController::class, 'update'])->name('voter.update');
+    Route::post('voter/{voter}/reset-votes', [VoterController::class, 'resetVotes'])->name('voter.reset-votes');
     Route::patch('voter/{voter}/toggle-status', [VoterController::class, 'toggleStatus'])->name('voter.toggle-status');
     Route::delete('voter/{voter}', [VoterController::class, 'destroy'])->name('voter.destroy');
+
+    // Online Voters
+    Route::get('online-voters', [OnlineVoterController::class, 'index'])->name('online-voters.index');
+    Route::delete('online-voters/{sessionId}', [OnlineVoterController::class, 'destroy'])->name('online-voters.destroy');
 
     // Signatories
     Route::get('signatories', [SignatoryController::class, 'index'])->name('signatories.index');

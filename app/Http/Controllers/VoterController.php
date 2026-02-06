@@ -405,6 +405,23 @@ class VoterController extends Controller
         return back()->with('success', "Voter {$voter->name} has been {$status}.");
     }
 
+    public function resetVotes(Voter $voter)
+    {
+        // Use transaction to ensure data integrity
+        \Illuminate\Support\Facades\DB::transaction(function () use ($voter) {
+            // Delete all votes for this voter
+            \App\Models\Vote::where('voter_id', $voter->id)->delete();
+
+            // Reactivate the voter so they can vote again
+            $voter->update(['is_active' => true]);
+
+            // Optional: Log this administrative action
+            // \App\Models\ActivityLog::create([...]);
+        });
+
+        return back()->with('success', "Votes for {$voter->name} have been deleted and account reactivated.");
+    }
+
     public function store(Request $request)
     {
         $request->validate([

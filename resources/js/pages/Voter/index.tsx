@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { PlusIcon, Upload, Download, Printer, ShieldBan, CreditCard, Trash2 } from 'lucide-react';
+import { PlusIcon, Upload, Download, Printer, ShieldBan, CreditCard, Trash2, Monitor } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -280,6 +280,13 @@ export default function Voter({ voters, filters, events, yearLevels, yearSection
                             <Button className="cursor-pointer bg-blue-800 text-white">
                                 <Upload className=" h-4 w-4" />
                                 <span className="rounded-sm lg:inline">Import</span>
+                            </Button>
+                        </Link>
+
+                        <Link href="/online-voters">
+                            <Button className="cursor-pointer bg-cyan-600 text-white">
+                                <Monitor className="h-4 w-4" />
+                                <span className="rounded-sm lg:inline">Online Voters</span>
                             </Button>
                         </Link>
 
