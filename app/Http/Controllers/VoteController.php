@@ -39,9 +39,9 @@ class VoteController extends Controller
                             });
                         }
                     })->orderBy('id', 'asc')
-                    ->with(['candidates' => function ($q) {
-                        $q->with(['candidatePhotos', 'voter.yearLevel', 'voter.yearSection', 'partylist']);
-                    }]);
+                        ->with(['candidates' => function ($q) {
+                            $q->with(['candidatePhotos', 'voter.yearLevel', 'voter.yearSection', 'partylist']);
+                        }]);
                 },
             ])
             ->get();
@@ -187,7 +187,7 @@ class VoteController extends Controller
         });
 
 
-        return redirect()->route('vote.receipt');
+        return redirect()->route('vote.receipt')->with('success', 'You have successfully voted!');
     }
 
     public function receipt()

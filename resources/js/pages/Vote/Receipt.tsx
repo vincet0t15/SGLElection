@@ -39,7 +39,7 @@ interface Props {
 }
 
 export default function Receipt({ votes, event, voter }: Props) {
-    const { system_settings } = usePage<SharedData>().props;
+    const { system_settings, flash } = usePage<SharedData & { flash: { success?: string } }>().props;
 
     const votesByPosition = votes.reduce((acc, vote) => {
         const positionName = vote.candidate.position.name;
@@ -79,6 +79,13 @@ export default function Receipt({ votes, event, voter }: Props) {
                 <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 w-full print:hidden"></div>
 
                 <div className="p-8 print:p-0">
+
+                    {flash?.success && (
+                        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center gap-3 text-emerald-700 print:hidden animate-in fade-in slide-in-from-top-2 duration-500">
+                            <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                            <p className="font-bold text-sm">{flash.success}</p>
+                        </div>
+                    )}
 
                     <div className="mb-8 flex justify-center border-b border-slate-100 pb-6">
                         <table className="border-collapse border-none">

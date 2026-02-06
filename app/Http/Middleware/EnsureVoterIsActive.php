@@ -16,6 +16,11 @@ class EnsureVoterIsActive
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Allow access to receipt and logout even if inactive
+        if ($request->routeIs('vote.receipt') || $request->routeIs('voter.logout')) {
+            return $next($request);
+        }
+
         $voter = Auth::guard('voter')->user();
 
         if ($voter && !$voter->is_active) {
