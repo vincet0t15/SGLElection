@@ -58,8 +58,14 @@ export default function Backup() {
         formData.append('backup_file', selectedFile);
 
         router.post(restore().url, formData, {
-            onError: () => {
-                toast.error('Failed to restore database');
+            onSuccess: (page) => {
+                const flash = page.props.flash as FlashProps['flash'];
+                if (flash?.success) {
+                    toast.success(flash.success);
+                }
+            },
+            onError: (errors) => {
+                toast.error(errors.error || 'Failed to restore database');
                 if (fileInputRef.current) fileInputRef.current.value = '';
                 setSelectedFile(null);
             },
