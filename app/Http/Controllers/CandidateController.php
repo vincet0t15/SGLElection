@@ -202,7 +202,7 @@ class CandidateController extends Controller
         $voterId = $validated['voter_id'] ?? null;
 
         if (!$voterId) {
-            // Create new voter if one isn't selected
+
             $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $validated['name'])) . rand(100, 999);
             while (Voter::where('username', $username)->exists()) {
                 $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $validated['name'])) . rand(100, 999);
