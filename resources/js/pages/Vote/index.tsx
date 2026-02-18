@@ -240,9 +240,6 @@ export default function VoteIndex({ events }: Props) {
                 ) : (
                     events.map((event) => (
                         <div key={event.id} className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-
-
-
                             {event.positions.map((position) => (
                                 <section key={position.id} className="scroll-mt-24 relative">
 
