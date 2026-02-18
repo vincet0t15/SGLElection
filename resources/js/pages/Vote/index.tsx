@@ -42,17 +42,16 @@ export default function VoteIndex({ events }: Props) {
     const progressPercentage = totalPositions > 0 ? (votedPositions / totalPositions) * 100 : 0;
 
     const handleVote = (positionId: number, candidateId: number, maxVotes: number) => {
+
         const currentVotes = votes[positionId] || [];
         const isSelected = currentVotes.includes(candidateId);
 
         if (isSelected) {
-
             setVotes(prev => ({
                 ...prev,
                 [positionId]: currentVotes.filter(id => id !== candidateId)
             }));
         } else {
-
             if (currentVotes.length >= maxVotes) {
                 toast.error(`You can only select ${maxVotes} candidate(s) for this position.`);
                 return;
