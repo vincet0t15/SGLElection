@@ -99,9 +99,9 @@ class CandidateController extends Controller
         $voterId = $validated['voter_id'] ?? null;
 
         if (!$voterId) {
-            // Create new voter
+
             $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $validated['name'])) . rand(100, 999);
-            // Ensure uniqueness (simple check)
+
             while (Voter::where('username', $username)->exists()) {
                 $username = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $validated['name'])) . rand(100, 999);
             }
@@ -112,7 +112,7 @@ class CandidateController extends Controller
                 'year_section_id' => $validated['year_section_id'],
                 'event_id' => $validated['event_id'],
                 'username' => $username,
-                'password' => 'password', // Default password
+                'password' => 'password',
                 'is_active' => true,
             ]);
             $voterId = $voter->id;
@@ -155,7 +155,6 @@ class CandidateController extends Controller
         if ($request->has('event_id')) {
             $positions = Position::where('event_id', $request->event_id)->get();
             $partylists = Partylist::where('event_id', $request->event_id)->get();
-            // $voters = Voter::where('event_id', $request->event_id)->orderBy('name')->get(); // Removed to optimize
         }
 
         return Inertia::render('Candidate/create', [
@@ -163,7 +162,7 @@ class CandidateController extends Controller
             'yearLevels' => $yearLevels,
             'positions' => $positions,
             'partylists' => $partylists,
-            'voters' => [], // Empty array as we use async select
+            'voters' => [],
             'event_id' => $request->event_id,
         ]);
     }
