@@ -62,6 +62,8 @@ export default function VoteIndex({ events }: Props) {
                 [positionId]: [...currentVotes, candidateId]
             }));
         }
+
+
     };
 
     const isSelected = (positionId: number, candidateId: number) => {
